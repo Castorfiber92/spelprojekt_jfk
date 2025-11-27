@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="HeroData" load_steps=2 format=3 uid="uid://dvivwugrwh8vr"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_x5tnt"]
+
+[resource]
+script = ExtResource("1_x5tnt")
+name = "OrcHexblade"
+baseHP = 24.0
+baseDamage = 2.0
+metadata/_custom_type_script = "uid://cg6we33ta62qy"

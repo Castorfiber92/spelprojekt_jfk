@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="HeroData" load_steps=2 format=3 uid="uid://blppyby2i0jom"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_ai3un"]
+
+[resource]
+script = ExtResource("1_ai3un")
+name = "MrRabbitMonk"
+baseHP = 20.0
+baseDamage = 5.0
+metadata/_custom_type_script = "uid://cg6we33ta62qy"

@@ -1,0 +1,60 @@
+[gd_scene load_steps=9 format=3 uid="uid://dghh06fkn2y3i"]
+
+[ext_resource type="Script" uid="uid://bdcgimto455j7" path="res://Scripts/Heroes/Hero.gd" id="1_d235u"]
+[ext_resource type="Resource" uid="uid://blppyby2i0jom" path="res://Resources/Hero/MrRabbitMonk.tres" id="2_nm5wh"]
+[ext_resource type="Texture2D" uid="uid://bv3j3m02aoe8p" path="res://Graphics/Mirjam.png" id="3_ce415"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o40e8"]
+atlas = ExtResource("3_ce415")
+region = Rect2(0, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_63mf6"]
+atlas = ExtResource("3_ce415")
+region = Rect2(32, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ycmug"]
+atlas = ExtResource("3_ce415")
+region = Rect2(64, 48, 32, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gjkmb"]
+atlas = ExtResource("3_ce415")
+region = Rect2(96, 48, 32, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wxugg"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o40e8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_63mf6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ycmug")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gjkmb")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[node name="MrRabbitMonk" type="Node2D"]
+script = ExtResource("1_d235u")
+hero = ExtResource("2_nm5wh")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_wxugg")
+autoplay = "default"
+frame_progress = 0.89515316

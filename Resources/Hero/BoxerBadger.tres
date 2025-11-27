@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="HeroData" load_steps=2 format=3 uid="uid://dknc6qefv1ye"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_16sy4"]
+
+[resource]
+script = ExtResource("1_16sy4")
+name = "BoxerBadger"
+baseHP = 40.0
+baseDamage = 4.0
+metadata/_custom_type_script = "uid://cg6we33ta62qy"
