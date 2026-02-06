@@ -1,11 +1,12 @@
 extends PanelContainer
 
-var activeHero : Hero
-@onready var nameLabel : Label = %HeroName
+var active_hero : Hero
+@onready var name_label : Label = $VBoxContainer/HeroName
 var namn : String = "Namn"
 
 func _ready() -> void:
-	UpdateInfo()
+	update_info()
 	
-func UpdateInfo():
-	nameLabel.text = activeHero.hero.name
+func update_info():
+	if active_hero != null:
+		name_label.text = active_hero.hero.name

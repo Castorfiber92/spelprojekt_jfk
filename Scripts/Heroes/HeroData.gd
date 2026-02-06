@@ -2,5 +2,5 @@ extends Resource
 class_name HeroData
 
 @export var name : String
-@export var baseHP : float
-@export var baseDamage : float
+@export var base_HP : float
+@export var base_damage : float

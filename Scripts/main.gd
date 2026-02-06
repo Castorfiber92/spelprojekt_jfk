@@ -4,14 +4,14 @@ var a : int = 1
 var b : float = 1.25
 
 func _ready() -> void:
-	DealDamage()
+	deal_damage()
 
-func DealDamage():
+func deal_damage():
 	var damage : float
 	damage += a
 	print_debug(damage)
-	damage = CalculateCrit(damage)
+	damage = calculate_crit(damage)
 	print_debug(damage)
 
-func CalculateCrit(dmg : float):
+func calculate_crit(dmg : float):
 	return dmg*b
