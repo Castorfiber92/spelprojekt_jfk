@@ -5,48 +5,66 @@
 [node name="BaseUI" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = -575.0
-offset_top = -322.0
-offset_right = -535.0
-offset_bottom = -282.0
-scale = Vector2(28.720005, 16.120003)
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 color = Color(0.15315554, 0.31289747, 0.1773814, 1)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="Active Heroers" type="HBoxContainer" parent="."]
 layout_mode = 0
-offset_top = 19.851112
-offset_right = 41.0
-offset_bottom = 39.851112
+offset_top = 700.0
+offset_right = 1920.0
+offset_bottom = 1050.0
+theme_override_constants/separation = 230
 
-[node name="HeroSlot" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(5, 0)
+[node name="HeroSlot" type="PanelContainer" parent="Active Heroers"]
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 script = ExtResource("1_va5en")
 
-[node name="HeroName" type="Label" parent="HBoxContainer/HeroSlot"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 4
-text = "10"
-
-[node name="HeroSlot2" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(5, 0)
+[node name="VBoxContainer" type="VBoxContainer" parent="Active Heroers/HeroSlot"]
 layout_mode = 2
 
-[node name="HeroSlot3" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(5, 0)
+[node name="HBoxContainer" type="HBoxContainer" parent="Active Heroers/HeroSlot/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 200
+
+[node name="HP" type="PanelContainer" parent="Active Heroers/HeroSlot/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(50, 55)
 layout_mode = 2
 
-[node name="HeroSlot4" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(5, 0)
+[node name="Label" type="Label" parent="Active Heroers/HeroSlot/VBoxContainer/HBoxContainer/HP"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DAMAGE" type="PanelContainer" parent="Active Heroers/HeroSlot/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 
-[node name="HeroSlot5" type="PanelContainer" parent="HBoxContainer"]
-custom_minimum_size = Vector2(5, 0)
+[node name="Label" type="Label" parent="Active Heroers/HeroSlot/VBoxContainer/HBoxContainer/DAMAGE"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="Active Heroers/HeroSlot/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HeroName" type="Label" parent="Active Heroers/HeroSlot/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 30
+text = "Herolord"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
