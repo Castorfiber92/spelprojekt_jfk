@@ -7,6 +7,8 @@ class_name CombatManager
 @export var player_heroes : Array[HeroData]
 @export var enemy_heroes : Array[HeroData]
 
+@onready var hero_slot: = preload("res://Scenes/HeroSlot.tscn")
+
 func _ready() -> void:
 	create_slots()
 
@@ -20,6 +22,7 @@ func create_slots():
 
 func set_hero(slot : HeroSlot, hero : Hero):
 	slot.active_hero = hero
+	slot.update_info()
 
 func remove_hero(slot : HeroSlot):
 	slot.active_hero = null
@@ -29,32 +32,34 @@ func initialize_combat():
 	
 func load_player_party():
 	for i in player_heroes:
-		var slot = HeroSlot.new()
+		var slot : HeroSlot = hero_slot.instantiate()
 		##Add it to the UI
 		combat_ui.player_party.add_child(slot)
 		##Assign the team to Player
-		slot.team = slot.team.HERO_PLAYER
+		#slot.currentTeam = slot.currentTeam.HERO_PLAYER
 		##Add it to our array
 		slots.append(slot)
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
-		##Set the Hero class data according to the HeroData in the array above
-		hero.hero = i
+		##Set the Hero data according to the HeroData in the array above
+		hero.hero_data = i
+		hero.initialize_data()
 		##Update the slot with the correct hero
 		set_hero(slot, hero)
 
 func load_enemy_party():
 	for i in enemy_heroes:
-		var slot = HeroSlot.new()
+		var slot : HeroSlot = hero_slot.instantiate()
 		##Add it to the UI
 		combat_ui.enemy_party.add_child(slot)
 		##Assign the team to Player
-		slot.team = slot.team.HERO_ENEMY
+		##slot.team = slot.team.HERO_ENEMY
 		##Add it to our array
 		slots.append(slot)
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero class data according to the HeroData in the array above
-		hero.hero = i
+		hero.hero_data = i
+		hero.initialize_data()
 		##Update the slot with the correct hero
 		set_hero(slot, hero)

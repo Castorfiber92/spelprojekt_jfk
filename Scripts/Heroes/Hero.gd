@@ -1,10 +1,10 @@
 extends Node2D
 class_name Hero
 
-@export var hero : HeroData
-@export var current_HP : float
-@export var current_damage : float
-var behaviors: Dictionary [String, BehaviorData]
+@export var hero_data : HeroData
+@export var current_HP : int
+@export var current_damage : int
+var behaviors: Dictionary [String, Behavior]
 
 func _ready() -> void:
 	## When the Hero Class loads (i.e. begins to exist) we call the functions below
@@ -13,10 +13,10 @@ func _ready() -> void:
 func initialize_data():
 	## This loads the information from the base resource class HeroData (which we do NOT want to meddle with)
 	## into the Hero class. 
-	current_HP = hero.base_HP
-	current_damage = hero.base_damage
+	current_HP = hero_data.base_HP
+	current_damage = hero_data.base_damage
 	
-func add_behavior(behavior: BehaviorData):
+func add_behavior(behavior: Behavior):
 	## This is used when we add another behavior to the Hero. Such as when an item is added, when a buff
 	## is received, when they unlock a new ability etc. etc.
 	var new_behavior = behavior.duplicate() ## Creates a unique copy so we don't mess with the Resource itself
