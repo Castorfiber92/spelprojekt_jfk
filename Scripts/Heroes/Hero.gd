@@ -28,7 +28,8 @@ func add_behavior(behavior: BehaviorData):
 		behaviors[new_behavior.name] = new_behavior
 		return true
 	else:
-		##This check might be more confusing than not. Perhaps not needed.
+		##If it is already on the list, run error message
+		##(This check might be more confusing than not. Perhaps not needed.)
 		print("Behavior " + new_behavior.name + "already exists in the dict.")
 		return false
 		
