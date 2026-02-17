@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://4o0e327hk6p2"]
+
+[ext_resource type="Script" uid="uid://c07ekn2q4ouo3" path="res://Scripts/Combat/CombatUI.gd" id="1_4u6w4"]
+[ext_resource type="PackedScene" uid="uid://cfo0bnhsgek7e" path="res://Scenes/HeroSlot.tscn" id="1_va5en"]
+
+[node name="CombatUI" type="Control" unique_id=903688084 node_paths=PackedStringArray("player_party", "enemy_party")]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_4u6w4")
+player_party = NodePath("Player Heroes")
+enemy_party = NodePath("Enemy Heroes")
+metadata/_edit_use_anchors_ = true
+
+[node name="Background" type="ColorRect" parent="." unique_id=622324164]
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.15315554, 0.31289747, 0.1773814, 1)
+
+[node name="Player Heroes" type="HBoxContainer" parent="." unique_id=252388779]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 700.0
+offset_right = 1860.0
+offset_bottom = 1050.0
+theme_override_constants/separation = 75
+
+[node name="HeroSlot" parent="Player Heroes" unique_id=1012603315 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot2" parent="Player Heroes" unique_id=279709608 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot3" parent="Player Heroes" unique_id=689312403 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot4" parent="Player Heroes" unique_id=1371394024 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot5" parent="Player Heroes" unique_id=301217383 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="Enemy Heroes" type="HBoxContainer" parent="." unique_id=225338066]
+modulate = Color(1, 0, 0, 1)
+layout_mode = 0
+offset_left = 60.0
+offset_top = 50.0
+offset_right = 1860.0
+offset_bottom = 400.0
+theme_override_constants/separation = 75
+
+[node name="HeroSlot" parent="Enemy Heroes" unique_id=449030312 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot2" parent="Enemy Heroes" unique_id=529867464 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot3" parent="Enemy Heroes" unique_id=1648733327 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot4" parent="Enemy Heroes" unique_id=122582950 instance=ExtResource("1_va5en")]
+layout_mode = 2
+
+[node name="HeroSlot5" parent="Enemy Heroes" unique_id=1907797751 instance=ExtResource("1_va5en")]
+layout_mode = 2

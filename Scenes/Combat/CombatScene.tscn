@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://brnh2ovjq674m"]
+
+[ext_resource type="Script" uid="uid://b4p81aq7y3nu2" path="res://Scripts/Combat/CombatManager.gd" id="1_vhmsl"]
+[ext_resource type="PackedScene" uid="uid://4o0e327hk6p2" path="res://Scenes/Combat/CombatUI.tscn" id="2_8dwbb"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="2_oin0j"]
+[ext_resource type="Resource" uid="uid://blppyby2i0jom" path="res://Resources/Hero/MrRabbitMonk.tres" id="3_exby7"]
+[ext_resource type="Resource" uid="uid://dvivwugrwh8vr" path="res://Resources/Hero/OrcHexblade.tres" id="4_x1lw5"]
+
+[node name="CombatManager" type="Node2D" unique_id=442684704 node_paths=PackedStringArray("combat_ui")]
+script = ExtResource("1_vhmsl")
+combat_ui = NodePath("CombatUI")
+player_heroes = Array[ExtResource("2_oin0j")]([ExtResource("3_exby7")])
+enemy_heroes = Array[ExtResource("2_oin0j")]([ExtResource("4_x1lw5")])
+
+[node name="CombatUI" parent="." unique_id=903688084 instance=ExtResource("2_8dwbb")]
