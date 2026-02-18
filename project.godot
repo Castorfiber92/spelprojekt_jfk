@@ -18,6 +18,11 @@ config/name="Spelprojekt JFK"
 run/main_scene="uid://dyw3gk74lxop3"
 config/features=PackedStringArray("4.6", "Mobile")
 
+[autoload]
+
+Enums="*uid://dwt4brpj5327"
+Preloads="*uid://dt72ff4iabpl0"
+
 [display]
 
 window/size/viewport_width=1920

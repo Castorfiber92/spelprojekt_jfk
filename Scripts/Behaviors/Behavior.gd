@@ -1,0 +1,2 @@
+extends BehaviorBase
+class_name Behavior
