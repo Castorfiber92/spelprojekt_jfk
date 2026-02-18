@@ -1,10 +1,14 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://dknc6qefv1ye"]
 
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_16sy4"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behavior/Basic Actions/attack_basic.tres" id="1_ydoiv"]
 
 [resource]
 script = ExtResource("1_16sy4")
 name = "BoxerBadger"
-base_HP = -8
-base_damage = -5
+base_HP = 15
+base_damage = 3
+base_speed = 1
+base_range = 1
+base_action = ExtResource("1_ydoiv")
 metadata/_custom_type_script = "uid://cg6we33ta62qy"

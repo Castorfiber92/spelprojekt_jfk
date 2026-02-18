@@ -1,7 +1,7 @@
 extends PanelContainer
 class_name HeroSlot
 
-@export var active_hero : Hero
+@export var hero : Hero
 #enum team {HERO_ENEMY, HERO_PLAYER}
 @export var hp_label : Label 
 @export var damage_label : Label
@@ -24,13 +24,13 @@ func toggle_visibility(show = true):
 func update_info():
 	##We are calling this whenever we need to update the labels
 	##First we check that there is, in fact, a active hero in the slot (error-check)
-	if active_hero != null:
+	if hero != null:
 		##If there is, we convert the correct variables to strings and update the information
 		##First, we show the labels again
 		toggle_visibility()
-		hp_label.text = str(active_hero.current_HP)
-		damage_label.text = str(active_hero.current_damage)
-		name_label.text = active_hero.hero_data.name
+		hp_label.text = str(hero.current_HP)
+		damage_label.text = str(hero.current_damage)
+		name_label.text = hero.hero_data.name
 	else:
 		##If there is NO hero
 		##Hide the labels
