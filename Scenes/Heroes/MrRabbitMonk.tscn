@@ -1,7 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://dghh06fkn2y3i"]
+[gd_scene format=3 uid="uid://dghh06fkn2y3i"]
 
 [ext_resource type="Script" uid="uid://bdcgimto455j7" path="res://Scripts/Heroes/Hero.gd" id="1_d235u"]
-[ext_resource type="Resource" uid="uid://blppyby2i0jom" path="res://Resources/Hero/MrRabbitMonk.tres" id="2_nm5wh"]
+[ext_resource type="Resource" uid="uid://blppyby2i0jom" path="res://Resources/Heroes/MrRabbitMonk.tres" id="2_nm5wh"]
 [ext_resource type="Texture2D" uid="uid://bv3j3m02aoe8p" path="res://Graphics/Mirjam.png" id="3_ce415"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_o40e8"]

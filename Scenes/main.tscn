@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://beb5mhxxuniew" path="res://Scripts/main.gd" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://brnh2ovjq674m" path="res://Scenes/Combat/CombatScene.tscn" id="2_bo1nx"]
+[ext_resource type="Script" uid="uid://cdcdhdrcaah1a" path="res://Scripts/Data/Resource Creation/GenerateResources.gd" id="3_8gbba"]
 
 [node name="Main" type="Node2D" unique_id=588131158]
 script = ExtResource("1_bo1nx")
@@ -15,3 +16,7 @@ limit_right = 1920
 limit_bottom = 1080
 
 [node name="CombatManager" parent="." unique_id=442684704 instance=ExtResource("2_bo1nx")]
+
+[node name="Editor Scripts" type="Node" parent="." unique_id=1893187848]
+script = ExtResource("3_8gbba")
+csv_path = "res://Scripts/Data/CSV/Heroes - Data.csv"

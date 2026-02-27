@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="crit_basic" format=3 uid="uid://bpksvfrvavtvi"]
 
-[ext_resource type="Script" uid="uid://cbr7687fkpjye" path="res://Resources/Behavior/Passive Abilities/Crit/Base Script/crit_base.gd" id="1_1lpus"]
+[ext_resource type="Script" uid="uid://cbr7687fkpjye" path="res://Resources/Behaviors/Passive Abilities/Crit/Base Script/crit_base.gd" id="1_1lpus"]
 
 [resource]
 script = ExtResource("1_1lpus")
