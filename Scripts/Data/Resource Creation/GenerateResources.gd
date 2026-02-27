@@ -9,7 +9,7 @@ extends Node
 
 @export_group("Google Drive Sync")
 ## The ID from your Google Sheet URL
-@export var google_sheet_id: String = ""
+@export var google_sheet_id: String = "17J7sFikfk8IrrhA2Krcp29_qytfdY_f5aiZjjxtkmh4"
 ## The GID (Sheet Page ID) - 0 for the first sheet
 @export var google_sheet_gid: String = "0"
 @export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive

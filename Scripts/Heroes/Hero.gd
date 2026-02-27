@@ -19,16 +19,15 @@ func _ready() -> void:
 func initialize_data():
 	## This loads the information from the base resource class HeroData (which we do NOT want to meddle with)
 	## into the Hero class.
+	# Add the basic action-behavior
 	add_behavior(hero_data.base_action)
+	# Add the basic abilities
+	for i in hero_data.abilities:
+		add_behavior(i)
 	current_HP = hero_data.base_HP
 	current_damage = hero_data.base_damage
 	current_speed = hero_data.base_speed
 	current_range = hero_data.base_range
-	print("Hero Initialized: ", hero_data.name)
-	print("Source Speed: ", hero_data.base_speed, " -> Result: ", current_speed)
-	print("Source Damage: ", hero_data.base_damage, " -> Result: ", current_damage)
-	print("Source HP: ", hero_data.base_HP, " -> Result: ", current_HP)
-	print("Source Range: ", hero_data.base_range, " -> Result: ", current_range)
 
 func take_damage(damage : int, source : Hero):
 	#Here we call the on_take_damage event to check behaviors

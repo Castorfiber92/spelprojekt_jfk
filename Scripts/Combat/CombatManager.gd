@@ -16,6 +16,8 @@ var enemy_slots : Array[HeroSlot]
 ##constant paths that we can check
 @onready var hero_slot: = preload("res://Scenes/HeroSlot.tscn")
 
+var current_phase : Enums.CombatPhase
+
 func _ready() -> void:
 	create_slots()
 	start_next_turn()
@@ -65,23 +67,51 @@ func update_UI():
 		slot.update_info()
 
 func execute_turn(hero: Hero):
-	# We grab the base action, that might be a heal, an attack etc.
-	var base_action = hero.hero_data.base_action
-	# We find a proper target(s) for the action
-	# We might need additional checks here for single target/multi target etc
-	var targets = get_valid_targets(hero, base_action)
-	# After finding a target, we perform the action
-	perform_action(hero, targets)
+	# PHASE: PRE_TURN
+	current_phase = Enums.CombatPhase.PRE_TURN
+	hero.trigger_behavior_event("on_turn_start") 
+
+	# PHASE: SELECT_ACTION
+	current_phase = Enums.CombatPhase.SELECT_ACTION
+	var action = hero.hero_data.base_action 
+	
+	# PHASE: FIND_TARGETS
+	current_phase = Enums.CombatPhase.FIND_TARGETS
+	var targets = get_valid_targets(hero, action)
+	
+	if targets.is_empty():
+		# Edit  what happens if it has no valid targets
+		print(hero.hero_data.name, " has no valid targets and skips!")
+		_wrap_up_turn(hero)
+		return
+
+	# PHASE: BEFORE_ACT
+	current_phase = Enums.CombatPhase.BEFORE_ACT
+	hero.trigger_behavior_event("on_before_act", targets)
+
+	# PHASE: EXECUTE
+	current_phase = Enums.CombatPhase.EXECUTE
+	print(hero.hero_data.name, " will be using ", action.name)
+	perform_action(hero, targets) # This handles the 'on_execute_action'
+
+	# PHASE: AFTER_ACT
+	current_phase = Enums.CombatPhase.AFTER_ACT
+	hero.trigger_behavior_event("on_after_act", targets)
+	
+	_wrap_up_turn(hero)
+
+func _wrap_up_turn(hero: Hero):
+	hero.has_acted = true
+	current_phase = Enums.CombatPhase.IDLE
+	clear_highlights()
+	update_UI()
+	start_next_turn()
 
 func perform_action(source : Hero, targets: Array[Hero]):
 	# We trigger the actual behavior event on the corresponding target
-	print("performing action...")
 	source.trigger_behavior_event("on_execute_action", targets)
 	# We update that the hero has made their action
 	source.has_acted = true
-	# We start the next turn
-	clear_highlights()
-	start_next_turn()
 	
 func clear_highlights():
 	for i in player_slots:

@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://beb5mhxxuniew" path="res://Scripts/main.gd" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://brnh2ovjq674m" path="res://Scenes/Combat/CombatScene.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://cdcdhdrcaah1a" path="res://Scripts/Data/Resource Creation/GenerateResources.gd" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_kry3j"]
+[ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="4_21xkr"]
 
 [node name="Main" type="Node2D" unique_id=588131158]
 script = ExtResource("1_bo1nx")
@@ -16,8 +18,8 @@ limit_right = 1920
 limit_bottom = 1080
 
 [node name="CombatManager" parent="." unique_id=442684704 instance=ExtResource("2_bo1nx")]
+player_heroes = Array[ExtResource("3_kry3j")]([ExtResource("4_21xkr"), ExtResource("4_21xkr"), ExtResource("4_21xkr"), ExtResource("4_21xkr"), ExtResource("4_21xkr")])
 
 [node name="Editor Scripts" type="Node" parent="." unique_id=1893187848]
 script = ExtResource("3_8gbba")
 csv_path = "res://Scripts/Data/CSV/Heroes - Data.csv"
-google_sheet_id = "17J7sFikfk8IrrhA2Krcp29_qytfdY_f5aiZjjxtkmh4"

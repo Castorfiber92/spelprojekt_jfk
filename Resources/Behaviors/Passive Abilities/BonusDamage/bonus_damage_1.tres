@@ -6,4 +6,5 @@
 script = ExtResource("1_yvg5t")
 bonus_damage = 1
 name = "1 Bonus Damage"
+target_team = 1
 metadata/_custom_type_script = "uid://drv1abgk13i6"
