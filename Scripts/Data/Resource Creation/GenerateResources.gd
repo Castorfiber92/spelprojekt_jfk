@@ -6,12 +6,6 @@ extends Node
 
 @export_tool_button("Generate Heroes","Callable") var generate_heroes_action = generate_heroes 
 
-const Tribe_MAP = {
-	"critter": Enums.Tribe.CRITTER,
-	"orc": Enums.Tribe.ORC,
-	"undead": Enums.Tribe.UNDEAD,
-}
-
 func generate_heroes():
 	# If we are not currently inside the editor, i.e. the game is running, do nothing
 	if not Engine.is_editor_hint():
@@ -44,7 +38,7 @@ func generate_heroes():
 			continue 
 		var h_description   = row[1].strip_edges()
 		var tribe_string = row[2].strip_edges().to_lower()
-		var h_tribe = Tribe_MAP.get(tribe_string, Enums.Tribe.CRITTER) # Default to Critter if not found
+		var h_tribe = Enums.Tribe_MAP.get(tribe_string, Enums.Tribe.CRITTER) # Default to Critter if not found
 		var h_hp     = int(row[3])
 		var h_dmg    = int(row[4])
 		var h_spd    = int(row[5])

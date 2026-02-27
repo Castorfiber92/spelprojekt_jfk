@@ -6,7 +6,7 @@ class_name CombatManager
 var hero_to_slot_map : Dictionary = {}
 var player_slots : Array[HeroSlot]
 var enemy_slots : Array[HeroSlot]
-var active_hero : Hero
+@export var active_hero : Hero
 
 ##Below is temporary, for testing
 @export var player_heroes : Array[HeroData]
@@ -48,9 +48,11 @@ func start_next_turn():
 	## Sort the heroes based on their speed
 	## Higher speed moves first
 	candidates.sort_custom(func(a, b): return a.current_speed > b.current_speed)
-	
 	## The first hero in the sorted list is the winner
 	active_hero = candidates[0]
+	# This is not final, only simple for testing, to show the active hero
+	var slot : HeroSlot = hero_to_slot_map[active_hero]
+	slot.highlight_slot()
 	print("Next to act: ", active_hero.hero_data.name)
 	await wait_for_input("ui_accept")
 	# Trigger the turn flow
@@ -78,7 +80,14 @@ func perform_action(source : Hero, targets: Array[Hero]):
 	# We update that the hero has made their action
 	source.has_acted = true
 	# We start the next turn
+	clear_highlights()
 	start_next_turn()
+	
+func clear_highlights():
+	for i in player_slots:
+		i.cleanup()
+	for i in enemy_slots:
+		i.cleanup()
 
 func get_valid_targets(source: Hero, action: Behavior) -> Array[Hero]:
 	var candidates: Array[HeroSlot] = []
