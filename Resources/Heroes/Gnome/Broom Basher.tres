@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://70irkhpjxtg8"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_iwv0j"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_l7nqu"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_c8e0x"]
+
+[resource]
+script = ExtResource("3_c8e0x")
+name = "Broom Basher"
+description = "Wields a broom, chance to stun on attack."
+base_HP = 20
+base_damage = 2
+base_speed = 80
+base_range = 3
+base_action = ExtResource("2_l7nqu")
