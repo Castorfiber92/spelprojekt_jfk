@@ -10,7 +10,6 @@ class_name HeroSlot
 func _ready() -> void:
 	update_info()
 
-
 func toggle_visibility(show = true):
 	if show:
 		hp_label.visible = true

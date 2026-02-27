@@ -29,4 +29,7 @@ func on_damage_taken(data):
 	
 func on_death(data):
 	pass
+
+func on_calculate_damage(data):
+	return data
 	
