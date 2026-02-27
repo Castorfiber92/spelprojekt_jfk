@@ -21,6 +21,16 @@ func toggle_visibility(show = true):
 		damage_label.visible = false
 		name_label.visible = false
 
+func cleanup():
+	set_modulate(Color.WHITE)
+
+func highlight_slot(source = true):
+	# This is not final, only simple for testing
+	if source:
+		set_modulate(Colors.user_color)
+	else :
+		set_modulate(Colors.target_color)
+
 func update_info():
 	##We are calling this whenever we need to update the labels
 	##First we check that there is, in fact, a active hero in the slot (error-check)
