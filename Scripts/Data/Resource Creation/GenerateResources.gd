@@ -4,7 +4,15 @@ extends Node
 @export_file("*.csv") var csv_path: String
 @export_dir var output_dir: String = "res://Resources/Heroes/"
 
+@export_group("Generate Functions")
 @export_tool_button("Generate Heroes","Callable") var generate_heroes_action = generate_heroes 
+
+@export_group("Google Drive Sync")
+## The ID from your Google Sheet URL
+@export var google_sheet_id: String = ""
+## The GID (Sheet Page ID) - 0 for the first sheet
+@export var google_sheet_gid: String = "0"
+@export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive
 
 func generate_heroes():
 	# If we are not currently inside the editor, i.e. the game is running, do nothing
@@ -121,3 +129,100 @@ func _find_file_in_cache(dir: EditorFileSystemDirectory, target_file: String) ->
 		if path != "": return path
 		
 	return ""
+
+func download_csv_from_drive():
+	if google_sheet_id == "":
+		printerr("Hero Importer: No ID provided!")
+		return
+
+	var host = "docs.google.com"
+	var url_path = "/spreadsheets/d/" + google_sheet_id + "/export?format=csv&gid=" + google_sheet_gid
+	
+	# Start the process with a redirect limit of 5
+	_perform_http_download(host, url_path, 5)
+
+func _perform_http_download(host: String, url_path: String, redirect_limit: int):
+	if redirect_limit <= 0:
+		printerr("Hero Importer: Too many redirects!")
+		return
+
+	print("Hero Importer: Connecting to: ", host)
+	var http = HTTPClient.new()
+	
+	# Connect to the host
+	var err = http.connect_to_host(host, 443, TLSOptions.client())
+	if err != OK:
+		printerr("Hero Importer: Connection error: ", err)
+		return
+
+	# Wait for connection
+	while http.get_status() == HTTPClient.STATUS_CONNECTING or http.get_status() == HTTPClient.STATUS_RESOLVING:
+		http.poll()
+		OS.delay_msec(50)
+
+	# Send the GET request
+	http.request(HTTPClient.METHOD_GET, url_path, [])
+
+	# Wait for response headers
+	while http.get_status() == HTTPClient.STATUS_REQUESTING:
+		http.poll()
+		OS.delay_msec(50)
+
+	if http.has_response():
+		var code = http.get_response_code()
+		print("Hero Importer: Response Code: ", code)
+
+		# 1. Handle Redirects (Include 307 and 308)
+		if code == 301 or code == 302 or code == 307 or code == 308:
+			var headers = http.get_response_headers_as_dictionary()
+			var location = ""
+		
+			# Headers can be "Location" or "location" 
+			for key in headers:
+				if key.to_lower() == "location":
+					location = headers[key]
+					break
+		
+			if location != "":
+				print("Hero Importer: Redirecting to: ", location)
+			
+				# Ensure we handle absolute URLs from the redirect
+				var next_host = host
+				var next_path = url_path
+			
+				if location.begins_with("http"):
+					var stripped_url = location.replace("https://", "").replace("http://", "")
+					var first_slash = stripped_url.find("/")
+					next_host = stripped_url.substr(0, first_slash)
+					next_path = stripped_url.substr(first_slash)
+				else:
+					next_path = location # Relative redirect
+
+				http.close()
+				_perform_http_download(next_host, next_path, redirect_limit - 1)
+				return
+
+		# 2. Handle Actual Data (200 OK)
+		var response_body = PackedByteArray()
+		while http.get_status() == HTTPClient.STATUS_BODY:
+			http.poll()
+			var chunk = http.read_response_body_chunk()
+			if chunk.size() > 0:
+				response_body.append_array(chunk)
+			else:
+				OS.delay_msec(10)
+		
+		# Only save if we actually got a 200 OK
+		if code == 200:
+			var file = FileAccess.open(csv_path, FileAccess.WRITE)
+			if file:
+				file.store_buffer(response_body)
+				file.close()
+				EditorInterface.get_resource_filesystem().scan()
+				print("Hero Importer: CSV Sync Successful! [%s]" % Time.get_time_string_from_system())
+			else:
+				printerr("Hero Importer: Could not write to file path.")
+		else:
+			printerr("Hero Importer: Failed with code ", code, ". Body received: ", response_body.get_string_from_utf8())
+	
+	http.close()

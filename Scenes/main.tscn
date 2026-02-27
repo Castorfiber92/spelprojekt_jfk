@@ -20,3 +20,4 @@ limit_bottom = 1080
 [node name="Editor Scripts" type="Node" parent="." unique_id=1893187848]
 script = ExtResource("3_8gbba")
 csv_path = "res://Scripts/Data/CSV/Heroes - Data.csv"
+google_sheet_id = "17J7sFikfk8IrrhA2Krcp29_qytfdY_f5aiZjjxtkmh4"
