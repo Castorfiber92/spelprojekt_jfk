@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://dru3ep3sjnyfv"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_1llsl"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_8slxl"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_qgump"]
+
+[resource]
+script = ExtResource("3_qgump")
+name = "Squirell Slingshot Sniper"
+base_HP = 20
+base_damage = 4
+base_speed = 10
+base_range = 1
+base_action = ExtResource("2_8slxl")

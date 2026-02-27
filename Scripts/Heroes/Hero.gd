@@ -42,7 +42,7 @@ func add_behavior(behavior: Behavior):
 	var new_behavior = behavior.duplicate() ## Creates a unique copy so we don't mess with the Resource itself
 	## We check if the dictionary of active_behaviors does NOT already have the behavior (i.e. if the Hero 
 	## already has crit for example, we don't want to add another instance of the same identical behavior.)
-	if behaviors.has(new_behavior) == false:
+	if behaviors.has(new_behavior.name) == false:
 		## If it's not already in the list, add it.
 		new_behavior.owner_hero = self
 		behaviors[new_behavior.name] = new_behavior

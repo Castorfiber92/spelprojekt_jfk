@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://fyen4aa0645q"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_8exp3"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_iml85"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_fkkd5"]
+
+[resource]
+script = ExtResource("3_fkkd5")
+name = "Mr Rabbit Monk"
+base_HP = 20
+base_damage = 5
+base_speed = 10
+base_range = 1
+base_action = ExtResource("2_iml85")

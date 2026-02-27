@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="bonus_damage_behavior" format=3 uid="uid://b6e67a72vwacx"]
 
-[ext_resource type="Script" uid="uid://drv1abgk13i6" path="res://Resources/Behavior/Passive Abilities/BonusDamage/Base Script/bonus_damage_base.gd" id="1_yvg5t"]
+[ext_resource type="Script" uid="uid://drv1abgk13i6" path="res://Resources/Behaviors/Passive Abilities/BonusDamage/Base Script/bonus_damage_base.gd" id="1_yvg5t"]
 
 [resource]
 script = ExtResource("1_yvg5t")
