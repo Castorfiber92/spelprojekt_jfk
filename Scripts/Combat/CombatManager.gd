@@ -16,9 +16,14 @@ var enemy_slots : Array[HeroSlot]
 ##constant paths that we can check
 @onready var hero_slot: = preload("res://Scenes/HeroSlot.tscn")
 
+## Stack variables
+var effect_stack: Array[CombatEffect] = []
+var is_processing: bool = false
+
 var current_phase : Enums.CombatPhase
 
 func _ready() -> void:
+	GameEvents.effect_created.connect(_on_effect_requested)
 	create_slots()
 	start_next_turn()
 
@@ -66,6 +71,30 @@ func update_UI():
 	for slot in hero_to_slot_map.values():
 		slot.update_info()
 
+func _on_effect_requested(new_effect: CombatEffect):
+	effect_stack.append(new_effect)
+	if not is_processing:
+		process_stack()
+
+func process_stack():
+	is_processing = true
+	
+	while not effect_stack.is_empty():
+		var effect = effect_stack.pop_front()
+		
+		# 1. Pipeline (Modifiers)
+		process_effect(effect)
+		
+		# 2. Execution (Actually change HP)
+		# Note: If this 'take_damage' triggers a NEW death, 
+		# the signal will fire and append to the stack automatically.
+		effect.target.take_damage(effect.value, effect.source)
+		
+		# Add a small 'await' here for animations/delays
+		# await get_tree().create_timer(0.1).timeout
+
+	is_processing = false
+
 func execute_turn(hero: Hero):
 	# PHASE: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
@@ -107,10 +136,33 @@ func _wrap_up_turn(hero: Hero):
 	update_UI()
 	start_next_turn()
 
+func process_effect(effect: CombatEffect):
+	# We let the ATTACKER'S behaviors modify the outgoing effect
+	# (Items, Strength buffs, Crit chances, etc.)
+	for b in effect.source.get_behaviors():
+		if b.has_method("modify_outgoing_effect"):
+			b.modify_outgoing_effect(effect)
+	
+	# 2. We let the TARGET'S behaviors modify the incoming effect
+	# (Armor, Shields, Damage Reduction, etc.)
+	for b in effect.target.get_behaviors():
+		if b.has_method("modify_incoming_effect"):
+			b.modify_incoming_effect(effect)
+
+func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
+	var modified_value = base_value
+	var hook_name = "modify_" + stat_name # e.g., "modify_range"
+	
+	for b in hero.get_behaviors():
+		if b.has_method(hook_name):
+			modified_value = b.call(hook_name, modified_value)
+			
+	return modified_value
+
 func perform_action(source : Hero, targets: Array[Hero]):
 	# We trigger the actual behavior event on the corresponding target
 	source.trigger_behavior_event("on_execute_action", targets)
-	# We update that the hero has made their action
+
 	source.has_acted = true
 	
 func clear_highlights():
@@ -133,7 +185,7 @@ func get_valid_targets(source: Hero, action: Behavior) -> Array[Hero]:
 
 	# Determine the range to use, if the range of the action is set to 0 we use the range of the hero
 	var r = action.range if action.range > 0 else source.current_range
-	var action_range = source.apply_value_modifier("on_calculate_range", r)
+	var action_range = get_modified_stat(source, "range", r)
 
 	# Filter by Range
 	var reachables: Array[Hero] = []

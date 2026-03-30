@@ -13,23 +13,29 @@ var owner_hero: Hero
 ##event.
 
 func on_execute_action(data):
-	pass
+	return []
 
 func on_start_of_battle(data):
-	pass
+	return []
 
 func on_attack(data):
-	pass
+	return []
 
 func on_damage_dealt(data):
-	pass
+	return []
 
 func on_damage_taken(data):
-	pass
+	return []
 	
 func on_death(data):
+	return []
+
+func modify_outgoing_effect(effect : CombatEffect):
+	pass
+	
+func modify_incoming_effect(effect : CombatEffect):
 	pass
 
-func on_calculate_damage(data):
-	return data
-	
+func modify_range(value: int) -> int: return value
+func modify_defense(value: int) -> int: return value
+func modify_speed(value: int) -> int: return value
