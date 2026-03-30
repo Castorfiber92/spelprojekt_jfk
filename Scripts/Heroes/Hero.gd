@@ -60,12 +60,15 @@ func remove_behavior(behavior_name: String):
 		## Remove it from the dictionary
 		behaviors.erase(behavior_name)
 
+func get_behaviors():
+	return behaviors.values()
+
 func trigger_behavior_event(event_name: String, data = null):
 	print("Triggering ", event_name, " event.")
 	for i in behaviors:
 		if behaviors[i].has_method(event_name):
 			behaviors[i].call(event_name, data)
-			
+
 ## Use this for modifying values (e.g., calculating damage)
 func apply_value_modifier(event_name: String, base_value) -> int:
 	var modified_value = base_value

@@ -23,6 +23,7 @@ config/features=PackedStringArray("4.6", "Mobile")
 Enums="*uid://dwt4brpj5327"
 Preloads="*uid://dt72ff4iabpl0"
 Colors="*uid://cnhuh1de0ai17"
+GameEvents="*uid://duj3n35dw8o2r"
 
 [display]
 
