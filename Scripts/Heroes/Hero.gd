@@ -12,6 +12,8 @@ var current_range : int
 var has_acted = false
 var behaviors: Dictionary [String, Behavior]
 
+signal has_died
+
 func _ready() -> void:
 	## When the Hero Class loads (i.e. begins to exist) we call the functions below
 	initialize_data()
@@ -33,6 +35,10 @@ func take_damage(damage : int, source : Hero):
 	#Here we call the on_take_damage event to check behaviors
 	#We deal damage according to the calculated damage
 	current_HP -= damage
+	if current_HP <= 0:
+		await trigger_behavior_event("on_death", self)
+		has_died.emit()
+		
 	
 
 func add_behavior(behavior: Behavior):

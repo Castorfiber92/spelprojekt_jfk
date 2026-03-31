@@ -2,12 +2,13 @@
 
 [ext_resource type="Script" uid="uid://c07ekn2q4ouo3" path="res://Scripts/Combat/CombatUI.gd" id="1_4u6w4"]
 
-[node name="CombatUI" type="Control" unique_id=903688084 node_paths=PackedStringArray("player_party", "enemy_party")]
+[node name="CombatUI" type="Control" unique_id=903688084 node_paths=PackedStringArray("player_party", "enemy_party", "phase_ui")]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_4u6w4")
 player_party = NodePath("Player Heroes")
 enemy_party = NodePath("Enemy Heroes")
+phase_ui = NodePath("PhaseUI (temp)")
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="ColorRect" parent="." unique_id=622324164]
@@ -31,3 +32,12 @@ offset_top = 50.0
 offset_right = 1860.0
 offset_bottom = 400.0
 theme_override_constants/separation = 75
+
+[node name="PhaseUI (temp)" type="Label" parent="." unique_id=1133332302]
+layout_mode = 0
+offset_right = 254.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 25
+text = "ENUM"
+horizontal_alignment = 1
+vertical_alignment = 1

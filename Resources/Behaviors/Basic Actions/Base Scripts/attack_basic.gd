@@ -17,4 +17,4 @@ func on_execute_action(data):
 		# effect.tags.append("melee") # or "ranged" based on your hero
 
 		GameEvents.effect_created.emit(effect)
-		print(owner_hero.hero_data.name, " initiates ", effect.tags, " on ", target.hero_data.name)
+		print(owner_hero.hero_data.name, " used ", name, " on ", target.hero_data.name)

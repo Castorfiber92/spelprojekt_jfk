@@ -2,7 +2,6 @@ extends PanelContainer
 class_name HeroSlot
 
 @export var hero : Hero
-#enum team {HERO_ENEMY, HERO_PLAYER}
 @export var hp_label : Label 
 @export var damage_label : Label
 @export var name_label : Label
@@ -10,6 +9,28 @@ class_name HeroSlot
 func _ready() -> void:
 	update_info()
 
+func apply_damage_effect() -> Tween:
+	var tween = create_tween().set_parallel(true)
+	var shake_intensity = 4.0
+	var shake_duration = 0.05
+	var flash_color = Color(1, 0.3, 0.3) # Soft red
+
+	# 1. SOFT RED FLASH
+	# Tweens the color to red, then back to white (normal)
+	var color_tween = create_tween()
+	color_tween.tween_property(self, "modulate", flash_color, 0.1)
+	color_tween.tween_property(self, "modulate", Color.WHITE, 0.2)
+
+	# 2. SHAKE EFFECT (Sequential loop within the parallel tween)
+	# Creates 4 quick random movements
+	for i in range(4):
+		var offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * shake_intensity
+		tween.tween_property(self, "position", position + offset, shake_duration)
+	
+	# Reset position to original at the end
+	tween.chain().tween_property(self, "position", position, shake_duration)
+	return tween
+	
 func toggle_visibility(show = true):
 	if show:
 		hp_label.visible = true
