@@ -20,7 +20,12 @@ var enemy_slots : Array[HeroSlot]
 var effect_stack: Array[CombatEffect] = []
 var is_processing: bool = false
 
-var current_phase : Enums.CombatPhase
+var current_phase : Enums.CombatPhase : set = update_phase_UI
+
+func update_phase_UI(new_value: Enums.CombatPhase) -> void:
+	var string = Enums.CombatPhase.keys()[current_phase]
+	combat_ui.phase_ui.text = string
+	current_phase = new_value
 
 func _ready() -> void:
 	GameEvents.effect_created.connect(_on_effect_requested)
@@ -81,29 +86,32 @@ func process_stack():
 	
 	while not effect_stack.is_empty():
 		var effect = effect_stack.pop_front()
-		
+		var slot : HeroSlot = hero_to_slot_map[effect.target]
 		# 1. Pipeline (Modifiers)
 		process_effect(effect)
-		
-		# 2. Execution (Actually change HP)
-		# Note: If this 'take_damage' triggers a NEW death, 
-		# the signal will fire and append to the stack automatically.
-		effect.target.take_damage(effect.value, effect.source)
-		
-		# Add a small 'await' here for animations/delays
+		match effect.type:
+			"DAMAGE":
+				# 2. Execution (Actually change HP)
+				effect.target.take_damage(effect.value, effect.source)
+				await slot.apply_damage_effect()
+			"HEAL":
+				pass # For now (not applicable yet)
+			"SHIELD":
+				pass # For now (not applicable yet)
+
+		# Add a small 'await' somehow for animations/delays
 		# await get_tree().create_timer(0.1).timeout
 
 	is_processing = false
 
 func execute_turn(hero: Hero):
+	print("New turn")
 	# PHASE: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
 	hero.trigger_behavior_event("on_turn_start") 
-
 	# PHASE: SELECT_ACTION
 	current_phase = Enums.CombatPhase.SELECT_ACTION
 	var action = hero.hero_data.base_action 
-	
 	# PHASE: FIND_TARGETS
 	current_phase = Enums.CombatPhase.FIND_TARGETS
 	var targets = get_valid_targets(hero, action)
@@ -113,20 +121,17 @@ func execute_turn(hero: Hero):
 		print(hero.hero_data.name, " has no valid targets and skips!")
 		_wrap_up_turn(hero)
 		return
-
 	# PHASE: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
 	hero.trigger_behavior_event("on_before_act", targets)
-
 	# PHASE: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
 	print(hero.hero_data.name, " will be using ", action.name)
 	perform_action(hero, targets) # This handles the 'on_execute_action'
-
 	# PHASE: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
+	await wait_for_input("ui_accept")
 	hero.trigger_behavior_event("on_after_act", targets)
-	
 	_wrap_up_turn(hero)
 
 func _wrap_up_turn(hero: Hero):
@@ -137,18 +142,19 @@ func _wrap_up_turn(hero: Hero):
 	start_next_turn()
 
 func process_effect(effect: CombatEffect):
-	# We let the ATTACKER'S behaviors modify the outgoing effect
+	# 1. We check the attacker's behaviors and modify the outgoing effect
 	# (Items, Strength buffs, Crit chances, etc.)
 	for b in effect.source.get_behaviors():
 		if b.has_method("modify_outgoing_effect"):
 			b.modify_outgoing_effect(effect)
 	
-	# 2. We let the TARGET'S behaviors modify the incoming effect
+	# 2. We check the target's behaviors and modify the incoming effect
 	# (Armor, Shields, Damage Reduction, etc.)
 	for b in effect.target.get_behaviors():
 		if b.has_method("modify_incoming_effect"):
 			b.modify_incoming_effect(effect)
 
+# This is to check whether there are stats indepent from specific behaviors. Such as flat increases
 func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
 	var modified_value = base_value
 	var hook_name = "modify_" + stat_name # e.g., "modify_range"
@@ -185,13 +191,17 @@ func get_valid_targets(source: Hero, action: Behavior) -> Array[Hero]:
 
 	# Determine the range to use, if the range of the action is set to 0 we use the range of the hero
 	var r = action.range if action.range > 0 else source.current_range
+	# Then we check all behaviors if there are any that modifies stats, in this case range.
 	var action_range = get_modified_stat(source, "range", r)
 
 	# Filter by Range
 	var reachables: Array[Hero] = []
-	for i in candidates.size():
-		if candidates[i].hero != null and (i + 1) <= action_range:
-			reachables.append(candidates[i].hero)
+	var current_distance = 0
+	for slot in candidates:
+		if slot.hero != null:
+			current_distance += 1 # this means we found a target
+			if current_distance <= action_range: # if the target is within range
+				reachables.append(slot.hero)
 	##Check if the action is a target action, in that case return a random target
 	if action.target_type == Enums.Target.SINGLE:
 		if not reachables.is_empty():
@@ -238,7 +248,8 @@ func set_hero(slot : HeroSlot, hero : Hero):
 	hero_to_slot_map[hero] = slot
 	##Update the ui of the slot
 	slot.update_info()
-	
+	hero.has_died.connect(remove_hero.bind(slot))
+
 func load_player_party():
 	for i in player_heroes:
 		var slot : HeroSlot = hero_slot.instantiate()
@@ -272,7 +283,11 @@ func load_enemy_party():
 		set_hero(slot, hero)
 
 func remove_hero(slot : HeroSlot):
+	slot.hero.has_died.disconnect(remove_hero.bind(slot))
+	hero_to_slot_map.erase(slot.hero)
 	slot.hero = null
+	slot.update_info()
+
 	
 func initialize_combat():
 	pass
