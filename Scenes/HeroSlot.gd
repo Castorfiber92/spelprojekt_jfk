@@ -6,6 +6,8 @@ class_name HeroSlot
 @export var damage_label : Label
 @export var name_label : Label
 
+var index: int = 0
+
 func _ready() -> void:
 	update_info()
 
