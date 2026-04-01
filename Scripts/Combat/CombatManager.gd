@@ -6,7 +6,7 @@ class_name CombatManager
 var hero_to_slot_map : Dictionary = {}
 var player_slots : Array[HeroSlot]
 var enemy_slots : Array[HeroSlot]
-@export var active_hero : Hero
+@export var active_slot : HeroSlot
 
 ##Below is temporary, for testing
 @export var player_heroes : Array[HeroData]
@@ -44,12 +44,12 @@ func wait_for_input(action_name: String):
 			return # This 'resolves' the await in the calling function
 
 func start_next_turn():
-	active_hero = null
+	active_slot = null
 	## Get all active heroes from the dictionary that has not yet moved
-	var candidates : Array[Hero]
-	for hero : Hero in hero_to_slot_map.keys():
-		if not hero.has_acted:
-			candidates.append(hero)
+	var candidates : Array[HeroSlot]
+	for slot in hero_to_slot_map.values():
+		if not slot.hero.has_acted:
+			candidates.append(slot)
 	
 	if candidates.is_empty():
 		print("Press SPACE to start the round...")
@@ -59,16 +59,15 @@ func start_next_turn():
 		return
 	## Sort the heroes based on their speed
 	## Higher speed moves first
-	candidates.sort_custom(func(a, b): return a.current_speed > b.current_speed)
+	candidates.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
 	## The first hero in the sorted list is the winner
-	active_hero = candidates[0]
+	active_slot = candidates[0]
 	# This is not final, only simple for testing, to show the active hero
-	var slot : HeroSlot = hero_to_slot_map[active_hero]
-	slot.highlight_slot()
-	print("Next to act: ", active_hero.hero_data.name)
+	active_slot.highlight_slot()
+	print("Next to act: ", active_slot.hero.hero_data.name)
 	await wait_for_input("ui_accept")
 	# Trigger the turn flow
-	execute_turn(active_hero)
+	execute_turn(active_slot)
 	# Update the visuals
 	update_UI()
 	
@@ -104,35 +103,35 @@ func process_stack():
 
 	is_processing = false
 
-func execute_turn(hero: Hero):
+func execute_turn(slot: HeroSlot):
 	print("New turn")
 	# PHASE: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
-	hero.trigger_behavior_event("on_turn_start") 
+	slot.hero.trigger_behavior_event("on_turn_start") 
 	# PHASE: SELECT_ACTION
 	current_phase = Enums.CombatPhase.SELECT_ACTION
-	var action = hero.hero_data.base_action 
+	var action = slot.hero.hero_data.base_action 
 	# PHASE: FIND_TARGETS
 	current_phase = Enums.CombatPhase.FIND_TARGETS
-	var targets = get_valid_targets(hero, action)
+	var targets = get_valid_targets(slot, action)
 	
 	if targets.is_empty():
 		# Edit  what happens if it has no valid targets
-		print(hero.hero_data.name, " has no valid targets and skips!")
-		_wrap_up_turn(hero)
+		print(slot.hero.hero_data.name, " has no valid targets and skips!")
+		_wrap_up_turn(slot.hero)
 		return
 	# PHASE: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
-	hero.trigger_behavior_event("on_before_act", targets)
+	slot.hero.trigger_behavior_event("on_before_act", targets)
 	# PHASE: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
-	print(hero.hero_data.name, " will be using ", action.name)
-	perform_action(hero, targets) # This handles the 'on_execute_action'
+	print(slot.hero.hero_data.name, " will be using ", action.name)
+	perform_action(slot.hero, targets) # This handles the 'on_execute_action'
 	# PHASE: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
 	await wait_for_input("ui_accept")
-	hero.trigger_behavior_event("on_after_act", targets)
-	_wrap_up_turn(hero)
+	slot.hero.trigger_behavior_event("on_after_act", targets)
+	_wrap_up_turn(slot.hero)
 
 func _wrap_up_turn(hero: Hero):
 	hero.has_acted = true
@@ -154,18 +153,8 @@ func process_effect(effect: CombatEffect):
 		if b.has_method("modify_incoming_effect"):
 			b.modify_incoming_effect(effect)
 
-# This is to check whether there are stats indepent from specific behaviors. Such as flat increases
-func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
-	var modified_value = base_value
-	var hook_name = "modify_" + stat_name # e.g., "modify_range"
-	
-	for b in hero.get_behaviors():
-		if b.has_method(hook_name):
-			modified_value = b.call(hook_name, modified_value)
-			
-	return modified_value
 
-func perform_action(source : Hero, targets: Array[Hero]):
+func perform_action(source : Hero, targets: Array[HeroSlot]):
 	# We trigger the actual behavior event on the corresponding target
 	source.trigger_behavior_event("on_execute_action", targets)
 
@@ -176,40 +165,19 @@ func clear_highlights():
 		i.cleanup()
 	for i in enemy_slots:
 		i.cleanup()
-
-func get_valid_targets(source: Hero, action: Behavior) -> Array[Hero]:
+		
+func get_valid_targets(source: HeroSlot, action: Behavior) -> Array[HeroSlot]:
 	var candidates: Array[HeroSlot] = []
-	
 	# Determine which team array to look at by the definition in a behavior
 	match action.target_team:
-		Enums.Team.ENEMY:
-			candidates = get_enemy_slots(source)
-		Enums.Team.FRIEND:
-			candidates = get_friendly_slots(source)
 		Enums.Team.SELF:
 			return [source]
-
-	# Determine the range to use, if the range of the action is set to 0 we use the range of the hero
-	var r = action.range if action.range > 0 else source.current_range
-	# Then we check all behaviors if there are any that modifies stats, in this case range.
-	var action_range = get_modified_stat(source, "range", r)
-
-	# Filter by Range
-	var reachables: Array[Hero] = []
-	var current_distance = 0
-	for slot in candidates:
-		if slot.hero != null:
-			current_distance += 1 # this means we found a target
-			if current_distance <= action_range: # if the target is within range
-				reachables.append(slot.hero)
-	##Check if the action is a target action, in that case return a random target
-	if action.target_type == Enums.Target.SINGLE:
-		if not reachables.is_empty():
-			var target = reachables.pick_random()
-			reachables.clear()
-			reachables.append(target) 
-
-	return reachables
+		Enums.Team.ENEMY:
+			candidates = get_enemy_slots(source.hero)
+		Enums.Team.FRIEND:
+			candidates = get_friendly_slots(source.hero)
+	# Delegate the actual filtering to the behavior script
+	return action.get_valid_targets(source, candidates)
 	
 func get_enemy_slots(source: Hero) -> Array[HeroSlot]:
 	# If the source is a Player, their enemies are in the enemy_slots
@@ -251,14 +219,15 @@ func set_hero(slot : HeroSlot, hero : Hero):
 	hero.has_died.connect(remove_hero.bind(slot))
 
 func load_player_party():
-	for i in player_heroes:
+	for i in range(player_heroes.size()):
 		var slot : HeroSlot = hero_slot.instantiate()
+		slot.index = i 
 		##Add it to the UI
 		combat_ui.player_party.add_child(slot)
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = i
+		hero.hero_data = player_heroes[i] 
 		hero.initialize_data()
 		##Assign the team to Player Array
 		player_slots.append(slot)
