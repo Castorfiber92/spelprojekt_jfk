@@ -8,6 +8,7 @@
 script = ExtResource("3_c8e0x")
 name = "Broom Basher"
 description = "Wields a broom, chance to stun on attack."
+tribe = 3
 base_HP = 20
 base_damage = 2
 base_speed = 80

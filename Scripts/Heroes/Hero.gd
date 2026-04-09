@@ -3,6 +3,7 @@ class_name Hero
 
 var hero_data : HeroData
 var current_HP : int
+var maximum_HP : int
 var current_damage : int
 var current_speed : int
 var current_range : int
@@ -27,6 +28,7 @@ func initialize_data():
 	for i in hero_data.abilities:
 		add_behavior(i)
 	current_HP = hero_data.base_HP
+	maximum_HP = current_HP
 	current_damage = hero_data.base_damage
 	current_speed = hero_data.base_speed
 	current_range = hero_data.base_range
@@ -39,7 +41,8 @@ func take_damage(damage : int, source : Hero):
 		await trigger_behavior_event("on_death", self)
 		has_died.emit()
 		
-	
+func heal_HP(value: int, source : Hero):
+	current_HP = clamp(current_HP + value, 0, maximum_HP)
 
 func add_behavior(behavior: Behavior):
 	## This is used when we add another behavior to the Hero. Such as when an item is added, when a buff

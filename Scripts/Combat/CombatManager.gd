@@ -94,7 +94,8 @@ func process_stack():
 				effect.target.take_damage(effect.value, effect.source)
 				await slot.apply_damage_effect()
 			"HEAL":
-				pass # For now (not applicable yet)
+				effect.target.heal_HP(effect.value, effect.source)
+				await slot.apply_heal_effect()
 			"SHIELD":
 				pass # For now (not applicable yet)
 
@@ -116,7 +117,7 @@ func execute_turn(slot: HeroSlot):
 	var targets = get_valid_targets(slot, action)
 	
 	if targets.is_empty():
-		# Edit  what happens if it has no valid targets
+		# What happens if it has no valid targets
 		print(slot.hero.hero_data.name, " has no valid targets and skips!")
 		_wrap_up_turn(slot.hero)
 		return
@@ -138,6 +139,18 @@ func _wrap_up_turn(hero: Hero):
 	current_phase = Enums.CombatPhase.IDLE
 	clear_highlights()
 	update_UI()
+	# Check if the player party are all empty of heroes e.g. all the heroes have died, return true if so
+	var player_defeated = player_slots.all(func(slot): return slot.hero == null)
+	if player_defeated:
+		# If true, the player loses.
+		lose_combat()
+		return
+	# We check if the enemy party is all dead
+	var enemy_defeated = enemy_slots.all(func(slot): return slot.hero == null)
+	if enemy_defeated:
+		# If true, the player wins.
+		win_combat()
+		return
 	start_next_turn()
 
 func process_effect(effect: CombatEffect):
@@ -257,7 +270,11 @@ func remove_hero(slot : HeroSlot):
 	slot.hero = null
 	slot.update_info()
 
+func win_combat():
+	print("You win the battle!")
 	
+func lose_combat():
+	print("You lose the battle!")
 func initialize_combat():
 	pass
 	

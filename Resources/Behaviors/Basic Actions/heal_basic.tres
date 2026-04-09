@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="heal_basic_behavior" format=3 uid="uid://c22sg10nnr7mi"]
+
+[ext_resource type="Script" uid="uid://cfqr3w3l7xkvw" path="res://Resources/Behaviors/Basic Actions/Base Scripts/heal_basic.gd" id="1_8ii5t"]
+
+[resource]
+script = ExtResource("1_8ii5t")
+name = "Basic Heal"
+range = 2
+metadata/_custom_type_script = "uid://cfqr3w3l7xkvw"

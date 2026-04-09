@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_q2j2b"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_8cupc"]
-[ext_resource type="Resource" uid="uid://b6e67a72vwacx" path="res://Resources/Behaviors/Passive Abilities/BonusDamage/bonus_damage_1.tres" id="2_808vy"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_yomkm"]
 
 [resource]
@@ -13,4 +12,3 @@ base_damage = 4
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_8cupc")
-abilities = Array[ExtResource("1_q2j2b")]([ExtResource("2_808vy")])
