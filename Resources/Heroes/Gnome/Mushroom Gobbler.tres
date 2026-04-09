@@ -8,6 +8,7 @@
 script = ExtResource("3_62lhn")
 name = "Mushroom Gobbler"
 description = "Eat mushrooms on turn start, gaining random buffs, damage, speed, range"
+tribe = 3
 base_HP = 35
 base_damage = 4
 base_speed = 70
