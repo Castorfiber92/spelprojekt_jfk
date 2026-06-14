@@ -59,6 +59,8 @@ func start_next_turn():
 		return
 	## Sort the heroes based on their speed
 	## Higher speed moves first
+	## Shuffle candidates first to randomize tie-breakers
+	candidates.shuffle()
 	candidates.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
 	## The first hero in the sorted list is the winner
 	active_slot = candidates[0]
@@ -127,7 +129,7 @@ func execute_turn(slot: HeroSlot):
 	# PHASE: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
 	print(slot.hero.hero_data.name, " will be using ", action.name)
-	perform_action(slot.hero, targets) # This handles the 'on_execute_action'
+	perform_action(slot, targets) # This handles the 'on_execute_action'
 	# PHASE: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
 	await wait_for_input("ui_accept")
@@ -167,11 +169,12 @@ func process_effect(effect: CombatEffect):
 			b.modify_incoming_effect(effect)
 
 
-func perform_action(source : Hero, targets: Array[HeroSlot]):
+func perform_action(source : HeroSlot, targets: Array[HeroSlot]):
 	# We trigger the actual behavior event on the corresponding target
-	source.trigger_behavior_event("on_execute_action", targets)
+	var context = CombatContext.new(source, targets)
+	source.hero.trigger_behavior_event("on_execute_action", context)
 
-	source.has_acted = true
+	source.hero.has_acted = true
 	
 func clear_highlights():
 	for i in player_slots:
@@ -225,6 +228,7 @@ func create_slots():
 func set_hero(slot : HeroSlot, hero : Hero):
 	##Assign the corresponding hero to the slot
 	slot.hero = hero
+	slot.play_animation("idle")
 	##Map the slot/hero combination to the dictionary
 	hero_to_slot_map[hero] = slot
 	##Update the ui of the slot
