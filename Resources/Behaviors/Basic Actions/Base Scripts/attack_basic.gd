@@ -2,7 +2,12 @@ extends Behavior
 class_name attack_basic_behavior
 
 func on_execute_action(data):
-	var targets = data as Array[HeroSlot]
+	var context = data as CombatContext
+	
+	var source: HeroSlot = context.source
+	var targets: Array[HeroSlot] = context.targets
+	source.play_animation("attack")
+
 	for target in targets:
 		if target.hero == null: continue
 		var target_hero = target.hero
@@ -20,3 +25,8 @@ func on_execute_action(data):
 
 		GameEvents.effect_created.emit(effect)
 		print(owner_hero.hero_data.name, " used ", name, " on ", target_hero.hero_data.name)
+	
+		## Timer below is temporary, for visible feedback, dont use hard numbers like this
+	await source.get_tree().create_timer(0.1).timeout
+	source.play_animation("idle")
+	

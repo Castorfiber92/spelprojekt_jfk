@@ -5,11 +5,16 @@ class_name HeroSlot
 @export var hp_label : Label 
 @export var damage_label : Label
 @export var name_label : Label
+@export var sprite: TextureRect
 
 var index: int = 0
 
 func _ready() -> void:
 	update_info()
+
+func play_animation(anim_name: String) -> void:
+	if hero and hero.hero_data.sprites and hero.hero_data.sprites.has_animation(anim_name):
+		sprite.texture = hero.hero_data.sprites.get_frame_texture(anim_name, 0)
 
 func apply_damage_effect() -> Tween:
 	var tween = create_tween().set_parallel(true)
