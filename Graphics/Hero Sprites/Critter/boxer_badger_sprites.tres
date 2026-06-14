@@ -1,6 +1,6 @@
 [gd_resource type="SpriteFrames" format=3 uid="uid://grbii4cwfivh"]
 
-[ext_resource type="Texture2D" uid="uid://c1nnqcw4fmsm3" path="res://Graphics/Hero Sprites/Boxer Badger.png" id="1_smitj"]
+[ext_resource type="Texture2D" uid="uid://c1nnqcw4fmsm3" path="res://Graphics/Hero Sprites/Critter/Boxer Badger.png" id="1_smitj"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1eaox"]
 atlas = ExtResource("1_smitj")
@@ -17,7 +17,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_1eaox")
 }],
 "loop": true,
-"name": &"attack",
+"name": &"action",
 "speed": 5.0
 }, {
 "frames": [{

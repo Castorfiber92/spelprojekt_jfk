@@ -2,7 +2,7 @@ Name,Description,Tribe,Base HP (10-50),Base DMG (1-10),Base Speed (1-100),Base R
 ,,,,,,,,
 Mr Rabbit Monk,,Critter,20,5,10,1,attack_basic,
 Boxer Badger,,Critter,40,4,10,1,attack_basic,
-Squirell Slingshot Sniper,,Critter,20,4,10,1,attack_basic,
+Squirrel Slingshot Sniper,,Critter,20,4,10,1,attack_basic,
 ,,,,,,,,
 Haunted doll,,Undead,50,1,10,1,attack_basic,
 Skeleton King,,Undead,30,4,10,1,attack_basic,

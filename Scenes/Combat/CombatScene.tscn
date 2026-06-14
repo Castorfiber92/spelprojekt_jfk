@@ -9,12 +9,12 @@
 [ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="6_16pdn"]
 [ext_resource type="Resource" uid="uid://db1nyfof0wpwe" path="res://Resources/Heroes/Orc/Troll Ranger.tres" id="7_7rc0u"]
 [ext_resource type="Resource" uid="uid://biud86n8q8bhh" path="res://Resources/Heroes/Undead/Skeleton King.tres" id="8_re6pl"]
-[ext_resource type="Resource" uid="uid://dru3ep3sjnyfv" path="res://Resources/Heroes/Critter/Squirell Slingshot Sniper.tres" id="9_60itk"]
+[ext_resource type="Resource" path="res://Resources/Heroes/Critter/Squirrel Slingshot Sniper.tres" id="9_0m6iy"]
 
 [node name="CombatManager" type="Node2D" unique_id=442684704 node_paths=PackedStringArray("combat_ui")]
 script = ExtResource("1_vhmsl")
 combat_ui = NodePath("CombatUI")
 player_heroes = Array[ExtResource("2_oin0j")]([ExtResource("3_0m6iy"), ExtResource("4_rjfil"), ExtResource("5_8lrde"), ExtResource("6_16pdn"), ExtResource("7_7rc0u")])
-enemy_heroes = Array[ExtResource("2_oin0j")]([ExtResource("7_7rc0u"), ExtResource("6_16pdn"), ExtResource("8_re6pl"), ExtResource("9_60itk"), ExtResource("4_rjfil")])
+enemy_heroes = Array[ExtResource("2_oin0j")]([ExtResource("7_7rc0u"), ExtResource("6_16pdn"), ExtResource("8_re6pl"), ExtResource("9_0m6iy"), ExtResource("4_rjfil")])
 
 [node name="CombatUI" parent="." unique_id=903688084 instance=ExtResource("2_8dwbb")]

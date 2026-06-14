@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://blebytpdob4m6"]
+
+[ext_resource type="Texture2D" uid="uid://birdoodio56j2" path="res://Graphics/Hero Sprites/Critter/Mr. Rabbit Monk.png" id="1_ohsll"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kjifp"]
+atlas = ExtResource("1_ohsll")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5dtro"]
+atlas = ExtResource("1_ohsll")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kjifp")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5dtro")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

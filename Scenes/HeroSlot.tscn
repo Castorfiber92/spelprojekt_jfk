@@ -2,7 +2,29 @@
 
 [ext_resource type="Script" uid="uid://ca3k3itdo55gm" path="res://Scenes/HeroSlot.gd" id="1_o71yv"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_adt3j"]
+bg_color = Color(0.6, 0.6, 0.6, 0.78431374)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m8phu"]
+bg_color = Color(0.6, 0.6, 0.6, 0.78431374)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o71yv"]
+bg_color = Color(0.004019165, 0.004019165, 0.004019165, 0.24705882)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
 [node name="HeroSlot" type="PanelContainer" unique_id=1012603315 node_paths=PackedStringArray("hp_label", "damage_label", "name_label", "sprite")]
+self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(300, 0)
 script = ExtResource("1_o71yv")
 hp_label = NodePath("VBoxContainer/HBoxContainer/HP/Label")
@@ -20,6 +42,7 @@ theme_override_constants/separation = 200
 [node name="HP" type="PanelContainer" parent="VBoxContainer/HBoxContainer" unique_id=1186184184]
 custom_minimum_size = Vector2(50, 55)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_adt3j")
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/HP" unique_id=1511249777]
 layout_mode = 2
@@ -31,6 +54,7 @@ vertical_alignment = 1
 [node name="DAMAGE" type="PanelContainer" parent="VBoxContainer/HBoxContainer" unique_id=153483155]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_m8phu")
 
 [node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/DAMAGE" unique_id=2067173947]
 layout_mode = 2
@@ -40,6 +64,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer" unique_id=2008074770]
+self_modulate = Color(1, 1, 1, 0)
 custom_minimum_size = Vector2(256, 256)
 layout_mode = 2
 
@@ -53,6 +78,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_o71yv")
 text = "Herolord"
 horizontal_alignment = 1
 vertical_alignment = 1
