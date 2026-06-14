@@ -1,0 +1,21 @@
+extends CombatEffect
+class_name DamageEffect
+
+func execute(_manager: CombatManager) -> void:
+	if target:
+		target.take_damage(value, source)
+
+func present(manager: CombatManager) -> void:
+	var source_slot: HeroSlot = manager.hero_to_slot_map.get(source, null)
+	
+	# 1. ATTACKER STRIKES FIRST: Play strike frame posture and hold it
+	if source_slot and animation != "" and animation != "idle":
+		await source_slot.play_animation(animation, animation_duration)
+		
+	# 2. TARGET REACTS SECOND: Play the screen shake and soft red tint canvas flash
+	if manager.hero_to_slot_map.has(target):
+		var target_slot: HeroSlot = manager.hero_to_slot_map[target]
+		await target_slot.apply_damage_effect().finished
+	else:
+		# Fallback delay so the coroutine loop doesn't snap if the target is missing
+		await manager.get_tree().process_frame

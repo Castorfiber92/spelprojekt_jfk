@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cmyuym2ajugac"]
+
+[ext_resource type="Texture2D" uid="uid://cexs0cpkiavrm" path="res://Graphics/Hero Sprites/Critter/Squirrel Slingshot Sniper.png" id="1_7hjsh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wowos"]
+atlas = ExtResource("1_7hjsh")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5syrl"]
+atlas = ExtResource("1_7hjsh")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wowos")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5syrl")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

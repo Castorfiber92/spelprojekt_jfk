@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://brtvwlxkykox8"]
+
+[ext_resource type="Texture2D" uid="uid://d34mwf5qc26ed" path="res://Graphics/Hero Sprites/Orc/Orc Hexblade.png" id="1_61doy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_npvow"]
+atlas = ExtResource("1_61doy")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x7bui"]
+atlas = ExtResource("1_61doy")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_npvow")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x7bui")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

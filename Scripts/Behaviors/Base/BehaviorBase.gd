@@ -72,7 +72,7 @@ func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
 	return modified_value
 
 
-func on_execute_action(data):
+func on_execute_action(combatContext : CombatContext):
 	return []
 
 func on_start_of_battle(data):

@@ -19,6 +19,7 @@ var enemy_slots : Array[HeroSlot]
 ## Stack variables
 var effect_stack: Array[CombatEffect] = []
 var is_processing: bool = false
+var combat_active: bool = true
 
 var current_phase : Enums.CombatPhase : set = update_phase_UI
 
@@ -30,7 +31,37 @@ func update_phase_UI(new_value: Enums.CombatPhase) -> void:
 func _ready() -> void:
 	GameEvents.effect_created.connect(_on_effect_requested)
 	create_slots()
-	start_next_turn()
+	await wait_for_input("ui_accept")
+	run_combat_loop()
+
+func run_combat_loop():
+	while combat_active:
+		var next_hero_slot = get_next_acting_hero()
+		
+		# If no heroes can act, the round is over!
+		if next_hero_slot == null:
+			print("Press SPACE to start the round...")
+			await wait_for_input("ui_accept")
+			print("Next round started!")
+			reset_round()
+			await wait_for_stack_to_clear()
+			continue # Restart the loop for the new round
+			
+		active_slot = next_hero_slot
+		active_slot.highlight_slot()
+		print("Next to act: ", active_slot.hero.hero_data.name)
+		
+		# Linear execution: Code completely pauses here until the turn and all cascades finish
+		await execute_turn(active_slot)
+		
+		# --- ADDED FOR TESTING: PACING DELAY BETWEEN ACTIONS ---
+		# Adjust the '0.5' to make the pause longer (e.g., 1.0) or shorter (e.g., 0.2)
+		await get_tree().create_timer(0.2).timeout
+		# -------------------------------------------------------
+		
+		# Clean up this specific turn completely before going to the top of the while-loop
+		_wrap_up_turn(active_slot.hero)
+		update_UI()
 
 # The Helper Function
 func wait_for_input(action_name: String):
@@ -43,35 +74,18 @@ func wait_for_input(action_name: String):
 		if Input.is_action_just_pressed(action_name):
 			return # This 'resolves' the await in the calling function
 
-func start_next_turn():
-	active_slot = null
-	## Get all active heroes from the dictionary that has not yet moved
-	var candidates : Array[HeroSlot]
+func get_next_acting_hero() -> HeroSlot:
+	var candidates : Array[HeroSlot] = []
 	for slot in hero_to_slot_map.values():
-		if not slot.hero.has_acted:
+		if slot.hero and not slot.hero.has_acted:
 			candidates.append(slot)
 	
 	if candidates.is_empty():
-		print("Press SPACE to start the round...")
-		await wait_for_input("ui_accept")
-		print("Next round started!")
-		reset_round()
-		return
-	## Sort the heroes based on their speed
-	## Higher speed moves first
-	## Shuffle candidates first to randomize tie-breakers
+		return null
+		
 	candidates.shuffle()
 	candidates.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
-	## The first hero in the sorted list is the winner
-	active_slot = candidates[0]
-	# This is not final, only simple for testing, to show the active hero
-	active_slot.highlight_slot()
-	print("Next to act: ", active_slot.hero.hero_data.name)
-	await wait_for_input("ui_accept")
-	# Trigger the turn flow
-	execute_turn(active_slot)
-	# Update the visuals
-	update_UI()
+	return candidates[0]
 	
 func update_UI():
 	for slot in hero_to_slot_map.values():
@@ -87,22 +101,22 @@ func process_stack():
 	
 	while not effect_stack.is_empty():
 		var effect = effect_stack.pop_front()
-		var slot : HeroSlot = hero_to_slot_map[effect.target]
-		# 1. Pipeline (Modifiers)
+		
+		# Safety fallback check
+		if not hero_to_slot_map.has(effect.target): 
+			continue
+			
+		# 1. Pipeline (Modifiers are calculated first)
 		process_effect(effect)
-		match effect.type:
-			"DAMAGE":
-				# 2. Execution (Actually change HP)
-				effect.target.take_damage(effect.value, effect.source)
-				await slot.apply_damage_effect()
-			"HEAL":
-				effect.target.heal_HP(effect.value, effect.source)
-				await slot.apply_heal_effect()
-			"SHIELD":
-				pass # For now (not applicable yet)
+		
+		# 2. Polymorphic Execution & Visual Sequence Execution
+		# The manager no longer explicitly calls play_animation() here!
+		effect.execute(self)       # Structural health changes
+		await effect.present(self)  # Orchestrated graphics presentation sequences
+		
+		update_UI()
 
-		# Add a small 'await' somehow for animations/delays
-		# await get_tree().create_timer(0.1).timeout
+	is_processing = false
 
 	is_processing = false
 
@@ -111,6 +125,7 @@ func execute_turn(slot: HeroSlot):
 	# PHASE: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
 	slot.hero.trigger_behavior_event("on_turn_start") 
+	await wait_for_stack_to_clear()
 	# PHASE: SELECT_ACTION
 	current_phase = Enums.CombatPhase.SELECT_ACTION
 	var action = slot.hero.hero_data.base_action 
@@ -121,7 +136,7 @@ func execute_turn(slot: HeroSlot):
 	if targets.is_empty():
 		# What happens if it has no valid targets
 		print(slot.hero.hero_data.name, " has no valid targets and skips!")
-		_wrap_up_turn(slot.hero)
+		# DELETED: _wrap_up_turn(slot.hero) from here
 		return
 	# PHASE: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
@@ -130,30 +145,32 @@ func execute_turn(slot: HeroSlot):
 	current_phase = Enums.CombatPhase.EXECUTE
 	print(slot.hero.hero_data.name, " will be using ", action.name)
 	perform_action(slot, targets) # This handles the 'on_execute_action'
+	await wait_for_stack_to_clear()
 	# PHASE: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
-	await wait_for_input("ui_accept")
 	slot.hero.trigger_behavior_event("on_after_act", targets)
-	_wrap_up_turn(slot.hero)
+	await wait_for_stack_to_clear()
+
+func wait_for_stack_to_clear():
+	while is_processing or not effect_stack.is_empty():
+		await get_tree().process_frame
 
 func _wrap_up_turn(hero: Hero):
 	hero.has_acted = true
 	current_phase = Enums.CombatPhase.IDLE
 	clear_highlights()
-	update_UI()
-	# Check if the player party are all empty of heroes e.g. all the heroes have died, return true if so
+	
 	var player_defeated = player_slots.all(func(slot): return slot.hero == null)
 	if player_defeated:
-		# If true, the player loses.
+		combat_active = false
 		lose_combat()
 		return
-	# We check if the enemy party is all dead
+		
 	var enemy_defeated = enemy_slots.all(func(slot): return slot.hero == null)
 	if enemy_defeated:
-		# If true, the player wins.
+		combat_active = false
 		win_combat()
 		return
-	start_next_turn()
 
 func process_effect(effect: CombatEffect):
 	# 1. We check the attacker's behaviors and modify the outgoing effect
@@ -209,14 +226,11 @@ func get_friendly_slots(source: Hero) -> Array[HeroSlot]:
 	else:
 		return enemy_slots
 
+
 func reset_round():
-	##Update the boolean status
 	for hero : Hero in hero_to_slot_map.keys():
 		hero.has_acted = false
-		#Check for round start behavior
 		hero.trigger_behavior_event("on_round_start")
-	
-	start_next_turn()
 
 func create_slots():
 	##Here we will create slots according to the playerparty (which does not exist right now)
@@ -244,7 +258,7 @@ func load_player_party():
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = player_heroes[i] 
+		hero.hero_data = player_heroes[i].duplicate(true) 
 		hero.initialize_data()
 		##Assign the team to Player Array
 		player_slots.append(slot)
@@ -273,6 +287,7 @@ func remove_hero(slot : HeroSlot):
 	hero_to_slot_map.erase(slot.hero)
 	slot.hero = null
 	slot.update_info()
+	
 
 func win_combat():
 	print("You win the battle!")

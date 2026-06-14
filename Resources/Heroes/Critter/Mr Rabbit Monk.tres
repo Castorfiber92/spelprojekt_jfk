@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_8exp3"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_iml85"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_fkkd5"]
-[ext_resource type="Texture2D" uid="uid://birdoodio56j2" path="res://Graphics/Hero Sprites/Mr. Rabbit Monk.png" id="4_27v6b"]
+[ext_resource type="SpriteFrames" uid="uid://blebytpdob4m6" path="res://Graphics/Hero Sprites/Critter/mr_rabbit_monk_sprites.tres" id="4_27v6b"]
 
 [resource]
 script = ExtResource("3_fkkd5")

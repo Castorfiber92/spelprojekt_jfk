@@ -6,6 +6,7 @@ extends Node
 
 @export_group("Generate Functions")
 @export_tool_button("Generate Heroes","Callable") var generate_heroes_action = generate_heroes 
+@export_tool_button("Link Sprites to Existing Heroes","Callable") var link_sprites_action = link_sprites_to_heroes
 
 @export_group("Google Drive Sync")
 ## The ID from your Google Sheet URL
@@ -24,7 +25,9 @@ func generate_heroes():
 		return
 	
 	# Pre-scan the filesystem to ensure Godot's cache is up to date
-	EditorInterface.get_resource_filesystem().scan()
+	var efs = EditorInterface.get_resource_filesystem()
+	efs.scan()
+	var root = efs.get_filesystem()
 	
 	# Open the CSV file
 	var file = FileAccess.open(csv_path, FileAccess.READ)
@@ -94,6 +97,14 @@ func generate_heroes():
 				if behavior:
 					# If we find the behavior, add it to the resource
 					res.abilities.append(behavior)
+					
+		# Check if a matching sprite file already exists using your helper
+		var sprite_filename = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
+		var sprite_path = _find_file_in_cache(root, sprite_filename) # 'root' comes from efs.get_filesystem()
+		
+		if sprite_path != "":
+			res.sprites = load(sprite_path) as SpriteFrames
+
 		# Save the resource
 		ResourceSaver.save(res, save_path)
 		print("Successfully Synced: ", h_name)
@@ -101,7 +112,64 @@ func generate_heroes():
 	# Close the file
 	file.close()
 	print("--- Import Task Finished ---")
+
+func link_sprites_to_heroes():
+	# Check that we are not running the game
+	if not Engine.is_editor_hint():
+		return
 	
+	# Pre-scan the filesystem to ensure Godot's cache is up to date
+	print("Hero Importer: Starting Sprite Linking Task...")
+	EditorInterface.get_resource_filesystem().scan()
+	
+	var efs = EditorInterface.get_resource_filesystem()
+	var root = efs.get_filesystem()
+	
+	# Open the CSV file to find which heroes we need to look for
+	if csv_path == "" or not FileAccess.file_exists(csv_path):
+		printerr("Hero Importer: Invalid CSV path for sprite linking!")
+		return
+		
+	var file = FileAccess.open(csv_path, FileAccess.READ)
+	var _headers = file.get_csv_line() 
+	var base_graphics_dir = "res://Graphics/Hero Sprites/"
+	var updated_count = 0
+	
+	while not file.eof_reached():
+		var row = file.get_csv_line()
+		if row.size() < 3: continue # Need at least name and tribe to build the path
+		
+		var h_name = row[0].strip_edges()
+		if h_name == "": continue
+		
+		var tribe_string = row[2].strip_edges().to_lower()
+		var tribe_folder_name = tribe_string.capitalize()
+		
+		# Build the exact path where this hero's .tres resource lives
+		var hero_file_path = output_dir.path_join(tribe_folder_name).path_join(h_name.validate_filename() + ".tres")
+		var sprite_filename = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
+		var expected_sprite_path = base_graphics_dir.path_join(tribe_folder_name).path_join(sprite_filename)
+		
+		# Only proceed if the hero data resource actually exists
+		if FileAccess.file_exists(hero_file_path):
+			var res: HeroData = load(hero_file_path)
+			
+			# Check if the sprite file actually exists in that specific tribe folder
+			if FileAccess.file_exists(expected_sprite_path):
+				var sprite_res = load(expected_sprite_path) as SpriteFrames
+				
+				if res.sprites != sprite_res:
+					res.sprites = sprite_res
+					ResourceSaver.save(res, hero_file_path)
+					print("Linked sprite to existing hero: ", h_name)
+					updated_count += 1
+			else:
+				print("Hero Importer: No sprite asset found at: ", expected_sprite_path)
+				
+	file.close()
+	print("--- Sprite Linking Finished ---")
+
+
 ## Uses Godot's internal FileSystem cache to find resources by name instantly
 func find_behavior_globally(behavior_name: String) -> Behavior:
 	if behavior_name == "": return null

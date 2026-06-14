@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cexs0cpkiavrm"
-path="res://.godot/imported/Squirrel Slingshot Sniper.png-4069c1fb5b3ef3e3ad43c7f14e6e8416.ctex"
+path="res://.godot/imported/Squirrel Slingshot Sniper.png-193b00e478d6d96469ef7dddee94e513.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Hero Sprites/Squirrel Slingshot Sniper.png"
-dest_files=["res://.godot/imported/Squirrel Slingshot Sniper.png-4069c1fb5b3ef3e3ad43c7f14e6e8416.ctex"]
+source_file="res://Graphics/Hero Sprites/Critter/Squirrel Slingshot Sniper.png"
+dest_files=["res://.godot/imported/Squirrel Slingshot Sniper.png-193b00e478d6d96469ef7dddee94e513.ctex"]
 
 [params]
 

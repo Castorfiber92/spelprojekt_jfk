@@ -1,32 +1,20 @@
 extends Behavior
 class_name attack_basic_behavior
+@export var animation : String = "action"
+@export var animationDuration : float = 0.15
 
-func on_execute_action(data):
-	var context = data as CombatContext
-	
-	var source: HeroSlot = context.source
-	var targets: Array[HeroSlot] = context.targets
-	source.play_animation("attack")
-
-	for target in targets:
-		if target.hero == null: continue
-		var target_hero = target.hero
-		# 1. Create the "Draft" CombatEffect
-		# We set the base damage here.
-		var effect = CombatEffect.new(
-			owner_hero, 
-			target_hero, 
-			"DAMAGE", 
-			owner_hero.current_damage)
+func on_execute_action(context : CombatContext):
+	for target in context.targets:
+		# Instantiate the specific configuration subclass
+		var effect = DamageEffect.new() 
 		
-		# 2. Add tags so other items know what this is
-		# effect.tags.append("basic_attack")
-		# effect.tags.append("melee") # or "ranged" based on your hero
-
+		effect.value = get_modified_stat(context.source.hero, "damage", context.source.hero.current_damage)
+		effect.source = context.source.hero
+		effect.target = target.hero
+		effect.animation = self.animation
+		effect.animation_duration = self.animationDuration
+		
+		# Emit to the CombatManager queue safely
 		GameEvents.effect_created.emit(effect)
-		print(owner_hero.hero_data.name, " used ", name, " on ", target_hero.hero_data.name)
-	
-		## Timer below is temporary, for visible feedback, dont use hard numbers like this
-	await source.get_tree().create_timer(0.1).timeout
-	source.play_animation("idle")
+
 	

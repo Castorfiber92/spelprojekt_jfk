@@ -3,10 +3,12 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_rijw0"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_i8l0g"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_lrh0r"]
+[ext_resource type="SpriteFrames" uid="uid://brtvwlxkykox8" path="res://Graphics/Hero Sprites/Orc/orc_hexblade_sprites.tres" id="4_de2ar"]
 
 [resource]
 script = ExtResource("3_lrh0r")
 name = "Orc Hexblade"
+sprites = ExtResource("4_de2ar")
 tribe = 1
 base_HP = 24
 base_damage = 2

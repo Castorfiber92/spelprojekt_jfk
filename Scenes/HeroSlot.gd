@@ -12,53 +12,60 @@ var index: int = 0
 func _ready() -> void:
 	update_info()
 
-func play_animation(anim_name: String) -> void:
+func play_animation(anim_name: String, anim_duration : float = 0.15) -> void:
 	if hero and hero.hero_data.sprites and hero.hero_data.sprites.has_animation(anim_name):
 		sprite.texture = hero.hero_data.sprites.get_frame_texture(anim_name, 0)
+	await get_tree().create_timer(anim_duration).timeout
+	# If we just played an attack/action pose, return them back to their resting posture
+	if anim_name != "idle" and hero.hero_data.sprites and hero.hero_data.sprites.has_animation(anim_name):
+		sprite.texture = hero.hero_data.sprites.get_frame_texture("idle", 0)
 
 func apply_damage_effect() -> Tween:
-	var tween = create_tween().set_parallel(true)
 	var shake_intensity = 4.0
 	var shake_duration = 0.05
 	var flash_color = Color(1, 0.3, 0.3) # Soft red
 
-	# 1. SOFT RED FLASH
-	# Tweens the color to red, then back to white (normal)
+	# 1. SOFT RED FLASH (Targets the sprite texture layout)
 	var color_tween = create_tween()
-	color_tween.tween_property(self, "modulate", flash_color, 0.1)
-	color_tween.tween_property(self, "modulate", Color.WHITE, 0.2)
+	color_tween.tween_property(sprite, "modulate", flash_color, 0.1)
+	color_tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
 
-	# 2. SHAKE EFFECT (Sequential loop within the parallel tween)
-	# Creates 4 quick random movements
+	# 2. SPRITE POSITION SHAKE
+	var shake_tween = create_tween()
+	
+	# ✅ FIX: Store the original local position of the SPRITE node, not the container panel
+	var original_sprite_position = sprite.position
+	
 	for i in range(4):
 		var offset = Vector2(randf_range(-5, 5), randf_range(-5, 5)) * shake_intensity
-		tween.tween_property(self, "position", position + offset, shake_duration)
+		# ✅ FIX: Tween the 'sprite' node position property instead of 'self'
+		shake_tween.tween_property(sprite, "position", original_sprite_position + offset, shake_duration)
 	
-	# Reset position to original at the end
-	tween.chain().tween_property(self, "position", position, shake_duration)
-	return tween
+	# Reset explicitly back to the original sprite coordinate base
+	shake_tween.tween_property(sprite, "position", original_sprite_position, shake_duration)
+	
+	return shake_tween
 
 func apply_heal_effect() -> Tween:
-	var tween = create_tween().set_parallel(true)
 	var shake_intensity = 4.0
 	var shake_duration = 0.05
-	var flash_color = Color(0.0, 0.7, 0.407, 1.0) # Soft red
+	var flash_color = Color(0.0, 0.7, 0.407, 1.0) # Soft green
 
-	# 1. SOFT RED FLASH
-	# Tweens the color to red, then back to white (normal)
+	# 1. SOFT GREEN FLASH
 	var color_tween = create_tween()
-	color_tween.tween_property(self, "modulate", flash_color, 0.1)
-	color_tween.tween_property(self, "modulate", Color.WHITE, 0.2)
+	color_tween.tween_property(sprite, "modulate", flash_color, 0.1)
+	color_tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
 
-	# 2. SHAKE EFFECT (Sequential loop within the parallel tween)
-	# Creates 4 quick random movements
+	# 2. SPRITE POSITION SHAKE
+	var shake_tween = create_tween()
+	var original_sprite_position = sprite.position
+	
 	for i in range(4):
 		var offset = Vector2(randf_range(-5, 5), randf_range(-5, 5)) * shake_intensity
-		tween.tween_property(self, "position", position + offset, shake_duration)
+		shake_tween.tween_property(sprite, "position", original_sprite_position + offset, shake_duration)
 	
-	# Reset position to original at the end
-	tween.chain().tween_property(self, "position", position, shake_duration)
-	return tween
+	shake_tween.tween_property(sprite, "position", original_sprite_position, shake_duration)
+	return shake_tween
 
 func toggle_visibility(show = true):
 	if show:
@@ -71,7 +78,12 @@ func toggle_visibility(show = true):
 		name_label.visible = false
 
 func cleanup():
-	set_modulate(Color.WHITE)
+	set_modulate(Color.WHITE) # Clears panel highlights
+	sprite.set_modulate(Color.WHITE) # Clears color tints
+	# Reset the sprite's relative canvas position back to zero if it got offset
+	sprite.position = Vector2.ZERO 
+	if hero == null:
+		sprite.texture = null
 
 func highlight_slot(source = true):
 	# This is not final, only simple for testing
