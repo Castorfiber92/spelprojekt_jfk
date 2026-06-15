@@ -3,18 +3,15 @@
 [ext_resource type="Script" uid="uid://b4p81aq7y3nu2" path="res://Scripts/Combat/CombatManager.gd" id="1_vhmsl"]
 [ext_resource type="PackedScene" uid="uid://4o0e327hk6p2" path="res://Scenes/Combat/CombatUI.tscn" id="2_8dwbb"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="2_oin0j"]
-[ext_resource type="Resource" uid="uid://ic6wbptmrbw3" path="res://Resources/Heroes/Orc/Earth Shaman.tres" id="3_0m6iy"]
 [ext_resource type="Resource" uid="uid://hdpjaf7iiama" path="res://Resources/Heroes/Orc/Orc Hexblade.tres" id="4_rjfil"]
 [ext_resource type="Resource" uid="uid://cx4ofhhvsfflt" path="res://Resources/Heroes/Undead/Haunted doll.tres" id="5_8lrde"]
 [ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="6_16pdn"]
-[ext_resource type="Resource" uid="uid://db1nyfof0wpwe" path="res://Resources/Heroes/Orc/Troll Ranger.tres" id="7_7rc0u"]
-[ext_resource type="Resource" uid="uid://biud86n8q8bhh" path="res://Resources/Heroes/Undead/Skeleton King.tres" id="8_re6pl"]
-[ext_resource type="Resource" path="res://Resources/Heroes/Critter/Squirrel Slingshot Sniper.tres" id="9_0m6iy"]
+[ext_resource type="Resource" uid="uid://bnnjoip13th68" path="res://Resources/Heroes/Gnome/Mushroom Gobbler.tres" id="8_0m6iy"]
+[ext_resource type="Resource" uid="uid://diqa1xgp7fjr8" path="res://Resources/Heroes/Critter/Squirrel Slingshot Sniper.tres" id="9_0m6iy"]
 
 [node name="CombatManager" type="Node2D" unique_id=442684704 node_paths=PackedStringArray("combat_ui")]
 script = ExtResource("1_vhmsl")
 combat_ui = NodePath("CombatUI")
-player_heroes = Array[ExtResource("2_oin0j")]([ExtResource("3_0m6iy"), ExtResource("4_rjfil"), ExtResource("5_8lrde"), ExtResource("6_16pdn"), ExtResource("7_7rc0u")])
-enemy_heroes = Array[ExtResource("2_oin0j")]([ExtResource("7_7rc0u"), ExtResource("6_16pdn"), ExtResource("8_re6pl"), ExtResource("9_0m6iy"), ExtResource("4_rjfil")])
+enemy_heroes = Array[ExtResource("2_oin0j")]([ExtResource("5_8lrde"), ExtResource("6_16pdn"), ExtResource("8_0m6iy"), ExtResource("9_0m6iy"), ExtResource("4_rjfil")])
 
 [node name="CombatUI" parent="." unique_id=903688084 instance=ExtResource("2_8dwbb")]

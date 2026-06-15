@@ -2,12 +2,21 @@ extends Resource
 class_name BehaviorBase
 
 @export var name : String
+@export var description_long : String
+@export var description_short : String
 var owner_hero: Hero
+@export_category("Type Settings")
+enum BehaviorType { PASSIVE, ACTIVE, BUFF }
+@export var type: BehaviorType = BehaviorType.PASSIVE
+@export var duration: int = 0 # 0 if not applicable
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
 ##0 range for self-targeting or if we are not using a custom range
 @export_range(0,5) var range : int
+@export_category("Buff Settings")
+@export var behaviors_to_apply: Array[Behavior] = []
+@export var blocks_action : bool = false
 ##Below we will have functions for every event we want to check
 ##which means on_hit, on_death, on_taking_damage etc etc.
 ##Then, we create resources for each behaviorData and define what said behavior is doing on every 
@@ -75,19 +84,25 @@ func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
 func on_execute_action(combatContext : CombatContext):
 	return []
 
-func on_start_of_battle(data):
+func on_start_of_battle(combatContext : CombatContext):
 	return []
 
-func on_attack(data):
+func on_turn_start(combatContext : CombatContext):
 	return []
 
-func on_damage_dealt(data):
+func on_turn_end(combatContext : CombatContext):
 	return []
 
-func on_damage_taken(data):
+func on_attack(combatContext : CombatContext):
+	return []
+
+func on_damage_dealt(combatContext : CombatContext):
+	return []
+
+func on_damage_taken(combatContext : CombatContext):
 	return []
 	
-func on_death(data):
+func on_death(combatContext : CombatContext):
 	return []
 
 func modify_outgoing_effect(effect : CombatEffect):

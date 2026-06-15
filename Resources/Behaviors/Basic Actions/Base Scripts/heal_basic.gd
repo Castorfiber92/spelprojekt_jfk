@@ -1,9 +1,8 @@
 extends Behavior
 class_name heal_basic_behavior
 
-func on_execute_action(data):
-	var targets = data as Array[HeroSlot]
-	for target in targets:
+func on_execute_action(combatContext : CombatContext):
+	for target in combatContext.targets:
 		if target.hero == null: continue
 		var target_hero = target.hero
 		# 1. Create the "Draft" CombatEffect

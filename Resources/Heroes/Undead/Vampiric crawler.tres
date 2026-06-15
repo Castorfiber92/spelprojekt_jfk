@@ -3,10 +3,12 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_5qc00"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_mmj3p"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_7bsb2"]
+[ext_resource type="SpriteFrames" uid="uid://b7h27lgci1lhk" path="res://Graphics/Hero Sprites/Undead/vampiric_crawler_sprites.tres" id="4_wu58y"]
 
 [resource]
 script = ExtResource("3_7bsb2")
 name = "Vampiric crawler"
+sprites = ExtResource("4_wu58y")
 tribe = 2
 base_HP = 35
 base_damage = 3

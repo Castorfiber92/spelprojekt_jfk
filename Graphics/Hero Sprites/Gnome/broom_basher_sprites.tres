@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cemcg83a34ylx"]
+
+[ext_resource type="Texture2D" uid="uid://de1puebfdvc7s" path="res://Graphics/Hero Sprites/Gnome/Broom Basher.png" id="1_faafl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_if4o6"]
+atlas = ExtResource("1_faafl")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b7wny"]
+atlas = ExtResource("1_faafl")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_if4o6")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b7wny")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
