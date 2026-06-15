@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://lap7hfddiymh"]
+
+[ext_resource type="Texture2D" uid="uid://dxw0dori5yeed" path="res://Graphics/Hero Sprites/Gnome/Mushroom Gobbler.png" id="1_ul7um"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_35f4q"]
+atlas = ExtResource("1_ul7um")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2vyc8"]
+atlas = ExtResource("1_ul7um")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_35f4q")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2vyc8")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

@@ -124,8 +124,16 @@ func execute_turn(slot: HeroSlot):
 	print("New turn")
 	# PHASE: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
-	slot.hero.trigger_behavior_event("on_turn_start") 
+	slot.hero.trigger_behavior_event("on_turn_start", slot) 
 	await wait_for_stack_to_clear()
+	# Check if the hero is available to act (not stunned/asleep/etc)
+	if not slot.hero.can_act():
+		print(slot.hero.hero_data.name, " is incapacitated and skips their turn!")
+		perform_action(slot)
+		await wait_for_stack_to_clear()
+		slot.hero.trigger_behavior_event("on_turn_end", slot)
+		await wait_for_stack_to_clear()
+		return
 	# PHASE: SELECT_ACTION
 	current_phase = Enums.CombatPhase.SELECT_ACTION
 	var action = slot.hero.hero_data.base_action 
@@ -135,20 +143,26 @@ func execute_turn(slot: HeroSlot):
 	
 	if targets.is_empty():
 		# What happens if it has no valid targets
-		print(slot.hero.hero_data.name, " has no valid targets and skips!")
+		print(slot.hero.hero_data.name, " has no valid targets and skips their turn!")
 		# DELETED: _wrap_up_turn(slot.hero) from here
+		slot.hero.trigger_behavior_event("on_turn_end", slot)
+		await wait_for_stack_to_clear()
 		return
 	# PHASE: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
-	slot.hero.trigger_behavior_event("on_before_act", targets)
+	slot.hero.trigger_behavior_event("on_before_act", slot)
+	await wait_for_stack_to_clear()
 	# PHASE: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
-	print(slot.hero.hero_data.name, " will be using ", action.name)
+	print(slot.hero.hero_data.name, " will be using ", action.name, " on ", ", ".join(targets.map(func(t): return t.hero.hero_data.name)))
+
 	perform_action(slot, targets) # This handles the 'on_execute_action'
 	await wait_for_stack_to_clear()
 	# PHASE: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
-	slot.hero.trigger_behavior_event("on_after_act", targets)
+	slot.hero.trigger_behavior_event("on_after_act", slot)
+	await wait_for_stack_to_clear()
+	slot.hero.trigger_behavior_event("on_turn_end", slot)
 	await wait_for_stack_to_clear()
 
 func wait_for_stack_to_clear():
@@ -186,10 +200,10 @@ func process_effect(effect: CombatEffect):
 			b.modify_incoming_effect(effect)
 
 
-func perform_action(source : HeroSlot, targets: Array[HeroSlot]):
-	# We trigger the actual behavior event on the corresponding target
-	var context = CombatContext.new(source, targets)
-	source.hero.trigger_behavior_event("on_execute_action", context)
+func perform_action(source : HeroSlot, targets: Array[HeroSlot] = []):
+	if source.hero.can_act():
+		# We trigger the actual behavior event on the corresponding target
+		source.hero.trigger_behavior_event("on_execute_action", source, targets)
 
 	source.hero.has_acted = true
 	
@@ -228,9 +242,9 @@ func get_friendly_slots(source: Hero) -> Array[HeroSlot]:
 
 
 func reset_round():
-	for hero : Hero in hero_to_slot_map.keys():
-		hero.has_acted = false
-		hero.trigger_behavior_event("on_round_start")
+	for slot in hero_to_slot_map.values():
+		slot.hero.has_acted = false
+		slot.hero.trigger_behavior_event("on_round_start", slot)
 
 func create_slots():
 	##Here we will create slots according to the playerparty (which does not exist right now)

@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://b7h27lgci1lhk"]
+
+[ext_resource type="Texture2D" uid="uid://b1wnhcqxhdqs1" path="res://Graphics/Hero Sprites/Undead/Vampiric Crawler.png" id="1_g6lfv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_88cc5"]
+atlas = ExtResource("1_g6lfv")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_07ox3"]
+atlas = ExtResource("1_g6lfv")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_88cc5")
+}],
+"loop": true,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_07ox3")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]

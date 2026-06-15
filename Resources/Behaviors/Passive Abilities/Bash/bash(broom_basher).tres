@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="bash_base" format=3 uid="uid://b7b4q5if8nhmi"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_hm5l5"]
+[ext_resource type="Script" uid="uid://cbxtm0wx1fx85" path="res://Resources/Behaviors/Passive Abilities/Bash/Base Script/bash_base.gd" id="2_e6tkf"]
+[ext_resource type="Resource" uid="uid://bejtkqbw62x76" path="res://Resources/Behaviors/Effects/Debuffs/status_stun/status_stun(broom_basher).tres" id="2_taskv"]
+
+[resource]
+script = ExtResource("2_e6tkf")
+chance = 0.5
+name = "Broom Bash"
+target_team = 1
+behaviors_to_apply = Array[ExtResource("1_hm5l5")]([ExtResource("2_taskv")])
+metadata/_custom_type_script = "uid://cbxtm0wx1fx85"

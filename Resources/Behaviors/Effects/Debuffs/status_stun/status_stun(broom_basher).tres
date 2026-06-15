@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="status_stun_basic_behavior" format=3 uid="uid://bejtkqbw62x76"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_gvyjp"]
+[ext_resource type="Script" uid="uid://bj3rxrnwnwnb0" path="res://Resources/Behaviors/Effects/Debuffs/Base Scripts/status_stun_basic.gd" id="2_gvyjp"]
+
+[resource]
+script = ExtResource("2_gvyjp")
+name = "Stunned"
+type = 2
+duration = 1
+target_team = 2
+blocks_action = true
+metadata/_custom_type_script = "uid://bj3rxrnwnwnb0"
