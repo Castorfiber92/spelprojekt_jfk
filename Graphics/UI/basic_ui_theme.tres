@@ -1,0 +1,12 @@
+[gd_resource type="Theme" format=3 uid="uid://bkb6jlinoq2gx"]
+
+[ext_resource type="FontFile" uid="uid://476t80p63s0t" path="res://Graphics/Alegreya-VariableFont_wght.ttf" id="1_b1b20"]
+[ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="1_wf024"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_b1b20"]
+texture = ExtResource("1_wf024")
+
+[resource]
+Label/font_sizes/font_size = 24
+Label/fonts/font = ExtResource("1_b1b20")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_b1b20")
