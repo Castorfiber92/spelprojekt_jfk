@@ -110,9 +110,8 @@ func process_stack():
 		process_effect(effect)
 		
 		# 2. Polymorphic Execution & Visual Sequence Execution
-		# The manager no longer explicitly calls play_animation() here!
-		effect.execute(self)       # Structural health changes
 		await effect.present(self)  # Orchestrated graphics presentation sequences
+		effect.execute(self)       # Structural health changes
 		
 		update_UI()
 
