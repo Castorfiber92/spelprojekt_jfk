@@ -8,15 +8,17 @@ var owner_hero: Hero
 @export_category("Type Settings")
 enum BehaviorType { PASSIVE, ACTIVE, BUFF }
 @export var type: BehaviorType = BehaviorType.PASSIVE
-@export var duration: int = 0 # 0 if not applicable
+enum BehaviorTag {NEUTRAL, BURN, FROZEN, MARK, STUN}
+@export var tag : BehaviorTag = BehaviorTag.NEUTRAL
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
 ##0 range for self-targeting or if we are not using a custom range
 @export_range(0,5) var range : int
 @export_category("Buff Settings")
-@export var behaviors_to_apply: Array[Behavior] = []
+@export var stacks: int = 0 # 0 if not applicable
 @export var blocks_action : bool = false
+@export var behaviors_to_apply: Array[Behavior] = []
 ##Below we will have functions for every event we want to check
 ##which means on_hit, on_death, on_taking_damage etc etc.
 ##Then, we create resources for each behaviorData and define what said behavior is doing on every 

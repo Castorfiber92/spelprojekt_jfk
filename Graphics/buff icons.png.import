@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dukxcnk2em3wx"
-path="res://.godot/imported/Boxer Badger.png-757c905fd36cb07fdff55cbe7d815e26.ctex"
+uid="uid://bxq8xau6m23au"
+path="res://.godot/imported/buff icons.png-edc164dc72f51d97e62908a61382fc82.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Graphics/Hero Sprites/Critter/Boxer Badger.png"
-dest_files=["res://.godot/imported/Boxer Badger.png-757c905fd36cb07fdff55cbe7d815e26.ctex"]
+source_file="res://Graphics/buff icons.png"
+dest_files=["res://.godot/imported/buff icons.png-edc164dc72f51d97e62908a61382fc82.ctex"]
 
 [params]
 

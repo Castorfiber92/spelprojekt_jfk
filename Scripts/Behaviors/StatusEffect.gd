@@ -1,2 +1,1 @@
 extends BehaviorBase
-class_name StatusEffect

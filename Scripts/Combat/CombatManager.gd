@@ -12,10 +12,6 @@ var enemy_slots : Array[HeroSlot]
 @export var player_heroes : Array[HeroData]
 @export var enemy_heroes : Array[HeroData]
 
-##Preloading the packed scene, this should not be here later. Create a preload script with
-##constant paths that we can check
-@onready var hero_slot: = preload("res://Scenes/HeroSlot.tscn")
-
 ## Stack variables
 var effect_stack: Array[CombatEffect] = []
 var is_processing: bool = false
@@ -63,7 +59,6 @@ func run_combat_loop():
 		_wrap_up_turn(active_slot.hero)
 		update_UI()
 
-# The Helper Function
 func wait_for_input(action_name: String):
 	# This loop 'pauses' the logic without freezing the game engine
 	while true:
@@ -264,7 +259,7 @@ func set_hero(slot : HeroSlot, hero : Hero):
 
 func load_player_party():
 	for i in range(player_heroes.size()):
-		var slot : HeroSlot = hero_slot.instantiate()
+		var slot : HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
 		##Add it to the UI
 		combat_ui.player_party.add_child(slot)
@@ -281,7 +276,7 @@ func load_player_party():
 		
 func load_enemy_party():
 	for i in enemy_heroes:
-		var slot : HeroSlot = hero_slot.instantiate()
+		var slot : HeroSlot = Preloads.hero_slot.instantiate()
 		##Add it to the UI
 		combat_ui.enemy_party.add_child(slot)
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)

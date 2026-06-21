@@ -63,6 +63,15 @@ func add_behavior(behavior: Behavior):
 		behaviors[new_behavior.name] = new_behavior
 		return true
 	else:
+		# If it exists, but is a buff (just apply the stronger amount of stacks)
+		# Right now it only sets the stacks to the max, so it wont apply properly for
+		# something that should increase the stacks, find a way to differentiate these types
+		# in the future. For now ok.
+		var existing_behavior = behaviors[new_behavior.name]
+		if existing_behavior.type == existing_behavior.BehaviorType.BUFF:
+			existing_behavior.stacks = new_behavior.stacks
+			print("Updated stacks!")
+			return true
 		##If it is already on the list, run error message
 		##(This check might be more confusing than not. Perhaps not needed.)
 		print("Behavior " + new_behavior.name + "already exists in the dict.")
@@ -80,7 +89,6 @@ func get_behaviors():
 	return behaviors.values()
 
 func trigger_behavior_event(event_name: String, source : HeroSlot, targets : Array[HeroSlot] = []):
-	
 	var context = CombatContext.new(source, targets)
 	# print("Triggering ", event_name, " event.")
 	for i in behaviors:
