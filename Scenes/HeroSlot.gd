@@ -6,6 +6,7 @@ class_name HeroSlot
 @export var damage_label : Label
 @export var name_label : Label
 @export var sprite: TextureRect
+@export var buff_slots_buffs: VBoxContainer
 
 var index: int = 0
 
@@ -102,7 +103,21 @@ func update_info():
 		hp_label.text = str(hero.current_HP)
 		damage_label.text = str(hero.current_damage)
 		name_label.text = hero.hero_data.name
+		add_buff_slots()
+
 	else:
 		##If there is NO hero
 		##Hide the labels
 		toggle_visibility(false)
+
+func add_buff_slots():
+	for child in buff_slots_buffs.get_children():
+			child.queue_free()
+	var mg_container = MarginContainer.new()
+	mg_container.custom_minimum_size = Vector2(0,40)
+	buff_slots_buffs.add_child(mg_container)
+	for b : Behavior in hero.behaviors.values():
+		if b.type == b.BehaviorType.BUFF:
+			var buff_slot = Preloads.buff_slot.instantiate()
+			buff_slots_buffs.add_child(buff_slot)
+			buff_slot.setup(b)

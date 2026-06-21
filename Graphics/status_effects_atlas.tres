@@ -1,0 +1,7 @@
+[gd_resource type="AtlasTexture" format=3 uid="uid://0a5tn7s4klbj"]
+
+[ext_resource type="Texture2D" uid="uid://bxq8xau6m23au" path="res://Graphics/buff icons.png" id="1_dlmfb"]
+
+[resource]
+atlas = ExtResource("1_dlmfb")
+region = Rect2(758, 81, 231, 213)

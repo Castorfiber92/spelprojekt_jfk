@@ -1,12 +1,12 @@
 [gd_resource type="SpriteFrames" format=3 uid="uid://grbii4cwfivh"]
 
-[ext_resource type="Texture2D" uid="uid://c1nnqcw4fmsm3" path="res://Graphics/Hero Sprites/Critter/Boxer Badger.png" id="1_smitj"]
+[ext_resource type="Texture2D" uid="uid://dukxcnk2em3wx" path="res://Graphics/Hero Sprites/Critter/Boxer Badger.png" id="1_smitj"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_1eaox"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_on4j3"]
 atlas = ExtResource("1_smitj")
 region = Rect2(768, 0, 768, 1024)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_fp4bj"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_hdx5p"]
 atlas = ExtResource("1_smitj")
 region = Rect2(0, 0, 768, 1024)
 
@@ -14,17 +14,17 @@ region = Rect2(0, 0, 768, 1024)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_1eaox")
+"texture": SubResource("AtlasTexture_on4j3")
 }],
-"loop": true,
+"loop": 1,
 "name": &"action",
 "speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_fp4bj")
+"texture": SubResource("AtlasTexture_hdx5p")
 }],
-"loop": true,
+"loop": 1,
 "name": &"idle",
 "speed": 5.0
 }]

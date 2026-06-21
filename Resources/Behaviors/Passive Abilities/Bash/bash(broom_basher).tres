@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="bash_base" format=3 uid="uid://b7b4q5if8nhmi"]
 
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_hm5l5"]
-[ext_resource type="Script" uid="uid://cbxtm0wx1fx85" path="res://Resources/Behaviors/Passive Abilities/Bash/Base Script/bash_base.gd" id="2_e6tkf"]
+[ext_resource type="Script" uid="uid://cbxtm0wx1fx85" path="res://Resources/Behaviors/Passive Abilities/Bash/Base Script/bash_basic.gd" id="2_e6tkf"]
 [ext_resource type="Resource" uid="uid://bejtkqbw62x76" path="res://Resources/Behaviors/Effects/Debuffs/status_stun/status_stun(broom_basher).tres" id="2_taskv"]
 
 [resource]

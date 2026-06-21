@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dufhid8c5gmva"]
+
+[ext_resource type="Script" uid="uid://bk37turk67wj1" path="res://Scenes/BuffSlot.gd" id="1_od4c5"]
+
+[node name="BuffSlot" type="PanelContainer" unique_id=27616509 node_paths=PackedStringArray("icon", "stacks_label")]
+custom_minimum_size = Vector2(50, 50)
+script = ExtResource("1_od4c5")
+icon = NodePath("TextureRect")
+stacks_label = NodePath("Label")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1704629794]
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="." unique_id=195181566]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(30, 0)
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1

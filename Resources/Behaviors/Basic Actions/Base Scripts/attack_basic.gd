@@ -13,7 +13,6 @@ func on_execute_action(combatContext : CombatContext):
 		effect.target = target.hero
 		effect.animation = self.animation
 		effect.animation_duration = self.animationDuration
-		effect.buffs = behaviors_to_apply
 		# Emit to the CombatManager queue safely
 		GameEvents.effect_created.emit(effect)
 

@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Spelprojekt JFK"
 run/main_scene="uid://dyw3gk74lxop3"
-config/features=PackedStringArray("4.6", "Mobile")
+config/features=PackedStringArray("4.7", "Mobile")
 
 [autoload]
 
@@ -24,6 +24,7 @@ Enums="*uid://dwt4brpj5327"
 Preloads="*uid://dt72ff4iabpl0"
 Colors="*uid://cnhuh1de0ai17"
 GameEvents="*uid://duj3n35dw8o2r"
+Ui="*uid://c7l6xcj52ho66"
 
 [display]
 

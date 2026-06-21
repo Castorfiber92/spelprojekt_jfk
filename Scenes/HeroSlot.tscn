@@ -3,7 +3,7 @@
 [ext_resource type="Theme" uid="uid://bkb6jlinoq2gx" path="res://Graphics/UI/basic_ui_theme.tres" id="1_adt3j"]
 [ext_resource type="Script" uid="uid://ca3k3itdo55gm" path="res://Scenes/HeroSlot.gd" id="1_o71yv"]
 
-[node name="HeroSlot" type="PanelContainer" unique_id=1012603315 node_paths=PackedStringArray("hp_label", "damage_label", "name_label", "sprite")]
+[node name="HeroSlot" type="PanelContainer" unique_id=1012603315 node_paths=PackedStringArray("hp_label", "damage_label", "name_label", "sprite", "buff_slots_buffs")]
 custom_minimum_size = Vector2(300, 0)
 theme = ExtResource("1_adt3j")
 script = ExtResource("1_o71yv")
@@ -11,6 +11,7 @@ hp_label = NodePath("VBoxContainer/HBoxContainer/HP/Label")
 damage_label = NodePath("VBoxContainer/HBoxContainer/DAMAGE/Label")
 name_label = NodePath("VBoxContainer/HeroName")
 sprite = NodePath("VBoxContainer/PanelContainer/TextureRect")
+buff_slots_buffs = NodePath("BuffSlots/VBoxContainer")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1654008156]
 layout_mode = 2
@@ -56,8 +57,21 @@ stretch_mode = 6
 [node name="HeroName" type="Label" parent="VBoxContainer" unique_id=206726168]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-size_flags_vertical = 8
 text = "Herolord"
 horizontal_alignment = 1
 vertical_alignment = 1
 text_overrun_behavior = 3
+
+[node name="BuffSlots" type="PanelContainer" parent="." unique_id=1547589434]
+custom_maximum_size = Vector2(50, 350)
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(300, 10)
+offset_transform_visual_only = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BuffSlots" unique_id=1528669505]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="BuffSlots/VBoxContainer" unique_id=1629327166]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
