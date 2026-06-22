@@ -2,7 +2,7 @@ extends Behavior
 class_name bash_basic_behavior
 
 @export var damage_multiplier: float = 2
-@export var chance: float = 1
+@export var chance: float = 0.15
 
 func modify_outgoing_effect(effect : CombatEffect):
 	if randf() < chance:

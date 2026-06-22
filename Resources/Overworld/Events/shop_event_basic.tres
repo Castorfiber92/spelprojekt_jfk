@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="ShopEvent" format=3 uid="uid://c32l2c4evnlyi"]
+
+[ext_resource type="Script" uid="uid://drat4gvku6wq2" path="res://Resources/Overworld/Events/Base Scripts/ShopEvent.gd" id="1_aaobm"]
+
+[resource]
+script = ExtResource("1_aaobm")
+metadata/_custom_type_script = "uid://drat4gvku6wq2"

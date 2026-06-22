@@ -1,0 +1,27 @@
+[gd_scene format=4 uid="uid://7m5b7oclubme"]
+
+[ext_resource type="Script" uid="uid://cjcft2hploaml" path="res://Scripts/Overworld/OverworldManager.gd" id="1_3kbeh"]
+[ext_resource type="TileSet" uid="uid://cubd6u1txsmdg" path="res://Scripts/Overworld/tile_set.tres" id="2_egu4b"]
+[ext_resource type="Texture2D" uid="uid://0a5tn7s4klbj" path="res://Graphics/status_effects_atlas.tres" id="3_qm0rl"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_s71ko"]
+
+[node name="OverworldManager" type="Node2D" unique_id=1598768618]
+script = ExtResource("1_3kbeh")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=159776199]
+tile_map_data = PackedByteArray("AAABAAIAAAAFAAAAAAACAAIAAAABAAAAAAADAAIAAAAFAAAAAAAEAAIAAAABAAAAAAAFAAIAAAAFAAAAAAAFAAMAAAABAAAAAAAGAAQAAAABAAAAAAAFAAQAAAABAAAAAAAEAAUAAAABAAAAAAAEAAQAAAAFAAAAAAADAAUAAAABAAAAAAADAAQAAAABAAAAAAADAAMAAAABAAAAAAAEAAMAAAABAAAAAAAFAAUAAAABAAAAAAAGAAUAAAABAAAAAAAGAAMAAAABAAAAAAAGAAIAAAABAAAAAAAGAAEAAAABAAAAAAAGAAAAAAAFAAAAAAAFAAAAAAABAAAAAAAEAAAAAAABAAAAAAADAAAAAAABAAAAAAACAAAAAAAFAAAAAAABAAAAAAABAAAAAAAAAAAAAAABAAAAAAAAAAEAAAABAAAAAAAAAAIAAAABAAAAAAAAAAMAAAABAAAAAAAAAAQAAAABAAAAAAAAAAUAAAABAAAAAAABAAUAAAABAAAAAAACAAUAAAABAAAAAAACAAQAAAABAAAAAAABAAQAAAABAAAAAAABAAMAAAABAAAAAAACAAMAAAABAAAAAAABAAEAAAABAAAAAAACAAEAAAABAAAAAAADAAEAAAABAAAAAAAEAAEAAAABAAAAAAAFAAEAAAABAAAAAAAHAAIAAAAEAAAAAAAGAP//AAABAAAAAAAFAP//AAABAAAAAAAEAP//AAABAAAAAAADAP//AAABAAAAAAADAP7/AAABAAAAAAACAP//AAABAAAAAAACAP7/AAABAAAAAAABAP//AAABAAAAAAABAP7/AAABAAAAAAAAAP//AAABAAAAAAA=")
+tile_set = ExtResource("2_egu4b")
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1232041659]
+position = Vector2(131, 505)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=146832279]
+shape = SubResource("CircleShape2D_s71ko")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player" unique_id=860919398]
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("3_qm0rl")
+
+[node name="Line2D" type="Line2D" parent="." unique_id=8224215]
+default_color = Color(0, 0.8352941, 0.21568628, 1)

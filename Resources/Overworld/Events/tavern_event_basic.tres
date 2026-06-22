@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="TavernEvent" format=3 uid="uid://dyt171cyqjxau"]
+
+[ext_resource type="Script" uid="uid://02oojmw4uexw" path="res://Resources/Overworld/Events/Base Scripts/TavernEvent.gd" id="1_1x7g1"]
+
+[resource]
+script = ExtResource("1_1x7g1")
+metadata/_custom_type_script = "uid://02oojmw4uexw"
