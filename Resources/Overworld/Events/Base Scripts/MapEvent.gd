@@ -1,0 +1,15 @@
+extends Resource
+class_name MapEvent
+
+enum EventType { COMBAT, TAVERN, SHOP, ENCOUNTER }
+@export var type: EventType
+@export var map_icon: Texture2D
+var visited: bool = false
+var unique_id: int = 0
+
+# Update this for each event to a specific tile/graphic, rn we make it just green
+@export var cleared_tile_coords: Vector2i = Vector2i(1, 0)
+
+func trigger_interaction(player_node: Node) -> void:
+	# Virtual method: overridden by specific sub-classes
+	pass

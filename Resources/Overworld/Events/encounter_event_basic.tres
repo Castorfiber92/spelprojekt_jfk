@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="EncounterEvent" format=3 uid="uid://boevsplf00cv8"]
+
+[ext_resource type="Script" uid="uid://cw1soj6dpglbw" path="res://Resources/Overworld/Events/Base Scripts/EncounterEvent.gd" id="1_hgxsc"]
+
+[resource]
+script = ExtResource("1_hgxsc")
+metadata/_custom_type_script = "uid://cw1soj6dpglbw"

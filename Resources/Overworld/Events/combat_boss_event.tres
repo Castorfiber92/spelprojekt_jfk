@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="CombatBossEvent" format=3 uid="uid://ri52thqt7cm3"]
+
+[ext_resource type="Script" uid="uid://cajgfj8viwptx" path="res://Resources/Overworld/Events/Base Scripts/CombatBossEvent.gd" id="1_ekv0y"]
+
+[resource]
+script = ExtResource("1_ekv0y")
+metadata/_custom_type_script = "uid://cajgfj8viwptx"
