@@ -21,7 +21,14 @@ func play_animation(anim_name: String, anim_duration : float = 0.15) -> void:
 	if anim_name != "idle" and hero.hero_data.sprites and hero.hero_data.sprites.has_animation(anim_name):
 		sprite.texture = hero.hero_data.sprites.get_frame_texture("idle", 0)
 
-func apply_damage_effect() -> Tween:
+func apply_damage_effect(crit : bool) -> Tween:
+	if crit:
+		return VisualEffects.play_critical_hit(sprite)
+
+	VisualEffects.flash_sprite(sprite, Color.FIREBRICK)
+	return VisualEffects.shake_node(sprite)
+
+func apply_damage_effect_old() -> Tween:
 	var shake_intensity = 4.0
 	var shake_duration = 0.05
 	var flash_color = Color(1, 0.3, 0.3) # Soft red

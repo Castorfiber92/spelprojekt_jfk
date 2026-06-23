@@ -44,7 +44,6 @@ func run_combat_loop():
 			continue # Restart the loop for the new round
 			
 		active_slot = next_hero_slot
-		active_slot.highlight_slot()
 		print("Next to act: ", active_slot.hero.hero_data.name)
 		
 		# Linear execution: Code completely pauses here until the turn and all cascades finish
