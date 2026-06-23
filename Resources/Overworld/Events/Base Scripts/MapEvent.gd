@@ -1,9 +1,8 @@
 extends Resource
 class_name MapEvent
 
-enum EventType { COMBAT, TAVERN, SHOP, ENCOUNTER }
+enum EventType { COMBAT, TAVERN, SHOP, ENCOUNTER, BOSS }
 @export var type: EventType
-@export var map_icon: Texture2D
 var visited: bool = false
 var unique_id: int = 0
 

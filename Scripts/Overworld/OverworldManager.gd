@@ -36,6 +36,8 @@ var map_events: Dictionary = {}
 var current_preview_cells: Array[Vector2i] = []
 var last_hovered_cell: Vector2i = Vector2i(-999, -999)
 
+var event_icons = {}
+
 func _ready() -> void:
 	generate_map_events()
 	initialize_navigation_grid()
@@ -66,7 +68,21 @@ func initialize_navigation_grid() -> void:
 			if neighbor in active_cells:
 				var neighbor_id = get_cell_id(neighbor)
 				astar.connect_points(current_id, neighbor_id, true) # Always connect
-
+				
+	for cell in active_cells:
+		if map_events.has(cell):
+			var event: MapEvent = map_events[cell]
+			var icon = TextureRect.new()
+			tile_map_layer.add_child(icon)
+			var fallback_string = event.EventType.keys()[event.type] 
+			icon.texture = Ui.get_overworld_event_texture(str(fallback_string))
+			# Get the pixel coordinate of the center of the tile
+			var tile_center = tile_map_layer.map_to_local(cell)
+			icon.scale = Vector2(0.5, 0.5)
+			# Offset by 1/4 the icon size to center it
+			var icon_size = icon.texture.get_size()
+			icon.position = tile_center - (icon_size / 4.0)
+			event_icons[cell] = icon
 
 func snap_player_to_start() -> void:
 	var current_cell = tile_map_layer.local_to_map(player.global_position)
@@ -155,7 +171,7 @@ func move_to_next_hex() -> void:
 		# Every time the player completes a step onto a hex, increment the counter
 		# Preloads.total_steps_taken += 1, this counter is not yet implemented. Leave it for later 
 		# if we want it.
-		print("Total steps taken this game: ", Preloads.total_steps_taken)
+		print("Total steps taken this game: ")
 		# ---------------------------------
 		if map_events.has(next_cell):
 			var event: MapEvent = map_events[next_cell]
@@ -164,12 +180,12 @@ func move_to_next_hex() -> void:
 			# If the event has already been visited, DO NOT trigger it again!
 			# Simply allow the player to pass through seamlessly like normal grass.
 			if not event.visited:
-				# Trigger the custom print statement/logic (sets visited = true)
+				# Trigger the custom logic (sets visited = true)
 				event.trigger_interaction(player)
 				
-				# Swap the visual tile to your grass/empty cell graphic
-				var source_id = tile_map_layer.get_cell_source_id(next_cell)
-				tile_map_layer.set_cell(next_cell, source_id, event.cleared_tile_coords)
+				# remove the event icon
+				event_icons[next_cell].queue_free()
+				event_icons.erase(next_cell)
 				
 				# Force a full stop at the interaction center
 				current_path.clear()

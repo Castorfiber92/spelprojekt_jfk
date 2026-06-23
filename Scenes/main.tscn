@@ -22,8 +22,8 @@ limit_right = 1920
 limit_bottom = 1080
 
 [node name="CombatManager" parent="." unique_id=442684704 instance=ExtResource("2_bo1nx")]
-player_heroes = Array[ExtResource("3_kry3j")]([ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j")])
-enemy_heroes = Array[ExtResource("3_kry3j")]([ExtResource("5_ynf5e"), ExtResource("4_21xkr"), ExtResource("7_hptm8"), ExtResource("8_d1ilt"), ExtResource("5_ynf5e")])
+player_heroes = Array[ExtResource("3_kry3j")]([ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j")])
+enemy_heroes = Array[ExtResource("3_kry3j")]([ExtResource("5_ynf5e"), ExtResource("4_21xkr"), ExtResource("7_hptm8"), ExtResource("8_d1ilt")])
 
 [node name="Editor Scripts" type="Node" parent="." unique_id=1893187848]
 script = ExtResource("3_8gbba")
