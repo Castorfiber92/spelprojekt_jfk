@@ -27,3 +27,16 @@ texture = ExtResource("3_qm0rl")
 
 [node name="Line2D" type="Line2D" parent="." unique_id=8224215]
 default_color = Color(0, 0.8352941, 0.21568628, 1)
+
+[node name="Border" type="CanvasLayer" parent="." unique_id=1003660239]
+
+[node name="Panel" type="NinePatchRect" parent="Border" unique_id=2009822481]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+patch_margin_left = 250
+patch_margin_top = 250
+patch_margin_right = 250
+patch_margin_bottom = 250

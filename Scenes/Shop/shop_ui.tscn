@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://dcp20p3kjujv1"]
+
+[ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="1_f7vp0"]
+[ext_resource type="PackedScene" uid="uid://ca32g1ss1dich" path="res://Scenes/Shop/shop_slot.tscn" id="2_f7vp0"]
+
+[node name="ShopUI" type="Control" unique_id=1507633235]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Background" type="TextureRect" parent="." unique_id=1378101406]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = 960.0
+offset_bottom = 540.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_f7vp0")
+
+[node name="Layout" type="VBoxContainer" parent="." unique_id=3138481]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -590.0
+offset_top = -350.0
+offset_right = 590.0
+offset_bottom = 350.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="TeamSlots" type="HBoxContainer" parent="Layout" unique_id=179086374]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ShopSlot" parent="Layout/TeamSlots" unique_id=2010550177 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot2" parent="Layout/TeamSlots" unique_id=247882473 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot3" parent="Layout/TeamSlots" unique_id=331909562 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot4" parent="Layout/TeamSlots" unique_id=869407270 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Layout" unique_id=594853369]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ShopSlots" type="HBoxContainer" parent="Layout" unique_id=380873497]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ShopSlot" parent="Layout/ShopSlots" unique_id=600672640 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot2" parent="Layout/ShopSlots" unique_id=1462611166 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot3" parent="Layout/ShopSlots" unique_id=434412830 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="ShopSlot4" parent="Layout/ShopSlots" unique_id=1627124843 instance=ExtResource("2_f7vp0")]
+layout_mode = 2
+
+[node name="RollButton" type="Button" parent="." unique_id=716843288]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 166.0
+offset_top = -16.474976
+offset_right = 316.0
+offset_bottom = 31.525024
+grow_vertical = 2
+offset_transform_position = Vector2(10.945, 0)
+theme_override_font_sizes/font_size = 30
+text = "Reroll"
