@@ -1,9 +1,6 @@
-extends Resource
+extends PurchaseableData
 class_name HeroData
 
-@export var name : String
-@export var description : String
-@export var sprites : SpriteFrames
 @export var tribe : Enums.Tribe
 @export_range(10,50) var base_HP : int
 @export_range(1,10) var base_damage : int

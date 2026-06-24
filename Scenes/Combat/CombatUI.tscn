@@ -7,8 +7,8 @@
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_4u6w4")
-player_party = NodePath("Player Heroes")
-enemy_party = NodePath("Enemy Heroes")
+player_party = NodePath("Background/VBoxContainer/Player Heroes")
+enemy_party = NodePath("Background/VBoxContainer/Enemy Heroes")
 phase_ui = NodePath("PhaseUI (temp)")
 metadata/_edit_use_anchors_ = true
 
@@ -18,20 +18,30 @@ offset_right = 1920.0
 offset_bottom = 1080.0
 texture = ExtResource("2_4w7j2")
 
-[node name="Player Heroes" type="HBoxContainer" parent="." unique_id=252388779]
-layout_mode = 0
-offset_left = 135.0
-offset_top = 170.0
-offset_right = 1785.0
-offset_bottom = 440.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Background" unique_id=26232241]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Player Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=252388779]
+layout_mode = 2
 theme_override_constants/separation = 75
 
-[node name="Enemy Heroes" type="HBoxContainer" parent="." unique_id=225338066]
-layout_mode = 0
-offset_left = 143.0
-offset_top = 675.0
-offset_right = 1793.0
-offset_bottom = 945.0
+[node name="Control" type="Control" parent="Background/VBoxContainer" unique_id=100819839]
+layout_mode = 2
+
+[node name="Enemy Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=225338066]
+layout_mode = 2
 theme_override_constants/separation = 75
 
 [node name="PhaseUI (temp)" type="Label" parent="." unique_id=1133332302]
