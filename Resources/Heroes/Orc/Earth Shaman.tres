@@ -6,10 +6,10 @@
 
 [resource]
 script = ExtResource("3_i8utn")
-name = "Earth Shaman"
 tribe = 1
 base_HP = 22
 base_damage = 3
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_r40d3")
+name = "Earth Shaman"

@@ -7,12 +7,12 @@
 
 [resource]
 script = ExtResource("3_62lhn")
-name = "Mushroom Gobbler"
-description = "Eat mushrooms on turn start, gaining random buffs, damage, speed, range"
-sprites = ExtResource("4_njnkk")
 tribe = 3
 base_HP = 35
 base_damage = 4
 base_speed = 70
 base_range = 1
 base_action = ExtResource("2_njnkk")
+name = "Mushroom Gobbler"
+description = "Eat mushrooms on turn start, gaining random buffs, damage, speed, range"
+sprites = ExtResource("4_njnkk")

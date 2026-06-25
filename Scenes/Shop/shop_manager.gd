@@ -5,6 +5,7 @@ var party_slots: Array[ShopSlot] = []
 var shop_slots: Array[ShopSlot] = []
 @export var shop_ui : ShopUi
 @export var max_party_size: int = 4
+@export var max_shop_size: int = 5
 
 var selected_slot: ShopSlot = null
 enum ShopPhase { IDLE, TRANSACTION, ROLLING, CLEANUP }
@@ -25,14 +26,16 @@ func initialize_slots():
 		var party_slot: ShopSlot = Preloads.shop_slot.instantiate()
 		party_slot.shop_manager = self
 		party_slot.slot_number = i + 1 # Assigns 1-based index mapping for transactions
-		
-		# Add to the UI Scene Tree container
 		shop_ui.party_slots.add_child(party_slot)
-		
-		# Track it inside your manager's structural array
 		party_slots.append(party_slot)
 		
-	# 4. Now that the containers exist, cleanly push your run data into them
+	for i in range(max_party_size):
+		var shop_slot: ShopSlot = Preloads.shop_slot.instantiate()
+		shop_slot.shop_manager = self
+		shop_slot.slot_number = i + 1
+		shop_ui.shop_slots.add_child(shop_slot)
+		shop_slots.append(shop_slot)
+
 	update_shop_UI()
 
 func select_slot(slot: ShopSlot) -> void:
@@ -141,12 +144,12 @@ func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) ->
 	var target_index = target.slot_number - 1
 	
 	# Ensure backend data array is large enough to prevent index out of bounds
-	if PlayerData.playerParty.size() < party_slots.size():
-		PlayerData.playerParty.resize(party_slots.size())
+	if PlayerData.player_party.size() < party_slots.size():
+		PlayerData.player_party.resize(party_slots.size())
 	
 	# 1. Merge Check
 	if not target.slot_is_empty and target.slot_item is HeroData:
-		var target_hero: HeroData = PlayerData.playerParty[target_index]
+		var target_hero: HeroData = PlayerData.player_party[target_index]
 		
 		if target_hero.can_merge_with(hero):
 			PlayerData.deduct_cost(hero.cost)
@@ -164,7 +167,7 @@ func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) ->
 		
 		# Assign the new instance to the player
 		var hero_instance: HeroData = hero.duplicate() 
-		PlayerData.playerParty[target_index] = hero_instance
+		PlayerData.player_party[target_index] = hero_instance
 		
 		shop.clear_slot()
 		update_shop_UI()
@@ -180,7 +183,7 @@ func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) ->
 		
 		# Assign the new instance to the player
 		var hero_instance: HeroData = hero.duplicate() 
-		PlayerData.playerParty[target_index] = hero_instance
+		PlayerData.player_party[target_index] = hero_instance
 		
 		update_shop_UI()
 	else:
@@ -189,12 +192,12 @@ func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) ->
 func shift_party_slots(target_idx: int, empty_idx: int) -> void:
 	if target_idx < empty_idx:
 		for i in range(empty_idx, target_idx, -1):
-			PlayerData.playerParty[i] = PlayerData.playerParty[i-1]
+			PlayerData.player_party[i] = PlayerData.player_party[i-1]
 	else:
 		for i in range(empty_idx, target_idx):
-			PlayerData.playerParty[i] = PlayerData.playerParty[i+1]
+			PlayerData.player_party[i] = PlayerData.player_party[i+1]
 			
-	PlayerData.playerParty[target_idx] = null
+	PlayerData.player_party[target_idx] = null
 
 func find_nearest_empty_slot(start_idx: int) -> int:
 	for i in range(start_idx, party_slots.size()):
@@ -205,7 +208,10 @@ func find_nearest_empty_slot(start_idx: int) -> int:
 
 func update_shop_UI() -> void:
 	for i in range(party_slots.size()):
-		if i < PlayerData.playerParty.size() and PlayerData.playerParty[i] != null:
-			party_slots[i].display_item(PlayerData.playerParty[i])
+		if i < PlayerData.player_party.size() and PlayerData.player_party[i] != null:
+			party_slots[i].display_item(PlayerData.player_party[i])
 		else:
 			party_slots[i].clear_slot()
+	for i in range(shop_slots.size()):
+		if shop_slots[i].slot_is_empty:
+			shop_slots[i].clear_slot()

@@ -6,10 +6,10 @@
 
 [resource]
 script = ExtResource("3_2nd7a")
-name = "Skeleton King"
 tribe = 2
 base_HP = 30
 base_damage = 4
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_vyk64")
+name = "Skeleton King"

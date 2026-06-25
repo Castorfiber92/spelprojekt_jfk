@@ -6,10 +6,10 @@
 
 [resource]
 script = ExtResource("3_hseww")
-name = "Troll Ranger"
 tribe = 1
 base_HP = 20
 base_damage = 6
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_tbtsd")
+name = "Troll Ranger"

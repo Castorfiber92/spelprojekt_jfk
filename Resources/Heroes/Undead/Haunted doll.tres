@@ -7,11 +7,11 @@
 
 [resource]
 script = ExtResource("3_nmtje")
-name = "Haunted doll"
-sprites = ExtResource("4_jcy6g")
 tribe = 2
 base_HP = 50
 base_damage = 1
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_xdik6")
+name = "Haunted doll"
+sprites = ExtResource("4_jcy6g")

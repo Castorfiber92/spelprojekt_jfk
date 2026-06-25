@@ -64,9 +64,10 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_top = -52.0
-offset_right = 155.0
-offset_bottom = 52.0
+offset_left = 150.0
+offset_top = -74.0
+offset_right = 305.0
+offset_bottom = 74.0
 grow_vertical = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(150, 0)
@@ -74,7 +75,8 @@ theme_override_constants/separation = 24
 
 [node name="SellButton" type="Button" parent="HBoxContainer" unique_id=652109427]
 layout_mode = 2
-offset_transform_position = Vector2(10.945, 0)
+offset_transform_enabled = true
+offset_transform_position = Vector2(-150, 0)
 theme_override_font_sizes/font_size = 30
 text = "Sell
 "
@@ -85,6 +87,7 @@ layout_mode = 2
 
 [node name="RollButton" type="Button" parent="HBoxContainer" unique_id=716843288]
 layout_mode = 2
-offset_transform_position = Vector2(10.945, 0)
+offset_transform_enabled = true
+offset_transform_position = Vector2(-150, 0)
 theme_override_font_sizes/font_size = 30
 text = "Reroll"
