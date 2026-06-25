@@ -7,10 +7,11 @@
 
 [resource]
 script = ExtResource("3_fkkd5")
-name = "Mr Rabbit Monk"
-sprites = ExtResource("4_27v6b")
+is_legendary_eligible = true
 base_HP = 20
 base_damage = 5
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_iml85")
+name = "Mr Rabbit Monk"
+sprites = ExtResource("4_27v6b")

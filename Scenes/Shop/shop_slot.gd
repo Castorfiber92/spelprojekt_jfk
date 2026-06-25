@@ -9,6 +9,7 @@ class_name ShopSlot
 @export var sprite : TextureRect
 
 var slot_item: PurchaseableData = null
+var slot_number : int
 var shop_manager: Node = null 
 
 var slot_is_empty: bool:

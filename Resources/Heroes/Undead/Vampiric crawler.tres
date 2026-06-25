@@ -7,11 +7,11 @@
 
 [resource]
 script = ExtResource("3_7bsb2")
-name = "Vampiric crawler"
-sprites = ExtResource("4_wu58y")
 tribe = 2
 base_HP = 35
 base_damage = 3
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_mmj3p")
+name = "Vampiric crawler"
+sprites = ExtResource("4_wu58y")

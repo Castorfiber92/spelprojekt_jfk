@@ -15,6 +15,47 @@ extends Node
 @export var google_sheet_gid: String = "0"
 @export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive
 
+@export_group("Developer Utilities")
+@export_tool_button("Export Valid Behaviors List", "Callable") var export_behaviors_action = export_valid_behaviors_list
+
+func export_valid_behaviors_list():
+	if not Engine.is_editor_hint(): return
+	
+	print("Hero Importer: Scanning files for behavior filenames...")
+	var all_files: Array[String] = []
+	_get_all_files_on_disk("res://", all_files)
+	
+	var valid_filenames: Array[String] = []
+	
+	# Scan all files to find actual Behavior resources
+	for path in all_files:
+		if path.ends_with(".tres"):
+			var loaded_res = load(path)
+			
+			# Ensure it is a behavior script before tracking its filename
+			if loaded_res is Behavior:
+				# Get the exact filename without the path (e.g., "res://Behaviors/bash(broom_basher).tres" -> "bash(broom_basher).tres")
+				var file_name_with_ext = path.get_file()
+				# Remove the ".tres" extension to get the raw string expected by the CSV
+				var raw_filename = file_name_with_ext.replace(".tres", "").strip_edges()
+				
+				if raw_filename != "" and not valid_filenames.has(raw_filename):
+					valid_filenames.append(raw_filename)
+					
+	valid_filenames.sort() # Sort alphabetically for easy spreadsheet management
+	
+	# Save this out as a plain text file in your project directory
+	var output_path = "res://valid_behaviors_list.txt"
+	var file = FileAccess.open(output_path, FileAccess.WRITE)
+	
+	if file:
+		for f_name in valid_filenames:
+			file.store_line(f_name)
+		file.close()
+		print("--- Exported %d valid behavior filenames to %s ---" % [valid_filenames.size(), output_path])
+	else:
+		printerr("Failed to write behavior list file.")
+
 func generate_heroes():
 	# If we are not currently inside the editor, i.e. the game is running, do nothing
 	if not Engine.is_editor_hint():
@@ -39,7 +80,7 @@ func generate_heroes():
 		var row = file.get_csv_line()
 		# Skip rows that are empty or do not have enough columns
 		# - keep this updated accordingly to how many values we have in the CSV
-		if row.size() < 9: 
+		if row.size() < 10: 
 			continue 
 		
 		# Declare which row is which data
@@ -50,12 +91,13 @@ func generate_heroes():
 		var h_description   = row[1].strip_edges()
 		var tribe_string = row[2].strip_edges().to_lower()
 		var h_tribe = Enums.Tribe_MAP.get(tribe_string, Enums.Tribe.CRITTER) # Default to Critter if not found
-		var h_hp     = int(row[3])
-		var h_dmg    = int(row[4])
-		var h_spd    = int(row[5])
-		var h_rng    = int(row[6])
-		var act_name = row[7].strip_edges()
-		var abl_list = row[8].strip_edges()
+		var h_legendary = row[3].strip_edges().to_lower() == "true"
+		var h_hp     = int(row[4])
+		var h_dmg    = int(row[5])
+		var h_spd    = int(row[6])
+		var h_rng    = int(row[7])
+		var act_name = row[8].strip_edges()
+		var abl_list = row[9].strip_edges()
 		
 		# Build the subfolder path based on the tribe name
 		# capitalize() turns "orc" into "Orc" for the folder name
@@ -76,6 +118,8 @@ func generate_heroes():
 		res.name = h_name
 		res.description = h_description
 		res.tribe = h_tribe
+		res.is_legendary_eligible = h_legendary
+		res.current_tier = HeroData.HeroTier.BRONZE
 		res.base_HP = clampi(h_hp, 10, 50)
 		res.base_damage = clampi(h_dmg, 1, 10)
 		res.base_speed = clampi(h_spd, 1, 100)
@@ -87,7 +131,8 @@ func generate_heroes():
 		# Find Array of Abilities, we clear it so we don't add multiple instances of same abilities
 		# However, keep in mind this means that the array of abilities will always be overwrited
 		# When we use this tool
-		res.abilities.clear()
+		var fresh_abilities: Array[Behavior] = [] # Hard-force a brand new mutable memory allocation
+		
 		# If the strings here are empty, there is simply no abilities
 		if abl_list != "":
 			# We separate the abilities by comma in the CSV
@@ -96,11 +141,21 @@ func generate_heroes():
 				var behavior = find_behavior_globally(a_name.strip_edges())
 				if behavior:
 					# If we find the behavior, add it to the resource
-					res.abilities.append(behavior)
+					fresh_abilities.append(behavior)
 					
-		# Check if a matching sprite file already exists using your helper
-		var sprite_filename = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
-		var sprite_path = _find_file_in_cache(root, sprite_filename) # 'root' comes from efs.get_filesystem()
+		res.abilities = fresh_abilities # Assign the completely independent array to the resource
+					
+		# Check if a matching sprite file already exists using a safe disk scan
+		var sprite_filename: String = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
+		var sprite_path: String = ""
+		
+		var all_files: Array[String] = []
+		_get_all_files_on_disk("res://", all_files)
+		
+		for path in all_files:
+			if path.ends_with(".tres") and path.get_file().strip_edges().to_lower() == sprite_filename:
+				sprite_path = path
+				break
 		
 		if sprite_path != "":
 			res.sprites = load(sprite_path) as SpriteFrames
@@ -114,30 +169,26 @@ func generate_heroes():
 	print("--- Import Task Finished ---")
 
 func link_sprites_to_heroes():
-	# Check that we are not running the game
 	if not Engine.is_editor_hint():
 		return
 	
-	# Pre-scan the filesystem to ensure Godot's cache is up to date
 	print("Hero Importer: Starting Sprite Linking Task...")
 	EditorInterface.get_resource_filesystem().scan()
 	
-	var efs = EditorInterface.get_resource_filesystem()
-	var root = efs.get_filesystem()
-	
-	# Open the CSV file to find which heroes we need to look for
 	if csv_path == "" or not FileAccess.file_exists(csv_path):
 		printerr("Hero Importer: Invalid CSV path for sprite linking!")
 		return
 		
 	var file = FileAccess.open(csv_path, FileAccess.READ)
 	var _headers = file.get_csv_line() 
-	var base_graphics_dir = "res://Graphics/Hero Sprites/"
 	var updated_count = 0
+	
+	var all_files: Array[String] = []
+	_get_all_files_on_disk("res://", all_files)
 	
 	while not file.eof_reached():
 		var row = file.get_csv_line()
-		if row.size() < 3: continue # Need at least name and tribe to build the path
+		if row.size() < 3: continue 
 		
 		var h_name = row[0].strip_edges()
 		if h_name == "": continue
@@ -145,18 +196,20 @@ func link_sprites_to_heroes():
 		var tribe_string = row[2].strip_edges().to_lower()
 		var tribe_folder_name = tribe_string.capitalize()
 		
-		# Build the exact path where this hero's .tres resource lives
 		var hero_file_path = output_dir.path_join(tribe_folder_name).path_join(h_name.validate_filename() + ".tres")
 		var sprite_filename = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
-		var expected_sprite_path = base_graphics_dir.path_join(tribe_folder_name).path_join(sprite_filename)
 		
-		# Only proceed if the hero data resource actually exists
 		if FileAccess.file_exists(hero_file_path):
 			var res: HeroData = load(hero_file_path)
+			var sprite_path: String = ""
 			
-			# Check if the sprite file actually exists in that specific tribe folder
-			if FileAccess.file_exists(expected_sprite_path):
-				var sprite_res = load(expected_sprite_path) as SpriteFrames
+			for path in all_files:
+				if path.ends_with(".tres") and path.get_file().strip_edges().to_lower() == sprite_filename:
+					sprite_path = path
+					break
+			
+			if sprite_path != "":
+				var sprite_res = load(sprite_path) as SpriteFrames
 				
 				if res.sprites != sprite_res:
 					res.sprites = sprite_res
@@ -164,39 +217,42 @@ func link_sprites_to_heroes():
 					print("Linked sprite to existing hero: ", h_name)
 					updated_count += 1
 			else:
-				print("Hero Importer: No sprite asset found at: ", expected_sprite_path)
+				print("Hero Importer: No sprite asset found at: ", sprite_filename)
 				
 	file.close()
 	print("--- Sprite Linking Finished ---")
 
 
-## Uses Godot's internal FileSystem cache to find resources by name instantly
 func find_behavior_globally(behavior_name: String) -> Behavior:
-	if behavior_name == "": return null
+	var cleaned_name: String = behavior_name.strip_edges().to_lower()
+	if cleaned_name == "": return null
 	
-	var efs = EditorInterface.get_resource_filesystem()
-	var root = efs.get_filesystem()
-	var found_path = _find_file_in_cache(root, behavior_name + ".tres")
+	var target_filename: String = cleaned_name + ".tres"
+	var all_resources: Array[String] = []
 	
-	if found_path != "":
-		return load(found_path) as Behavior if found_path != "" else null 
+	# Fetch all project resource paths via a safe, low-level disk check
+	_get_all_files_on_disk("res://", all_resources)
 	
-	printerr("Could not find Behavior resource: ", behavior_name)
+	for path in all_resources:
+		if path.ends_with(".tres") and path.get_file().strip_edges().to_lower() == target_filename:
+			return load(path) as Behavior
+			
+	printerr("Could not find Behavior resource: '", behavior_name, "'")
 	return null
 
-## Recursive search through Godot's cached EditorFileSystem (Fast)
-func _find_file_in_cache(dir: EditorFileSystemDirectory, target_file: String) -> String:
-	# Check files in current cached directory
-	for i in dir.get_file_count():
-		if dir.get_file(i).to_lower() == target_file.to_lower():
-			return dir.get_file_path(i)
-	
-	# Check subdirectories
-	for i in dir.get_subdir_count():
-		var path = _find_file_in_cache(dir.get_subdir(i), target_file)
-		if path != "": return path
-		
-	return ""
+func _get_all_files_on_disk(path: String, file_list: Array[String]) -> void:
+	var dir = DirAccess.open(path)
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if dir.current_is_dir():
+				if not file_name.begins_with("."): # Skip hidden folders like .godot
+					_get_all_files_on_disk(path.path_join(file_name), file_list)
+			else:
+				file_list.append(path.path_join(file_name))
+			file_name = dir.get_next()
+		dir.list_dir_end()
 
 func download_csv_from_drive():
 	if google_sheet_id == "":

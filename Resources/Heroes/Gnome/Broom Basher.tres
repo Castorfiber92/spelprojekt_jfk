@@ -8,9 +8,6 @@
 
 [resource]
 script = ExtResource("3_c8e0x")
-name = "Broom Basher"
-description = "Wields a broom, chance to stun on attack."
-sprites = ExtResource("4_l7nqu")
 tribe = 3
 base_HP = 20
 base_damage = 2
@@ -18,3 +15,6 @@ base_speed = 80
 base_range = 3
 base_action = ExtResource("2_l7nqu")
 abilities = Array[ExtResource("1_iwv0j")]([ExtResource("2_c8e0x")])
+name = "Broom Basher"
+description = "Wields a broom, chance to stun on attack."
+sprites = ExtResource("4_l7nqu")
