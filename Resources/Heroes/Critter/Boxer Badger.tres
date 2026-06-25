@@ -3,14 +3,12 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_q2j2b"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_8cupc"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_yomkm"]
-[ext_resource type="SpriteFrames" uid="uid://grbii4cwfivh" path="res://Graphics/Hero Sprites/Critter/boxer_badger_sprites.tres" id="4_808vy"]
 
 [resource]
 script = ExtResource("3_yomkm")
-name = "Boxer Badger"
-sprites = ExtResource("4_808vy")
 base_HP = 40
 base_damage = 4
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_8cupc")
+name = "Boxer Badger"

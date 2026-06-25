@@ -1,15 +1,21 @@
 [gd_scene format=3 uid="uid://dcp20p3kjujv1"]
 
+[ext_resource type="Script" uid="uid://d33kp7oxmigdi" path="res://Scenes/Shop/shop_ui.gd" id="1_bp8o4"]
 [ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="1_f7vp0"]
-[ext_resource type="PackedScene" uid="uid://ca32g1ss1dich" path="res://Scenes/Shop/shop_slot.tscn" id="2_f7vp0"]
+[ext_resource type="Script" uid="uid://d1ejsasqsb4gm" path="res://Scenes/Shop/sell_button.gd" id="3_bp8o4"]
 
-[node name="ShopUI" type="Control" unique_id=1507633235]
+[node name="ShopUI" type="Control" unique_id=1507633235 node_paths=PackedStringArray("party_slots", "shop_slots", "sell_button", "roll_button")]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("1_bp8o4")
+party_slots = NodePath("Layout/PartySlots")
+shop_slots = NodePath("Layout/ShopSlots")
+sell_button = NodePath("HBoxContainer/SellButton")
+roll_button = NodePath("HBoxContainer/RollButton")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1378101406]
 layout_mode = 1
@@ -41,21 +47,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 24
 
-[node name="TeamSlots" type="HBoxContainer" parent="Layout" unique_id=179086374]
+[node name="PartySlots" type="HBoxContainer" parent="Layout" unique_id=179086374]
 layout_mode = 2
 theme_override_constants/separation = 20
-
-[node name="ShopSlot" parent="Layout/TeamSlots" unique_id=2010550177 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot2" parent="Layout/TeamSlots" unique_id=247882473 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot3" parent="Layout/TeamSlots" unique_id=331909562 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot4" parent="Layout/TeamSlots" unique_id=869407270 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
 
 [node name="Control" type="Control" parent="Layout" unique_id=594853369]
 layout_mode = 2
@@ -65,28 +59,32 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="ShopSlot" parent="Layout/ShopSlots" unique_id=600672640 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot2" parent="Layout/ShopSlots" unique_id=1462611166 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot3" parent="Layout/ShopSlots" unique_id=434412830 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="ShopSlot4" parent="Layout/ShopSlots" unique_id=1627124843 instance=ExtResource("2_f7vp0")]
-layout_mode = 2
-
-[node name="RollButton" type="Button" parent="." unique_id=716843288]
+[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=1418839775]
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 166.0
-offset_top = -16.474976
-offset_right = 316.0
-offset_bottom = 31.525024
+offset_top = -52.0
+offset_right = 155.0
+offset_bottom = 52.0
 grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(150, 0)
+theme_override_constants/separation = 24
+
+[node name="SellButton" type="Button" parent="HBoxContainer" unique_id=652109427]
+layout_mode = 2
+offset_transform_position = Vector2(10.945, 0)
+theme_override_font_sizes/font_size = 30
+text = "Sell
+"
+script = ExtResource("3_bp8o4")
+
+[node name="Control" type="Control" parent="HBoxContainer" unique_id=1348686343]
+layout_mode = 2
+
+[node name="RollButton" type="Button" parent="HBoxContainer" unique_id=716843288]
+layout_mode = 2
 offset_transform_position = Vector2(10.945, 0)
 theme_override_font_sizes/font_size = 30
 text = "Reroll"

@@ -1,29 +1,45 @@
 extends Control
 class_name ShopSlot
 
-# This can hold HeroData OR ItemData seamlessly!
+@export var UI : Control
+@export var hp_label : Label
+@export var lvl_label : Label
+@export var dmg_label : Label
+@export var cost_label : Label
+@export var sprite : TextureRect
+
 var slot_item: PurchaseableData = null
-var is_frozen: bool = false
+var shop_manager: Node = null 
 
 var slot_is_empty: bool:
 	get: return slot_item == null
 
+func _gui_input(event: InputEvent) -> void:
+	# Check if the player left-clicked the card
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		# If a manager was successfully injected, pass the execution to the command center
+		if shop_manager and shop_manager.has_method("handle_slot_clicked"):
+			shop_manager.handle_slot_clicked(self)
+
 func display_item(new_item: PurchaseableData) -> void:
 	slot_item = new_item
 	if slot_item:
-		$UI.visible = true
-		$UI/CostLabel.text = str(slot_item.current_cost)
-		$UI/Icon.texture = slot_item.texture
+		UI.visible = true
+		cost_label.text = str(slot_item.cost)
+		sprite.texture = slot_item.texture
+		if slot_item is HeroData:
+			dmg_label.text = str(slot_item.base_damage)
+			hp_label.text = str(slot_item.base_HP)
+			#lvl_label.text = str(slot_item.level)
 	else:
 		clear_slot()
 
 func clear_slot() -> void:
 	slot_item = null
-	$UI.visible = false
-	is_frozen = false
+	UI.visible = false
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if slot_is_empty or is_frozen:
+	if slot_is_empty:
 		return null
 		
 	# Create a tiny visual preview sprite so the user sees what they are dragging

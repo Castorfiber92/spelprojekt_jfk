@@ -14,7 +14,7 @@ texture = ExtResource("2_eiwfq")
 atlas = ExtResource("3_beyo3")
 region = Rect2(313, 83, 176, 171)
 
-[node name="ShopSlot" type="PanelContainer" unique_id=2010550177]
+[node name="ShopSlot" type="PanelContainer" unique_id=2010550177 node_paths=PackedStringArray("UI", "hp_label", "lvl_label", "dmg_label", "cost_label", "sprite")]
 custom_minimum_size = Vector2(280, 300)
 custom_maximum_size = Vector2(280, 300)
 anchors_preset = 15
@@ -25,6 +25,12 @@ offset_bottom = -780.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_edeb2")
+UI = NodePath("Layout")
+hp_label = NodePath("Layout/Header/HPPanel/HP")
+lvl_label = NodePath("Layout/Header/LVLPanel/LEVEL")
+dmg_label = NodePath("Layout/Header/DMGPanel/DAMAGE")
+cost_label = NodePath("Layout/Footer/PanelContainer2/COST")
+sprite = NodePath("Layout/Control/Sprite")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1177979296]
 layout_mode = 2

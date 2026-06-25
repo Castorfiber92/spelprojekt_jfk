@@ -257,7 +257,7 @@ func set_hero(slot : HeroSlot, hero : Hero):
 	hero.has_died.connect(remove_hero.bind(slot))
 
 func load_player_party():
-	for i in range(player_heroes.size()):
+	for i in range(PlayerData.player_party.size()):
 		var slot : HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
 		##Add it to the UI
@@ -265,7 +265,7 @@ func load_player_party():
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = player_heroes[i].duplicate(true) 
+		hero.hero_data = PlayerData.player_party[i]
 		hero.initialize_data()
 		##Assign the team to Player Array
 		player_slots.append(slot)
