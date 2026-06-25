@@ -3,7 +3,8 @@
 [ext_resource type="Script" uid="uid://dh8n05uldg73t" path="res://Scenes/Shop/shop_manager.gd" id="1_f6wyd"]
 [ext_resource type="PackedScene" uid="uid://dcp20p3kjujv1" path="res://Scenes/Shop/shop_ui.tscn" id="2_f6wyd"]
 
-[node name="ShopManager" type="Node2D" unique_id=444146640]
+[node name="ShopManager" type="Node2D" unique_id=444146640 node_paths=PackedStringArray("shop_ui")]
 script = ExtResource("1_f6wyd")
+shop_ui = NodePath("ShopUI")
 
 [node name="ShopUI" parent="." unique_id=1507633235 instance=ExtResource("2_f6wyd")]
