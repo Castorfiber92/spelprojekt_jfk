@@ -1,53 +1,80 @@
 [gd_scene format=3 uid="uid://4o0e327hk6p2"]
 
 [ext_resource type="Script" uid="uid://c07ekn2q4ouo3" path="res://Scripts/Combat/CombatUI.gd" id="1_4u6w4"]
-[ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="2_4w7j2"]
+[ext_resource type="Theme" uid="uid://bkb6jlinoq2gx" path="res://Graphics/UI/basic_ui_theme.tres" id="2_38u0h"]
 
-[node name="CombatUI" type="Control" unique_id=903688084 node_paths=PackedStringArray("player_party", "enemy_party", "phase_ui")]
-layout_mode = 3
-anchors_preset = 0
+[node name="CombatUI" type="Container" unique_id=1523996303 node_paths=PackedStringArray("player_party", "enemy_party", "phase_ui")]
+custom_minimum_size = Vector2(1920, 1080)
 script = ExtResource("1_4u6w4")
 player_party = NodePath("Background/VBoxContainer/Player Heroes")
 enemy_party = NodePath("Background/VBoxContainer/Enemy Heroes")
 phase_ui = NodePath("PhaseUI (temp)")
 metadata/_edit_use_anchors_ = true
 
-[node name="Background" type="TextureRect" parent="." unique_id=783514910]
-layout_mode = 0
-offset_right = 1920.0
-offset_bottom = 1080.0
-texture = ExtResource("2_4w7j2")
+[node name="Background" type="PanelContainer" parent="." unique_id=800377825]
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 2
+theme = ExtResource("2_38u0h")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Background" unique_id=26232241]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="VBoxContainer" type="HBoxContainer" parent="Background" unique_id=133068845]
+custom_maximum_size = Vector2(1920, 1080)
+layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Player Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=252388779]
+[node name="Control3" type="Control" parent="Background/VBoxContainer" unique_id=800463048]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Player Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=1502563938]
+layout_mode = 2
+theme_override_constants/separation = 75
+
+[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/Player Heroes" unique_id=1861601472]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
+[node name="Control" type="Control" parent="Background/VBoxContainer/Player Heroes" unique_id=1152117207]
+visible = false
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/Player Heroes" unique_id=2125787234]
+layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 75
 
 [node name="Control" type="Control" parent="Background/VBoxContainer" unique_id=100819839]
 layout_mode = 2
+size_flags_horizontal = 6
 
-[node name="Enemy Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=225338066]
+[node name="Enemy Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=6382003]
 layout_mode = 2
 theme_override_constants/separation = 75
 
+[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/Enemy Heroes" unique_id=791122854]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
+[node name="Control" type="Control" parent="Background/VBoxContainer/Enemy Heroes" unique_id=33296883]
+visible = false
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/Enemy Heroes" unique_id=1181566452]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
+[node name="Control2" type="Control" parent="Background/VBoxContainer" unique_id=2099619891]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="PhaseUI (temp)" type="Label" parent="." unique_id=1133332302]
-layout_mode = 0
-offset_right = 254.0
-offset_bottom = 48.0
+layout_mode = 2
 theme_override_font_sizes/font_size = 25
 text = "ENUM"
 horizontal_alignment = 1

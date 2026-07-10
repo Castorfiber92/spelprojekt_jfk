@@ -243,8 +243,8 @@ func create_slots():
 	##Here we will create slots according to the playerparty (which does not exist right now)
 	## and according to what type of enemies we want to generate. Right now this is temporary,
 	## so that we might begin just testing it. The generating/loading we will cover later on.
-	load_player_party()
-	load_enemy_party()
+	load_party(player_heroes, combat_ui.player_party, player_slots, Enums.Team.FRIEND)
+	load_party(enemy_heroes, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
 	
 func set_hero(slot : HeroSlot, hero : Hero):
 	##Assign the corresponding hero to the slot
@@ -256,37 +256,26 @@ func set_hero(slot : HeroSlot, hero : Hero):
 	slot.update_info()
 	hero.has_died.connect(remove_hero.bind(slot))
 
-func load_player_party():
-	for i in range(PlayerData.player_party.size()):
-		var slot : HeroSlot = Preloads.hero_slot.instantiate()
+func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[HeroSlot], team_enum: Enums.Team):
+	# Gets our vertical column containers
+	var frontline_ui = ui_parent.get_node("Frontline")
+	var backline_ui = ui_parent.get_node("Backline")
+	for i in range(party_data.size()):
+		var slot: HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
-		##Add it to the UI
-		combat_ui.player_party.add_child(slot)
+		# Route to the correct vertical column
+		if i <= 2:
+			frontline_ui.add_child(slot) # Slots 0, 1, 2 stack vertically in Front
+		else:
+			backline_ui.add_child(slot)  # Slots 3, 4 stack vertically in Back
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = PlayerData.player_party[i]
+		hero.hero_data = party_data[i]
 		hero.initialize_data()
-		##Assign the team to Player Array
-		player_slots.append(slot)
-		hero.team = Enums.Team.FRIEND
-		##Update the slot with the correct hero
-		set_hero(slot, hero)
-		
-func load_enemy_party():
-	for i in enemy_heroes:
-		var slot : HeroSlot = Preloads.hero_slot.instantiate()
-		##Add it to the UI
-		combat_ui.enemy_party.add_child(slot)
-		##Create a Hero class from the HeroData (so we don't mess up the Resource)
-		var hero = Hero.new()
-		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = i
-		hero.initialize_data()
-		##Assign the team to Enemy Array
-		enemy_slots.append(slot)
-		hero.team = Enums.Team.ENEMY
-		##Update the slot with the correct hero
+		hero.team = team_enum
+		# Add the slot to the corresponding array
+		target_slots_array.append(slot)
 		set_hero(slot, hero)
 
 func remove_hero(slot : HeroSlot):

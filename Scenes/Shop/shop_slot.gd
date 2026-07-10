@@ -51,3 +51,35 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	set_drag_preview(preview)
 	
 	return self # Return the slot instance as the transfer payload
+	
+	# 1. Determines if this specific slot can accept the dragged item
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
+	# Ensure the dragged object is actually another ShopSlot
+	if not data is ShopSlot:
+		return false
+		
+	var source_slot = data as ShopSlot
+	
+	# Safety check: make sure both slots are talking to a valid shop manager
+	if shop_manager == null or source_slot.shop_manager == null:
+		return false
+		
+	# CASE A: The player is dragging a slot from the shop inventory pool
+	if shop_manager.shop_slots.has(source_slot):
+		# They are ONLY allowed to drop it into a party bench slot
+		return shop_manager.party_slots.has(self)
+		
+	# CASE B: The player is dragging a slot from their own party bench
+	if shop_manager.party_slots.has(source_slot):
+		# They can drop it onto ANY other party bench slot to rearrange/swap
+		return shop_manager.party_slots.has(self)
+		
+	return false
+
+# 2. Triggers when the player drops the dragged item onto this slot
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	var source_slot = data as ShopSlot
+	
+	# Hand execution off to your centralized ShopManager transaction flow
+	if shop_manager and shop_manager.has_method("execute_transaction"):
+		shop_manager.execute_transaction(source_slot, self)

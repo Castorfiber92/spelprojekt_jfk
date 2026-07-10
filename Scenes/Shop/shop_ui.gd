@@ -1,7 +1,7 @@
 extends Control
 class_name ShopUi
 
-@export var party_slots : Control
-@export var shop_slots : Control
-@export var sell_button : Button
-@export var roll_button : Button
+@onready var party_slots : Control = $Layout/PartySlots
+@onready var shop_slots : Control = $Layout/ShopSlots
+@onready var sell_button : Button = $HBoxContainer/SellButton
+@onready var roll_button : Button = $HBoxContainer/RollButton
