@@ -2,13 +2,16 @@ extends PanelContainer
 class_name HeroSlot
 
 @export var hero : Hero
-@export var hp_label : Label 
-@export var damage_label : Label
-@export var name_label : Label
-@export var sprite: TextureRect
-@export var buff_slots_buffs: VBoxContainer
+@onready var hp_label : Label = $VBoxContainer/HBoxContainer/HP/Label
+@onready var damage_label : Label = $VBoxContainer/HBoxContainer/DAMAGE/Label
+@onready var name_label : Label = $VBoxContainer/PanelContainer2/HeroName
+@onready var sprite: TextureRect = $VBoxContainer/PanelContainer/TextureRect
+@onready var buff_slots_buffs: HBoxContainer = $VBoxContainer/BuffSlots/HBoxContainer
 
 var index: int = 0
+
+func is_occupied () -> bool:
+	return hero != null
 
 func _ready() -> void:
 	update_info()

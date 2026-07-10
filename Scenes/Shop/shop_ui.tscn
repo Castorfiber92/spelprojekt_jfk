@@ -4,18 +4,15 @@
 [ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="1_f7vp0"]
 [ext_resource type="Script" uid="uid://d1ejsasqsb4gm" path="res://Scenes/Shop/sell_button.gd" id="3_bp8o4"]
 
-[node name="ShopUI" type="Control" unique_id=1507633235 node_paths=PackedStringArray("party_slots", "shop_slots", "sell_button", "roll_button")]
+[node name="ShopUI" type="Control" unique_id=1507633235]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1920.0
 offset_bottom = 1080.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_filter = 2
 script = ExtResource("1_bp8o4")
-party_slots = NodePath("Layout/PartySlots")
-shop_slots = NodePath("Layout/ShopSlots")
-sell_button = NodePath("HBoxContainer/SellButton")
-roll_button = NodePath("HBoxContainer/RollButton")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1378101406]
 layout_mode = 1
@@ -32,7 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("1_f7vp0")
 
-[node name="Layout" type="VBoxContainer" parent="." unique_id=3138481]
+[node name="Layout" type="HBoxContainer" parent="." unique_id=1941197110]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -51,13 +48,43 @@ theme_override_constants/separation = 24
 layout_mode = 2
 theme_override_constants/separation = 20
 
+[node name="Backline" type="VBoxContainer" parent="Layout/PartySlots" unique_id=682414749]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
+[node name="Control" type="Control" parent="Layout/PartySlots" unique_id=1670964239]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Frontline" type="VBoxContainer" parent="Layout/PartySlots" unique_id=1080652066]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
 [node name="Control" type="Control" parent="Layout" unique_id=594853369]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_horizontal = 3
 
 [node name="ShopSlots" type="HBoxContainer" parent="Layout" unique_id=380873497]
 layout_mode = 2
 theme_override_constants/separation = 20
+
+[node name="Frontline" type="VBoxContainer" parent="Layout/ShopSlots" unique_id=316925257]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
+
+[node name="Control" type="Control" parent="Layout/ShopSlots" unique_id=2137956636]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Backline" type="VBoxContainer" parent="Layout/ShopSlots" unique_id=837417253]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 75
 
 [node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=1418839775]
 layout_mode = 1

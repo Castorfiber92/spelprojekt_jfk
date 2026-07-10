@@ -1,10 +1,10 @@
-extends Node2D
+extends Control
 class_name ShopManager
 
 var party_slots: Array[ShopSlot] = []
 var shop_slots: Array[ShopSlot] = []
 @export var shop_ui : ShopUi
-@export var max_party_size: int = 4
+@export var max_party_size: int = 5
 @export var max_shop_size: int = 5
 
 var selected_slot: ShopSlot = null
@@ -20,20 +20,40 @@ func connect_ui_elements() -> void:
 	shop_ui.roll_button.pressed.connect(execute_shop_roll)
 	shop_ui.sell_button.pressed.connect(sell_selected_slot)
 	shop_ui.sell_button.manager = self
-
+	
 func initialize_slots():
+	# 1. Fetch player party sub-containers
+	var party_frontline_ui = shop_ui.party_slots.get_node("Frontline")
+	var party_backline_ui = shop_ui.party_slots.get_node("Backline")
+
 	for i in range(max_party_size):
 		var party_slot: ShopSlot = Preloads.shop_slot.instantiate()
 		party_slot.shop_manager = self
-		party_slot.slot_number = i + 1 # Assigns 1-based index mapping for transactions
-		shop_ui.party_slots.add_child(party_slot)
+		party_slot.slot_number = i + 1 # (1 to 5)
+		
+		# Route visually: 0, 1, 2 to Frontline; 3, 4 to Backline
+		if i <= 2:
+			party_frontline_ui.add_child(party_slot)
+		else:
+			party_backline_ui.add_child(party_slot)
+			
 		party_slots.append(party_slot)
 		
-	for i in range(max_party_size):
+	# 2. Fetch shop inventory sub-containers
+	var shop_frontline_ui = shop_ui.shop_slots.get_node("Frontline")
+	var shop_backline_ui = shop_ui.shop_slots.get_node("Backline")
+
+	for i in range(max_shop_size):
 		var shop_slot: ShopSlot = Preloads.shop_slot.instantiate()
 		shop_slot.shop_manager = self
-		shop_slot.slot_number = i + 1
-		shop_ui.shop_slots.add_child(shop_slot)
+		shop_slot.slot_number = i + 1 # (1 to 5)
+		
+		# Route visually: 0, 1, 2 to Shop Frontline; 3, 4 to Shop Backline
+		if i <= 2:
+			shop_frontline_ui.add_child(shop_slot)
+		else:
+			shop_backline_ui.add_child(shop_slot)
+			
 		shop_slots.append(shop_slot)
 
 	update_shop_UI()
@@ -63,7 +83,7 @@ func sell_selected_slot() -> void:
 	current_phase = ShopPhase.TRANSACTION
 	
 	var target_index: int = selected_slot.slot_number - 1
-	var item_to_sell: PurchaseableData = PlayerData.playerParty[target_index]
+	var item_to_sell: PurchaseableData = PlayerData.player_party[target_index]
 	
 	# Calculate dynamic refund based on the Tier (Bronze=1, Silver=2, Gold=3, Legendary=4)
 	var refund_amount: int = 1 # Base backup cost
@@ -78,7 +98,7 @@ func sell_selected_slot() -> void:
 	
 	# Process transaction data mutation
 	PlayerData.essence += refund_amount
-	PlayerData.playerParty[target_index] = null
+	PlayerData.player_party[target_index] = null
 	
 	print("Sold %s for %d Essence." % [item_to_sell.name, refund_amount])
 	
@@ -103,115 +123,108 @@ func execute_shop_roll():
 	# _update_currency_ui() # Direct call to refresh your gold/essence counters
 
 func roll_shop_slots() -> void:
-	# 1. Verification gates
 	if current_phase != ShopPhase.IDLE: return
-	if PlayerData.active_roster.is_empty():
-		print("Roll failed: Active run deck is empty! Add heroes to pool first.")
-		return
+	if PlayerData.active_roster.is_empty(): return
 		
 	current_phase = ShopPhase.ROLLING
 	
-	# 2. Populate each shop bench slot
 	for slot in shop_slots:
-		# Pick a completely random master resource from the player's custom deck
 		var random_index: int = randi() % PlayerData.active_roster.size()
 		var hero: HeroData = PlayerData.active_roster[random_index]
 		
 		slot.display_item(hero)
+		# Ensure the graphic is turned back on after being bought out previously
+		slot.UI.visible = true 
 		
 	current_phase = ShopPhase.IDLE
-	print("Shop refreshed using customized player pool.")
+
 
 func execute_transaction(source_slot: ShopSlot, target_slot: ShopSlot) -> void:
 	if current_phase != ShopPhase.IDLE: return
+	if source_slot == target_slot: return # Can't drop onto itself
 	
 	var incoming_data = source_slot.slot_item
 	if incoming_data == null: return
 	
-	if not PlayerData.can_pay(incoming_data.cost):
-		print("Cannot afford: ", incoming_data.spiritName)
-		return
-
 	current_phase = ShopPhase.TRANSACTION
 	
-	if incoming_data is HeroData:
-		await _handle_hero_placement(incoming_data, source_slot, target_slot)
+	# Check if we are moving an existing party member or buying a new one
+	var is_rearrangement: bool = party_slots.has(source_slot)
+	
+	if is_rearrangement:
+		_handle_party_rearrangement(source_slot, target_slot)
+	else:
+		# Standard shop purchase logic
+		if not PlayerData.can_pay(incoming_data.cost):
+			print("Cannot afford: ", incoming_data.spiritName)
+			current_phase = ShopPhase.IDLE
+			return
+			
+		if incoming_data is HeroData:
+			_handle_hero_placement(incoming_data, source_slot, target_slot)
 		
 	current_phase = ShopPhase.IDLE
 	update_shop_UI()
 
+func _handle_party_rearrangement(source: ShopSlot, target: ShopSlot) -> void:
+	var source_index = source.slot_number - 1
+	var target_index = target.slot_number - 1
+	
+	# Grab references from the actual player party array
+	var source_hero = PlayerData.player_party[source_index]
+	var target_hero = PlayerData.player_party[target_index]
+	
+	# Swap the data positions in the backend array
+	PlayerData.player_party[target_index] = source_hero
+	PlayerData.player_party[source_index] = target_hero
+	
+	print("Rearranged party: Swapped slot %d and slot %d." % [source.slot_number, target.slot_number])
+
 func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) -> void:
 	var target_index = target.slot_number - 1
 	
-	# Ensure backend data array is large enough to prevent index out of bounds
-	if PlayerData.player_party.size() < party_slots.size():
-		PlayerData.player_party.resize(party_slots.size())
+	# Ensure backend data array matches our exact 5-slot grid boundary
+	if PlayerData.player_party.size() < 5:
+		PlayerData.player_party.resize(5)
 	
-	# 1. Merge Check
+	# RULE 1: Merge Check (Same hero, upgrade tier)
 	if not target.slot_is_empty and target.slot_item is HeroData:
 		var target_hero: HeroData = PlayerData.player_party[target_index]
 		
 		if target_hero.can_merge_with(hero):
 			PlayerData.deduct_cost(hero.cost)
-			target_hero.advance_tier() # Upgrades target instance from Bronze -> Silver -> Gold
+			target_hero.advance_tier() 
 			shop.clear_slot()
 			update_shop_UI() 
 			return
 		else:
-			print("Merge rejected: Maximum tier reached or distinct characters.")
+			# ---- FIXED: Deny placement outright if it's a different hero ----
+			print("Placement rejected: Slot is occupied.")
 			return
 		
-	# 2. Open Slot rules check
+	# RULE 2: Open Slot (Clean placement)
 	if target.slot_is_empty:
 		PlayerData.deduct_cost(hero.cost)
 		
-		# Assign the new instance to the player
 		var hero_instance: HeroData = hero.duplicate() 
 		PlayerData.player_party[target_index] = hero_instance
 		
 		shop.clear_slot()
 		update_shop_UI()
 		return
-		
-	# 3. Shifting row rules check
-	var empty_index = find_nearest_empty_slot(target_index)
-	if empty_index != -1:
-		PlayerData.deduct_cost(hero.cost)
-		shop.clear_slot()
-		
-		shift_party_slots(target_index, empty_index)
-		
-		# Assign the new instance to the player
-		var hero_instance: HeroData = hero.duplicate() 
-		PlayerData.player_party[target_index] = hero_instance
-		
-		update_shop_UI()
-	else:
-		print("Placement failed: Lineup is entirely full.")
-
-func shift_party_slots(target_idx: int, empty_idx: int) -> void:
-	if target_idx < empty_idx:
-		for i in range(empty_idx, target_idx, -1):
-			PlayerData.player_party[i] = PlayerData.player_party[i-1]
-	else:
-		for i in range(empty_idx, target_idx):
-			PlayerData.player_party[i] = PlayerData.player_party[i+1]
-			
-	PlayerData.player_party[target_idx] = null
-
-func find_nearest_empty_slot(start_idx: int) -> int:
-	for i in range(start_idx, party_slots.size()):
-		if party_slots[i].slot_is_empty: return i
-	for i in range(start_idx, -1, -1):
-		if party_slots[i].slot_is_empty: return i
-	return -1
 
 func update_shop_UI() -> void:
+	# 1. Update party grid board
 	for i in range(party_slots.size()):
 		if i < PlayerData.player_party.size() and PlayerData.player_party[i] != null:
 			party_slots[i].display_item(PlayerData.player_party[i])
 		else:
 			party_slots[i].clear_slot()
+
+	# 2. Update shop inventory 
 	for i in range(shop_slots.size()):
-		if shop_slots[i].slot_is_empty:
+		if shop_slots[i].slot_item != null:
+			# Re-trigger display to ensure graphics/labels refresh cleanly
+			shop_slots[i].display_item(shop_slots[i].slot_item)
+		else:
 			shop_slots[i].clear_slot()
