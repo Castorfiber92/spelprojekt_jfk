@@ -264,10 +264,10 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 		var slot: HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
 		# Route to the correct vertical column
-		if i <= 2:
-			frontline_ui.add_child(slot) # Slots 0, 1, 2 stack vertically in Front
+		if i <= 1:
+			frontline_ui.add_child(slot) # Slots 0, 1 stack vertically in Front
 		else:
-			backline_ui.add_child(slot)  # Slots 3, 4 stack vertically in Back
+			backline_ui.add_child(slot)  # Slots 2, 3, 4 stack vertically in Back
 		##Create a Hero class from the HeroData (so we don't mess up the Resource)
 		var hero = Hero.new()
 		##Set the Hero data according to the HeroData in the array above

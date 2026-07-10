@@ -31,8 +31,8 @@ func initialize_slots():
 		party_slot.shop_manager = self
 		party_slot.slot_number = i + 1 # (1 to 5)
 		
-		# Route visually: 0, 1, 2 to Frontline; 3, 4 to Backline
-		if i <= 2:
+		# Route visually: 0, 1 to Frontline; 2, 3, 4 to Backline
+		if i <= 1:
 			party_frontline_ui.add_child(party_slot)
 		else:
 			party_backline_ui.add_child(party_slot)
@@ -49,7 +49,7 @@ func initialize_slots():
 		shop_slot.slot_number = i + 1 # (1 to 5)
 		
 		# Route visually: 0, 1, 2 to Shop Frontline; 3, 4 to Shop Backline
-		if i <= 2:
+		if i <= 1:
 			shop_frontline_ui.add_child(shop_slot)
 		else:
 			shop_backline_ui.add_child(shop_slot)
