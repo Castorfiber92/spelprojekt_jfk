@@ -18,6 +18,7 @@ extends Node
 @export_group("Developer Utilities")
 @export_tool_button("Export Valid Behaviors List", "Callable") var export_behaviors_action = export_valid_behaviors_list
 
+
 func export_valid_behaviors_list():
 	if not Engine.is_editor_hint(): return
 	
@@ -27,6 +28,9 @@ func export_valid_behaviors_list():
 	
 	var valid_filenames: Array[String] = []
 	
+	# --- Define filenames you want to ignore ---
+	var ignored_behaviors = ["attack_basic", "heal_basic", "cast_basic", "attack_multi"]
+	
 	# Scan all files to find actual Behavior resources
 	for path in all_files:
 		if path.ends_with(".tres"):
@@ -34,10 +38,14 @@ func export_valid_behaviors_list():
 			
 			# Ensure it is a behavior script before tracking its filename
 			if loaded_res is Behavior:
-				# Get the exact filename without the path (e.g., "res://Behaviors/bash(broom_basher).tres" -> "bash(broom_basher).tres")
+				# Get the exact filename without the path
 				var file_name_with_ext = path.get_file()
-				# Remove the ".tres" extension to get the raw string expected by the CSV
+				# Remove the ".tres" extension to get the raw string
 				var raw_filename = file_name_with_ext.replace(".tres", "").strip_edges()
+				
+				# --- Skip the filename if it matches our ignore list ---
+				if raw_filename in ignored_behaviors:
+					continue
 				
 				if raw_filename != "" and not valid_filenames.has(raw_filename):
 					valid_filenames.append(raw_filename)
@@ -55,7 +63,7 @@ func export_valid_behaviors_list():
 		print("--- Exported %d valid behavior filenames to %s ---" % [valid_filenames.size(), output_path])
 	else:
 		printerr("Failed to write behavior list file.")
-
+		
 func generate_heroes():
 	# If we are not currently inside the editor, i.e. the game is running, do nothing
 	if not Engine.is_editor_hint():
@@ -221,7 +229,6 @@ func link_sprites_to_heroes():
 				
 	file.close()
 	print("--- Sprite Linking Finished ---")
-
 
 func find_behavior_globally(behavior_name: String) -> Behavior:
 	var cleaned_name: String = behavior_name.strip_edges().to_lower()

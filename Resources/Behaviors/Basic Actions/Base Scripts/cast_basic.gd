@@ -1,13 +1,12 @@
 extends Behavior
-class_name heal_basic_behavior
-
+class_name cast_basic_behavior
 @export var animation : String = "action"
 @export var animationDuration : float = 0.15
 
 func on_execute_action(combatContext : CombatContext):
 	for target in combatContext.targets:
 		# Instantiate the specific configuration subclass
-		var effect = HealEffect.new() 
+		var effect = CastEffect.new() 
 		
 		effect.value = get_modified_stat(combatContext.source.hero, "spellpower", combatContext.source.hero.current_damage)
 		effect.source = combatContext.source.hero

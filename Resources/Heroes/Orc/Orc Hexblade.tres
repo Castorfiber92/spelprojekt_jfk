@@ -14,4 +14,5 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_i8l0g")
 name = "Orc Hexblade"
+description = "Siphon Soul: När han kommer till 25% hp, swap hp% med en i laget och får även en del av hans stats"
 sprites = ExtResource("4_de2ar")

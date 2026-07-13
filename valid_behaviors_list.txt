@@ -1,8 +1,7 @@
-attack_basic
-attack_multi
+armor(earth_shaman)
 bash(broom_basher)
 bonus_damage_1
 crit_basic
 crit_normal
-heal_basic
+status_armor(earth_shaman)
 status_stun(broom_basher)

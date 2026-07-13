@@ -7,11 +7,11 @@
 
 [resource]
 script = ExtResource("3_yomkm")
-is_legendary_eligible = true
 base_HP = 40
 base_damage = 4
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_8cupc")
 name = "Boxer Badger"
+description = "marked: Nästa attack från laget på samma target gör extra skada"
 sprites = ExtResource("4_808vy")

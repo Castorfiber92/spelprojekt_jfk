@@ -13,3 +13,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_tpu5u")
 name = "Necromancer"
+description = "Varje gång något dör ger han laget plus attack"

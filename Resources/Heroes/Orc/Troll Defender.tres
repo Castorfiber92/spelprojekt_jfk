@@ -13,3 +13,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_yj1a6")
 name = "Troll Defender"
+description = "Trollhide: Minskar all skada med 2 (tar minst 1 skada). healar 2 på start av sin turn (ökas permanent med 1 varje gång han blir slagen (max 10)"

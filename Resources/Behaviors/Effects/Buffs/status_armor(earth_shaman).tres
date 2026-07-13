@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="status_armor_basic_behavior" format=3 uid="uid://b8rw6bl3t2g00"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_3hrex"]
+[ext_resource type="Script" uid="uid://do3uy17ek43s8" path="res://Resources/Behaviors/Effects/Buffs/Base Scripts/status_armor_basic.gd" id="2_bybg7"]
+
+[resource]
+script = ExtResource("2_bybg7")
+type = 2
+target_team = 2
+stacks = 3
+metadata/_custom_type_script = "uid://do3uy17ek43s8"

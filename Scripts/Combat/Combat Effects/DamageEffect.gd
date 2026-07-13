@@ -1,13 +1,14 @@
 extends CombatEffect
 class_name DamageEffect
 
+# For actions that deal damage as base
 func execute(_manager: CombatManager) -> void:
 	var source_slot: HeroSlot = _manager.hero_to_slot_map.get(source, null)
 	if target:
 		target.take_damage(value, source_slot)
 	for b in buffs:
 		target.add_behavior(b.duplicate())
-		print(target," ", b.name, "added")
+		print(target.hero_data.name," ", b.name, " added")
 
 func present(manager: CombatManager) -> void:
 	var source_slot: HeroSlot = manager.hero_to_slot_map.get(source, null)
