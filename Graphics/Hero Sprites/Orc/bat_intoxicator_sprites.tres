@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cvaffewfksjiu"]
+
+[ext_resource type="Texture2D" uid="uid://mfyg0rpoa3dh" path="res://Graphics/Hero Sprites/Orc/Bat Intoxicator.png" id="1_slkx8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0cbuo"]
+atlas = ExtResource("1_slkx8")
+region = Rect2(0, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rq1hk"]
+atlas = ExtResource("1_slkx8")
+region = Rect2(768, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0cbuo")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rq1hk")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

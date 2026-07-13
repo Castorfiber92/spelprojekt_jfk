@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://j0pgan7nd8ka"]
+
+[ext_resource type="Texture2D" uid="uid://cx1njfx6n3yh7" path="res://Graphics/Hero Sprites/Orc/Troll Defender.png" id="1_0hkqj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nl3d8"]
+atlas = ExtResource("1_0hkqj")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8cpki"]
+atlas = ExtResource("1_0hkqj")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nl3d8")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8cpki")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_hh064"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_yj1a6"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_1gpm2"]
+[ext_resource type="SpriteFrames" uid="uid://j0pgan7nd8ka" path="res://Graphics/Hero Sprites/Orc/troll_defender_sprites.tres" id="4_eb770"]
 
 [resource]
 script = ExtResource("3_1gpm2")
@@ -13,4 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_yj1a6")
 name = "Troll Defender"
-description = "Trollhide: Minskar all skada med 2 (tar minst 1 skada). healar 2 på start av sin turn (ökas permanent med 1 varje gång han blir slagen (max 10)"
+sprites = ExtResource("4_eb770")

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://bik7s4ygp1w8n"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_p73u4"]
+[ext_resource type="Resource" uid="uid://3ysv4ls6by1l" path="res://Resources/Behaviors/Basic Actions/attack_multi.tres" id="2_3t072"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_ihx8n"]
+[ext_resource type="SpriteFrames" uid="uid://cvnd8nxah7bjj" path="res://Graphics/Hero Sprites/Gnome/turtlabode_sprites.tres" id="4_74ch3"]
+
+[resource]
+script = ExtResource("3_ihx8n")
+tribe = 3
+is_legendary_eligible = true
+base_HP = 50
+base_damage = 2
+base_speed = 5
+base_range = 1
+base_action = ExtResource("2_3t072")
+name = "Turtlabode"
+sprites = ExtResource("4_74ch3")

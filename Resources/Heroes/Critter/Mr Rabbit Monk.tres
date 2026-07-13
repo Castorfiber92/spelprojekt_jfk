@@ -13,5 +13,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_iml85")
 name = "Mr Rabbit Monk"
-description = "marked (Off balance): Nästa attack från laget på samma target puttar bak den i ledet."
 sprites = ExtResource("4_27v6b")

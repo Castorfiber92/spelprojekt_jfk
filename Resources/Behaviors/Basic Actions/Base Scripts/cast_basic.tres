@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="cast_basic_behavior" format=3 uid="uid://h1j0wnhy80e7"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_k4ix5"]
+[ext_resource type="Script" uid="uid://dijrmg7rep4x8" path="res://Resources/Behaviors/Basic Actions/Base Scripts/cast_basic.gd" id="2_fnf5p"]
+
+[resource]
+script = ExtResource("2_fnf5p")
+metadata/_custom_type_script = "uid://dijrmg7rep4x8"

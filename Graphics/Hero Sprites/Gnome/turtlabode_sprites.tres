@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cvnd8nxah7bjj"]
+
+[ext_resource type="Texture2D" uid="uid://d2d7q8xc0y7ow" path="res://Graphics/Hero Sprites/Gnome/Turtlabode.png" id="1_uickt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y45j5"]
+atlas = ExtResource("1_uickt")
+region = Rect2(887, 0, 887, 887)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w4fcb"]
+atlas = ExtResource("1_uickt")
+region = Rect2(0, 0, 887, 887)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y45j5")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w4fcb")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

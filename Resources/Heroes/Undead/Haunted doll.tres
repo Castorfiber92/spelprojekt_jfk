@@ -14,5 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_xdik6")
 name = "Haunted doll"
-description = "\"Cursear\" attackers. curse reducear attack med 1(?) varje runda"
 sprites = ExtResource("4_jcy6g")

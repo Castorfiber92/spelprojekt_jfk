@@ -39,6 +39,7 @@ func take_damage(damage : int, source : HeroSlot):
 	#Here we call the on_take_damage event to check behaviors
 	#We deal damage according to the calculated damage
 	current_HP -= damage
+	await trigger_behavior_event("on_damage_taken", source)
 	if current_HP <= 0:
 		await trigger_behavior_event("on_death", source)
 		self.has_died.emit()
