@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bco3rskbirb2q"]
+
+[ext_resource type="Texture2D" uid="uid://d1vkbkgh8a2tq" path="res://Graphics/Hero Sprites/Orc/Troll Ranger.png" id="1_tkgd4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uehw7"]
+atlas = ExtResource("1_tkgd4")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xn052"]
+atlas = ExtResource("1_tkgd4")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uehw7")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xn052")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

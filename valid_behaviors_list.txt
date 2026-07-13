@@ -3,5 +3,4 @@ bash(broom_basher)
 bonus_damage_1
 crit_basic
 crit_normal
-status_armor(earth_shaman)
-status_stun(broom_basher)
+mark

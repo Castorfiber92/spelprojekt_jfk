@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_bmoiv"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_vyk64"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2nd7a"]
+[ext_resource type="SpriteFrames" uid="uid://cqt3qgooodwsg" path="res://Graphics/Hero Sprites/Undead/skeleton_king_sprites.tres" id="4_3wu55"]
 
 [resource]
 script = ExtResource("3_2nd7a")
@@ -13,4 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_vyk64")
 name = "Skeleton King"
-description = "Återuppväcks I en miniform efter den har dött en gång"
+sprites = ExtResource("4_3wu55")

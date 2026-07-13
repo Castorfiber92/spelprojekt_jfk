@@ -14,4 +14,4 @@ func on_damage_taken(combatContext : CombatContext):
 	# Check after taking damage if the stacks of armor is 0, then remove the behavior.
 	print (str(combatContext.source.hero))
 	if stacks <= 0:
-		combatContext.source.hero.remove_behavior(name)
+		owner_hero.remove_behavior(name)

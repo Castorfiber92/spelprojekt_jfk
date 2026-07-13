@@ -47,6 +47,11 @@ func export_valid_behaviors_list():
 				if raw_filename in ignored_behaviors:
 					continue
 				
+				# Skip any filenames beginning with status, since these are the buffs being applied,
+				# not the actual abilities
+				if raw_filename.begins_with("status_"):
+					continue
+					
 				if raw_filename != "" and not valid_filenames.has(raw_filename):
 					valid_filenames.append(raw_filename)
 					

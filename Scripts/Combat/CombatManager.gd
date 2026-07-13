@@ -44,7 +44,6 @@ func run_combat_loop():
 			continue # Restart the loop for the new round
 			
 		active_slot = next_hero_slot
-		print("Next to act: ", active_slot.hero.hero_data.name)
 		
 		# Linear execution: Code completely pauses here until the turn and all cascades finish
 		await execute_turn(active_slot)
@@ -88,7 +87,7 @@ func update_UI():
 func _on_effect_requested(new_effect: CombatEffect):
 	effect_stack.append(new_effect)
 	if not is_processing:
-		process_stack()
+		await process_stack()
 
 func process_stack():
 	is_processing = true

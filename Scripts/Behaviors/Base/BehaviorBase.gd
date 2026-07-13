@@ -8,8 +8,7 @@ var owner_hero: Hero
 @export_category("Type Settings")
 enum BehaviorType { PASSIVE, ACTIVE, BUFF }
 @export var type: BehaviorType = BehaviorType.PASSIVE
-enum BehaviorTag {NEUTRAL, BURN, FREEZE, MARK, STUN, CURSE}
-@export var tag : BehaviorTag = BehaviorTag.NEUTRAL
+enum BehaviorTag {NEUTRAL, BURN, FREEZE, MARK, STUN, CURSE, ARMOR, POWER}
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
@@ -17,6 +16,7 @@ enum BehaviorTag {NEUTRAL, BURN, FREEZE, MARK, STUN, CURSE}
 @export_range(0,5) var range : int
 @export_category("Buff Settings")
 @export var stacks: int = 0 # 0 if not applicable
+@export var tag : BehaviorTag = BehaviorTag.NEUTRAL
 @export var blocks_action : bool = false
 @export var behaviors_to_apply: Array[Behavior] = []
 ##Below we will have functions for every event we want to check

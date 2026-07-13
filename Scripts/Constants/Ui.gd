@@ -4,9 +4,12 @@ extends Node
 const BUFF_REGIONS = {
 	"neutral_icon": Rect2(166, 55, 236, 252), # Fallback frame
 	"burn_icon": Rect2(166, 55, 236, 252), 
-	"frozen_icon": Rect2(447, 57, 251, 249),
+	"freeze_icon": Rect2(447, 57, 251, 249),
 	"mark_icon": Rect2(758, 81, 231, 213),
-	"stun_icon": Rect2(1036, 83, 262, 211)
+	"stun_icon": Rect2(1036, 83, 262, 211),
+	"curse_icon": Rect2(752,659,269,238),
+	"armor_icon": Rect2(183,661,261,241),
+	"power_icon": Rect2(730,374,276,234)
 }
 
 const EVENT_ICON_REGIONS = {
@@ -30,8 +33,6 @@ func get_buff_texture(buff_id: String) -> AtlasTexture:
 	# If we already built this texture previously, hand back the cached version instantly!
 	if _buff_texture_cache.has(full_key):
 		return _buff_texture_cache[full_key]
-		
-	# DELETED / CLEANED UP: The raw spam print statement.
 	
 	# Fallback if an unrecognized ID slips through the pipeline
 	if not BUFF_REGIONS.has(full_key):

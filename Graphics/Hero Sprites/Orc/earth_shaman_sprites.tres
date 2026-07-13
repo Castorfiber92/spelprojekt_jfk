@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://qe0ys3n68ib2"]
+
+[ext_resource type="Texture2D" uid="uid://c5ksqpicaptk4" path="res://Graphics/Hero Sprites/Orc/Earth Shaman.png" id="1_jvn4h"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qg0tf"]
+atlas = ExtResource("1_jvn4h")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kcn4b"]
+atlas = ExtResource("1_jvn4h")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qg0tf")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kcn4b")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

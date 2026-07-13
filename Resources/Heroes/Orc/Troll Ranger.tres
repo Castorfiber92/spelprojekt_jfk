@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_5ifn1"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_tbtsd"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_hseww"]
+[ext_resource type="SpriteFrames" uid="uid://bco3rskbirb2q" path="res://Graphics/Hero Sprites/Orc/troll_ranger_sprites.tres" id="4_rlh8s"]
 
 [resource]
 script = ExtResource("3_hseww")
@@ -13,4 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_tbtsd")
 name = "Troll Ranger"
-description = "Flaming spears: Stackande burn med 2~ dmg per stack"
+sprites = ExtResource("4_rlh8s")

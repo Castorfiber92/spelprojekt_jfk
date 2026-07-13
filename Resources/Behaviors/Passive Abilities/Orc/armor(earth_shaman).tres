@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="armor_basic_behavior" format=3 uid="uid://dxw2w8hhbf75u"]
 
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_1cca5"]
-[ext_resource type="Resource" uid="uid://b8rw6bl3t2g00" path="res://Resources/Behaviors/Effects/Buffs/status_armor(earth_shaman).tres" id="2_gpg43"]
-[ext_resource type="Script" uid="uid://bdu7cd5a58sga" path="res://Resources/Behaviors/Passive Abilities/Armor Buff/Base Script/armor_basic.gd" id="2_qfeiv"]
+[ext_resource type="Resource" uid="uid://b8rw6bl3t2g00" path="res://Resources/Behaviors/Effects/Buffs/Orc/status_armor(earth_shaman).tres" id="2_gpg43"]
+[ext_resource type="Script" uid="uid://bdu7cd5a58sga" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/Armor/armor_basic.gd" id="2_qfeiv"]
 
 [resource]
 script = ExtResource("2_qfeiv")

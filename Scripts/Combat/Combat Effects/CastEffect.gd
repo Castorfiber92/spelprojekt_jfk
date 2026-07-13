@@ -6,7 +6,7 @@ func execute(_manager: CombatManager) -> void:
 	var source_slot: HeroSlot = _manager.hero_to_slot_map.get(source, null)
 	for b in buffs:
 		target.add_behavior(b.duplicate())
-		print(target.hero_data.name," ", b.name, " added")
+
 
 func present(manager: CombatManager) -> void:
 	var source_slot: HeroSlot = manager.hero_to_slot_map.get(source, null)

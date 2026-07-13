@@ -6,9 +6,11 @@
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_kry3j"]
 [ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="4_21xkr"]
 [ext_resource type="Resource" uid="uid://70irkhpjxtg8" path="res://Resources/Heroes/Gnome/Broom Basher.tres" id="4_kry3j"]
-[ext_resource type="Resource" uid="uid://biud86n8q8bhh" path="res://Resources/Heroes/Undead/Skeleton King.tres" id="5_d1ilt"]
+[ext_resource type="Resource" uid="uid://db1nyfof0wpwe" path="res://Resources/Heroes/Orc/Troll Ranger.tres" id="5_fdnlq"]
 [ext_resource type="Resource" uid="uid://hdpjaf7iiama" path="res://Resources/Heroes/Orc/Orc Hexblade.tres" id="5_ynf5e"]
+[ext_resource type="Resource" uid="uid://bik7s4ygp1w8n" path="res://Resources/Heroes/Gnome/Turtlabode.tres" id="6_fdnlq"]
 [ext_resource type="Resource" uid="uid://bnnjoip13th68" path="res://Resources/Heroes/Gnome/Mushroom Gobbler.tres" id="7_hptm8"]
+[ext_resource type="Resource" uid="uid://ic6wbptmrbw3" path="res://Resources/Heroes/Orc/Earth Shaman.tres" id="7_jkdf5"]
 [ext_resource type="Resource" uid="uid://diqa1xgp7fjr8" path="res://Resources/Heroes/Critter/Squirrel Slingshot Sniper.tres" id="8_d1ilt"]
 [ext_resource type="Resource" uid="uid://c7boh6imv8asl" path="res://Resources/Heroes/Orc/Troll Defender.tres" id="10_6iyac"]
 
@@ -24,7 +26,7 @@ limit_right = 1920
 limit_bottom = 1080
 
 [node name="CombatManager" parent="." unique_id=442684704 instance=ExtResource("2_bo1nx")]
-player_heroes = Array[ExtResource("3_kry3j")]([ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("4_kry3j"), ExtResource("5_d1ilt")])
+player_heroes = Array[ExtResource("3_kry3j")]([ExtResource("4_kry3j"), ExtResource("5_fdnlq"), ExtResource("6_fdnlq"), ExtResource("4_kry3j"), ExtResource("7_jkdf5")])
 enemy_heroes = Array[ExtResource("3_kry3j")]([ExtResource("5_ynf5e"), ExtResource("4_21xkr"), ExtResource("7_hptm8"), ExtResource("8_d1ilt"), ExtResource("10_6iyac")])
 
 [node name="Editor Scripts" type="Node" parent="." unique_id=1893187848]

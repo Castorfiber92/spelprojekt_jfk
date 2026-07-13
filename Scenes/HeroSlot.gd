@@ -7,7 +7,7 @@ class_name HeroSlot
 @onready var name_label : Label = $VBoxContainer/PanelContainer2/HeroName
 @onready var sprite: TextureRect = $VBoxContainer/PanelContainer/TextureRect
 @onready var buff_slots_buffs: HBoxContainer = $VBoxContainer/BuffSlots/HBoxContainer
-
+var active_slots: Dictionary = {}
 var index: int = 0
 
 func is_occupied () -> bool:
@@ -60,7 +60,7 @@ func toggle_visibility(show = true):
 	else:
 		hp_label.visible = false
 		damage_label.visible = false
-		name_label.visible = false
+		name_label.text = "DEAD"
 
 func cleanup():
 	set_modulate(Color.WHITE) # Clears panel highlights
@@ -69,6 +69,9 @@ func cleanup():
 	sprite.position = Vector2.ZERO 
 	if hero == null:
 		sprite.texture = null
+		clear_all_buff_slots()
+		# 1. Clear the dictionary tracking the nodes
+		active_slots.clear()
 
 func highlight_slot(source = true):
 	# This is not final, only simple for testing
@@ -87,21 +90,73 @@ func update_info():
 		hp_label.text = str(hero.current_HP)
 		damage_label.text = str(hero.current_damage)
 		name_label.text = hero.hero_data.name
-		add_buff_slots()
+		update_buff_slots()
 
 	else:
 		##If there is NO hero
 		##Hide the labels
 		toggle_visibility(false)
 
-func add_buff_slots():
-	for child in buff_slots_buffs.get_children():
-			child.queue_free()
-	var mg_container = MarginContainer.new()
-	mg_container.custom_minimum_size = Vector2(0,40)
-	buff_slots_buffs.add_child(mg_container)
+
+func update_buff_slots():
+	# 1. Ensure the container container exists once
+	if buff_slots_buffs.get_child_count() == 0:
+		var mg_container = MarginContainer.new()
+		mg_container.custom_minimum_size = Vector2(0, 40)
+		buff_slots_buffs.add_child(mg_container)
+
+	# 2. Gather currently valid buffs from the hero
+	var current_buffs: Array = []
 	for b : Behavior in hero.behaviors.values():
 		if b.type == b.BehaviorType.BUFF:
+			current_buffs.append(b)
+
+	# 3. Clean up expired buffs (removed from hero, but still have an icon)
+	for b in active_slots.keys():
+		if not b in current_buffs:
+			var old_slot = active_slots[b]
+			active_slots.erase(b)
+			animate_out_and_free(old_slot)
+
+	# 4. Add new buffs or refresh existing ones
+	for b in current_buffs:
+		if not active_slots.has(b):
+			# This is a brand new buff -> Create and animate it
 			var buff_slot = Preloads.buff_slot.instantiate()
 			buff_slots_buffs.add_child(buff_slot)
 			buff_slot.setup(b)
+			
+			active_slots[b] = buff_slot
+			animate_in(buff_slot)
+		else:
+			# Buff already exists -> Just refresh its values (no animation)
+			active_slots[b].setup(b)
+
+func clear_all_buff_slots():
+	for buff_slot in active_slots.values():
+		if is_instance_valid(buff_slot):
+			buff_slot.queue_free()
+
+	active_slots.clear()
+
+# --- Animation Helper Functions ---
+
+func animate_in(buff_slot: Control):
+	buff_slot.pivot_offset = buff_slot.size / 2
+	buff_slot.scale = Vector2.ZERO
+	
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(buff_slot, "scale", Vector2.ONE, 0.25)
+
+func animate_out_and_free(buff_slot: Control):
+	buff_slot.pivot_offset = buff_slot.size / 2
+	
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_ease(Tween.EASE_IN) # Eases in so it shrinks away quickly
+	tween.tween_property(buff_slot, "scale", Vector2.ZERO, 0.15)
+	
+	# Free the memory automatically once the animation finishes
+	tween.tween_callback(buff_slot.queue_free)
