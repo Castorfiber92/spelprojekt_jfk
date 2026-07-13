@@ -7,11 +7,11 @@
 
 [resource]
 script = ExtResource("3_cer13")
-is_legendary_eligible = true
 base_HP = 20
 base_damage = 4
 base_speed = 10
-base_range = 2
+base_range = 1
 base_action = ExtResource("2_11xve")
 name = "Squirrel Slingshot Sniper"
+description = "on target: skjuter alltid på en enemy som är marked"
 sprites = ExtResource("4_h58dp")

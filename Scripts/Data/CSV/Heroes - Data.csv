@@ -1,19 +1,19 @@
-Name,Description,Tribe,Legendary Status,Base HP (10-50),Base DMG (1-10),Base Speed (1-100),Base Range (1-5),Base Action,Base Abilities
+Name,Description,Tribe,Legendary Status,Base HP (10-50),Base DMG (1-10),Base Speed (1-100),Base Range (1-3),Base Action,Base Abilities
 ,,,,,,,,,
-Mr Rabbit Monk,,Critter,TRUE,20,5,10,1,attack_basic,
-Boxer Badger,,Critter,TRUE,40,4,10,1,attack_basic,
-Squirrel Slingshot Sniper,,Critter,TRUE,20,4,10,1,attack_basic,
+Mr Rabbit Monk,marked (Off balance): Nästa attack från laget på samma target puttar bak den i ledet.,Critter,FALSE,20,5,10,1,attack_basic,
+Boxer Badger,marked: Nästa attack från laget på samma target gör extra skada,Critter,FALSE,40,4,10,1,attack_basic,
+Squirrel Slingshot Sniper,on target: skjuter alltid på en enemy som är marked,Critter,FALSE,20,4,10,1,attack_basic,
 ,,,,,,,,,
-Haunted doll,,Undead,FALSE,50,1,10,1,attack_basic,
-Skeleton King,,Undead,FALSE,30,4,10,1,attack_basic,
+Haunted doll,"""Cursear"" attackers. curse reducear attack med 1(?) varje runda",Undead,FALSE,50,1,10,1,attack_basic,
+Skeleton King,Återuppväcks I en miniform efter den har dött en gång,Undead,FALSE,30,4,10,1,attack_basic,
 Skeleton Prince,,Undead,FALSE,20,2,10,1,attack_basic,
-Necromancer,,Undead,FALSE,20,2,10,1,attack_basic,
-Vampiric crawler,,Undead,FALSE,35,3,10,1,attack_basic,
+Necromancer,Varje gång något dör ger han laget plus attack,Undead,FALSE,20,2,10,1,attack_basic,
+Vampiric crawler,double strike - slår två slag varje attack. Siphon life - hälften av skadan den gör healar en random friendly hero. ,Undead,FALSE,35,3,10,1,attack_basic,
 ,,,,,,,,,
-Orc Hexblade,,Orc,FALSE,24,2,10,1,attack_basic,
-Troll Ranger,,Orc,FALSE,20,6,10,1,attack_basic,
-Earth Shaman,,Orc,FALSE,22,3,10,1,attack_basic,
-Troll Defender,,Orc,FALSE,45,3,10,1,attack_basic,
+Orc Hexblade,"Siphon Soul: När han kommer till 25% hp, swap hp% med en i laget och får även en del av hans stats",Orc,FALSE,24,2,10,1,attack_basic,
+Troll Ranger,Flaming spears: Stackande burn med 2~ dmg per stack,Orc,FALSE,20,6,10,1,attack_basic,
+Earth Shaman,Earth Shield: Start av runda ger alla en sköld som tål 3~ skada. stackande eller ej osäkert beroende på balans ,Orc,FALSE,22,3,10,1,attack_basic,armor(earth_shaman)
+Troll Defender,Trollhide: Minskar all skada med 2 (tar minst 1 skada). healar 2 på start av sin turn (ökas permanent med 1 varje gång han blir slagen (max 10) ,Orc,FALSE,45,3,10,1,attack_basic,
 ,,,,,,,,,
-Mushroom Gobbler,"Eat mushrooms on turn start, gaining random buffs, damage, speed, range",Gnome,FALSE,35,4,70,1,attack_basic,
-Broom Basher,"Wields a broom, chance to stun on attack.",Gnome,FALSE,20,2,80,3,attack_basic,bash(broom_basher)
+Mushroom Gobbler,"Eat mushrooms on turn start, gaining random buffs, damage, speed, range",Gnome,FALSE,35,4,10,1,attack_basic,
+Broom Basher,"Wields a broom, chance to stun on attack.",Gnome,FALSE,20,2,10,1,attack_basic,bash(broom_basher)

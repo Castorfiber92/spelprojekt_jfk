@@ -14,4 +14,5 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_mmj3p")
 name = "Vampiric crawler"
+description = "double strike - slår två slag varje attack. Siphon life - hälften av skadan den gör healar en random friendly hero."
 sprites = ExtResource("4_wu58y")

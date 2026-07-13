@@ -9,8 +9,9 @@ enum HeroTier { BRONZE, SILVER, GOLD, LEGENDARY }
 @export var current_tier : HeroTier = HeroTier.BRONZE
 @export_range(10,50) var base_HP : int
 @export_range(1,10) var base_damage : int
+@export_range(1,10) var base_spellpower : int
 @export_range(1,100) var base_speed : int
-@export_range(1,5) var base_range : int
+@export_range(1,3) var base_range : int
 @export_group("Base abilities")
 @export var base_action : Behavior
 @export var abilities : Array[Behavior]

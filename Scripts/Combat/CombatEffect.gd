@@ -4,7 +4,7 @@ class_name CombatEffect
 var source: Hero
 var target: Hero
 var value: float
-var type: String # "DAMAGE", "HEAL", "SHIELD"
+var type: String # "DAMAGE", "HEAL", "CAST"
 var animation : String
 var animation_duration : float
 var tags: Array[String] = [] # ["fire", "thorns", "melee"]

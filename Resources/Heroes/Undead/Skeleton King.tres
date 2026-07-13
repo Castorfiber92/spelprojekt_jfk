@@ -13,3 +13,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_vyk64")
 name = "Skeleton King"
+description = "Återuppväcks I en miniform efter den har dött en gång"

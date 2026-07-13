@@ -5,6 +5,7 @@ var hero_data : HeroData
 var current_HP : int
 var maximum_HP : int
 var current_damage : int
+var current_spellpower : int
 var current_speed : int
 var current_range : int
 
@@ -32,6 +33,7 @@ func initialize_data():
 	current_damage = hero_data.base_damage
 	current_speed = hero_data.base_speed
 	current_range = hero_data.base_range
+	current_spellpower = hero_data.base_spellpower
 
 func take_damage(damage : int, source : HeroSlot):
 	#Here we call the on_take_damage event to check behaviors
@@ -64,7 +66,7 @@ func add_behavior(behavior: Behavior):
 		return true
 	else:
 		# If it exists, but is a buff (just apply the stronger amount of stacks)
-		# Right now it only sets the stacks to the max, so it wont apply properly for
+		# Right now it only sets the stacks to the max when hit by the same name, so it wont apply properly for
 		# something that should increase the stacks, find a way to differentiate these types
 		# in the future. For now ok.
 		var existing_behavior = behaviors[new_behavior.name]
@@ -88,11 +90,13 @@ func remove_behavior(behavior_name: String):
 func get_behaviors():
 	return behaviors.values()
 
-func trigger_behavior_event(event_name: String, source : HeroSlot, targets : Array[HeroSlot] = []):
-	var context = CombatContext.new(source, targets)
+func trigger_behavior_event(event_name: String, source : HeroSlot, targets : Array[HeroSlot] = [], combat_manager : CombatManager = null):
 	# print("Triggering ", event_name, " event.")
 	for i in behaviors:
 		if behaviors[i].has_method(event_name):
+			var context = CombatContext.new(source, targets, combat_manager)
+			if context.targets.is_empty() and combat_manager != null:
+				context.targets = context.resolve_targets(behaviors[i], combat_manager)
 			behaviors[i].call(event_name, context)
 
 ## Use this for modifying values (e.g., calculating damage)

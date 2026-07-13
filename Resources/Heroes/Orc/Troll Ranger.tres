@@ -13,3 +13,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_tbtsd")
 name = "Troll Ranger"
+description = "Flaming spears: Stackande burn med 2~ dmg per stack"

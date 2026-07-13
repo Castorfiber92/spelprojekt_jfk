@@ -114,49 +114,43 @@ func process_stack():
 	is_processing = false
 
 func execute_turn(slot: HeroSlot):
-	print("New turn")
-	# PHASE: PRE_TURN
+	print("New turn for ", slot.hero.hero_data.name)
+	
+	# PHASE 1: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
-	slot.hero.trigger_behavior_event("on_turn_start", slot) 
+	slot.hero.trigger_behavior_event("on_turn_start", slot, [], self) 
 	await wait_for_stack_to_clear()
-	# Check if the hero is available to act (not stunned/asleep/etc)
+	
+	# Status verification
 	if not slot.hero.can_act():
 		print(slot.hero.hero_data.name, " is incapacitated and skips their turn!")
-		perform_action(slot)
-		await wait_for_stack_to_clear()
-		slot.hero.trigger_behavior_event("on_turn_end", slot)
+		slot.hero.trigger_behavior_event("on_turn_end", slot, [], self)
 		await wait_for_stack_to_clear()
 		return
-	# PHASE: SELECT_ACTION
-	current_phase = Enums.CombatPhase.SELECT_ACTION
-	var action = slot.hero.hero_data.base_action 
-	# PHASE: FIND_TARGETS
-	current_phase = Enums.CombatPhase.FIND_TARGETS
-	var targets = get_valid_targets(slot, action)
-	
-	if targets.is_empty():
-		# What happens if it has no valid targets
-		print(slot.hero.hero_data.name, " has no valid targets and skips their turn!")
-		# DELETED: _wrap_up_turn(slot.hero) from here
-		slot.hero.trigger_behavior_event("on_turn_end", slot)
-		await wait_for_stack_to_clear()
-		return
-	# PHASE: BEFORE_ACT
+		
+	# PHASE 2: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
-	slot.hero.trigger_behavior_event("on_before_act", slot)
+	slot.hero.trigger_behavior_event("on_before_act", slot, [], self)
 	await wait_for_stack_to_clear()
-	# PHASE: EXECUTE
+	
+	# PHASE 3: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
-	print(slot.hero.hero_data.name, " will be using ", action.name, " on ", ", ".join(targets.map(func(t): return t.hero.hero_data.name)))
-
-	perform_action(slot, targets) # This handles the 'on_execute_action'
+	
+	# We pass an empty target array []. The hero's active attack behavior
+	# will resolve its targets automatically using the behavior's range rules
+	slot.hero.trigger_behavior_event("on_execute_action", slot, [], self)
 	await wait_for_stack_to_clear()
-	# PHASE: AFTER_ACT
+	slot.hero.has_acted = true
+	
+	# PHASE 4: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
-	slot.hero.trigger_behavior_event("on_after_act", slot)
+	slot.hero.trigger_behavior_event("on_after_act", slot, [], self)
 	await wait_for_stack_to_clear()
-	slot.hero.trigger_behavior_event("on_turn_end", slot)
+	
+	# PHASE 5: POST_TURN
+	slot.hero.trigger_behavior_event("on_turn_end", slot, [], self)
 	await wait_for_stack_to_clear()
+
 
 func wait_for_stack_to_clear():
 	while is_processing or not effect_stack.is_empty():
@@ -191,47 +185,28 @@ func process_effect(effect: CombatEffect):
 	for b in effect.target.get_behaviors():
 		if b.has_method("modify_incoming_effect"):
 			b.modify_incoming_effect(effect)
-
-
-func perform_action(source : HeroSlot, targets: Array[HeroSlot] = []):
-	if source.hero.can_act():
-		# We trigger the actual behavior event on the corresponding target
-		source.hero.trigger_behavior_event("on_execute_action", source, targets)
-
-	source.hero.has_acted = true
 	
 func clear_highlights():
 	for i in player_slots:
 		i.cleanup()
 	for i in enemy_slots:
 		i.cleanup()
-		
-func get_valid_targets(source: HeroSlot, action: Behavior) -> Array[HeroSlot]:
-	var candidates: Array[HeroSlot] = []
-	# Determine which team array to look at by the definition in a behavior
-	match action.target_team:
-		Enums.Team.SELF:
-			return [source]
-		Enums.Team.ENEMY:
-			candidates = get_enemy_slots(source.hero)
-		Enums.Team.FRIEND:
-			candidates = get_friendly_slots(source.hero)
-	# Delegate the actual filtering to the behavior script
-	return action.get_valid_targets(source, candidates)
 	
 func get_enemy_slots(source: Hero) -> Array[HeroSlot]:
-	# If the source is a Player, their enemies are in the enemy_slots
-	if source.team == Enums.Team.FRIEND:
-		return enemy_slots
-	else:
-		return player_slots
+	var raw_slots = enemy_slots if source.team == Enums.Team.FRIEND else player_slots
+	
+	# FILTER: Instantly weed out dead units or empty lanes at the source!
+	return raw_slots.filter(func(slot): 
+		return slot != null and is_instance_valid(slot.hero)
+	)
 
 func get_friendly_slots(source: Hero) -> Array[HeroSlot]:
-	# If the source is a Player, their friends are in the player_slots
-	if source.team == Enums.Team.FRIEND:
-		return player_slots
-	else:
-		return enemy_slots
+	var raw_slots = player_slots if source.team == Enums.Team.FRIEND else enemy_slots
+	
+	# FILTER: Only hand back active, living allies to the context math
+	return raw_slots.filter(func(slot): 
+		return slot != null and is_instance_valid(slot.hero) 
+	)
 
 
 func reset_round():

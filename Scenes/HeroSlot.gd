@@ -31,32 +31,6 @@ func apply_damage_effect(crit : bool) -> Tween:
 	VisualEffects.flash_sprite(sprite, Color.FIREBRICK)
 	return VisualEffects.shake_node(sprite)
 
-func apply_damage_effect_old() -> Tween:
-	var shake_intensity = 4.0
-	var shake_duration = 0.05
-	var flash_color = Color(1, 0.3, 0.3) # Soft red
-
-	# 1. SOFT RED FLASH (Targets the sprite texture layout)
-	var color_tween = create_tween()
-	color_tween.tween_property(sprite, "modulate", flash_color, 0.1)
-	color_tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
-
-	# 2. SPRITE POSITION SHAKE
-	var shake_tween = create_tween()
-	
-	# ✅ FIX: Store the original local position of the SPRITE node, not the container panel
-	var original_sprite_position = sprite.position
-	
-	for i in range(4):
-		var offset = Vector2(randf_range(-5, 5), randf_range(-5, 5)) * shake_intensity
-		# ✅ FIX: Tween the 'sprite' node position property instead of 'self'
-		shake_tween.tween_property(sprite, "position", original_sprite_position + offset, shake_duration)
-	
-	# Reset explicitly back to the original sprite coordinate base
-	shake_tween.tween_property(sprite, "position", original_sprite_position, shake_duration)
-	
-	return shake_tween
-
 func apply_heal_effect() -> Tween:
 	var shake_intensity = 4.0
 	var shake_duration = 0.05
