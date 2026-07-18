@@ -16,9 +16,9 @@ func present(manager: CombatManager) -> void:
 		await source_slot.play_animation(animation, animation_duration)
 		
 	# 2. TARGET REACTS SECOND, if they should from a buff?
-	#if manager.hero_to_slot_map.has(target):
-		#var target_slot: HeroSlot = manager.hero_to_slot_map[target]
-		#await target_slot.apply_damage_effect(is_crit).finished
-	#else:
+	if manager.hero_to_slot_map.has(target):
+		var target_slot: HeroSlot = manager.hero_to_slot_map[target]
+		await target_slot.apply_heal_effect().finished
+	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing
-	await manager.get_tree().process_frame
+		await manager.get_tree().process_frame

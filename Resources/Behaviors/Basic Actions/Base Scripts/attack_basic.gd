@@ -8,7 +8,7 @@ func on_execute_action(combatContext : CombatContext):
 		# Instantiate the specific configuration subclass
 		var effect = DamageEffect.new() 
 		
-		effect.value = get_modified_stat(combatContext.source.hero, "damage", combatContext.source.hero.current_damage)
+		effect.value = get_modified_stat(combatContext.source.hero, "spellpower", combatContext.source.hero.current_damage)
 		effect.source = combatContext.source.hero
 		effect.target = target.hero
 		effect.animation = self.animation

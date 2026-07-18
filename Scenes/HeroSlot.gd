@@ -32,7 +32,7 @@ func apply_damage_effect(crit : bool) -> Tween:
 	return VisualEffects.shake_node(sprite)
 
 func apply_heal_effect() -> Tween:
-	var shake_intensity = 4.0
+	var shake_intensity = 1.0
 	var shake_duration = 0.05
 	var flash_color = Color(0.0, 0.7, 0.407, 1.0) # Soft green
 

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://cawegf2bt8cnq"]
+
+[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_ceehn"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_dd7jd"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_r8vqy"]
+
+[resource]
+script = ExtResource("3_r8vqy")
+tribe = 3
+base_HP = 40
+base_damage = 8
+base_speed = 5
+base_range = 1
+base_action = ExtResource("2_dd7jd")
+name = "Thwomping Tree"

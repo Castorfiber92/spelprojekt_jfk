@@ -63,9 +63,22 @@ func wait_for_input(action_name: String):
 		# Wait for exactly one frame to pass
 		await get_tree().process_frame
 		
+		if not is_inside_tree():
+			return
 		# Check if the specific action (Space/Enter) was just pressed
 		if Input.is_action_just_pressed(action_name):
 			return # This 'resolves' the await in the calling function
+# BELOW IS FOR TESTING ONLY
+func emergency_exit_to_overworld() -> void:
+	print("Combat Manager: Shutting down loops for safe escape...")
+	
+	# 1. Flip your loop variables to false to instantly break all active 'while true' loops
+	combat_active = false
+	is_processing = false
+	effect_stack.clear()
+	
+	# 2. Swap back to the overworld map scene safely
+	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 
 func get_next_acting_hero() -> HeroSlot:
 	var candidates : Array[HeroSlot] = []
