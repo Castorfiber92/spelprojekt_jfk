@@ -21,7 +21,6 @@ class HexAStar extends AStar2D:
 	func _estimate_cost(from_id: int, to_id: int) -> float:
 		return get_point_position(from_id).distance_to(get_point_position(to_id))
 
-
 @onready var tile_map_layer: TileMapLayer = $TileMapLayer
 @onready var player: CharacterBody2D = $Player
 @onready var line_2d: Line2D = $Line2D # Direct reference to our new visual line drawer
@@ -39,7 +38,26 @@ var last_hovered_cell: Vector2i = Vector2i(-999, -999)
 var event_icons = {}
 
 func _ready() -> void:
-	generate_map_events()
+	# 1. Inspect the global GameManager vault memory cache first
+	if GameManager.has_saved_map_state():
+		print("Overworld Manager: Returning game loop detected. Loading saved grid maps...")
+		map_events = GameManager.get_saved_map_events()
+		
+		# Snapping player to their last saved hex location safely
+		var saved_cell = GameManager.get_saved_player_cell()
+		player.global_position = tile_map_layer.map_to_local(saved_cell)
+	else:
+		print("Overworld Manager: New run detected. Generating layout positions from scratch...")
+		# BRAND NEW GAME: Run your 7-tile spreadsheet recipe randomizer from scratch
+		generate_map_events()
+	
+	# 2. Let Godot's internal caching systems settle for one frame
+	await get_tree().process_frame
+	
+	# 3. Compile your A* walkway paths and paint visual icons over nodes
+	initialize_navigation_grid()
+	line_2d.clear_points()
+	await get_tree().process_frame
 	initialize_navigation_grid()
 	snap_player_to_start()
 	line_2d.clear_points() # Make sure the line starts completely empty
@@ -48,18 +66,19 @@ func get_cell_id(cell: Vector2i) -> int:
 	return (cell.x << 32) | (cell.y & 0xFFFFFFFF)
 
 func initialize_navigation_grid() -> void:
+	# 1. Clear previous A* navigation tracking cache data
 	astar.clear()
-	astar.manager_ref = self # Feed the manager reference to our custom class
+	astar.manager_ref = self 
 	
 	var active_cells = tile_map_layer.get_used_cells()
 	
-	# 1. Register points
+	# 2. Register every valid hex grid point into the pathfinder
 	for cell in active_cells:
 		var point_id = get_cell_id(cell) 
 		var cell_position = tile_map_layer.map_to_local(cell)
 		astar.add_point(point_id, cell_position)
 	
-	# 2. Build connection bridges UNIFORMLY everywhere
+	# 3. Create bidirectional walkways between every adjacent hex
 	for cell in active_cells:
 		var current_id = get_cell_id(cell)
 		var surrounding_neighbors = tile_map_layer.get_surrounding_cells(cell)
@@ -67,22 +86,37 @@ func initialize_navigation_grid() -> void:
 		for neighbor in surrounding_neighbors:
 			if neighbor in active_cells:
 				var neighbor_id = get_cell_id(neighbor)
-				astar.connect_points(current_id, neighbor_id, true) # Always connect
+				astar.connect_points(current_id, neighbor_id, true) 
 				
+	# 4. Loop through the randomized active events and draw their overlay icons
 	for cell in active_cells:
 		if map_events.has(cell):
 			var event: MapEvent = map_events[cell]
-			var icon = TextureRect.new()
-			tile_map_layer.add_child(icon)
+			
+			# --- THE VISITED SAFETY SHIELD ---
+			# If the player has already successfully completed this node activity,
+			# skip drawing its visual graphic icon entirely!
+			if event.visited:
+				continue
+			# ---------------------------------
+			
+			# Extract the enum key string name (e.g. "COMBAT", "SHOP", "TAVERN")
 			var fallback_string = event.EventType.keys()[event.type] 
-			icon.texture = Ui.get_overworld_event_texture(str(fallback_string))
-			# Get the pixel coordinate of the center of the tile
-			var tile_center = tile_map_layer.map_to_local(cell)
-			icon.scale = Vector2(0.5, 0.5)
-			# Offset by 1/4 the icon size to center it
-			var icon_size = icon.texture.get_size()
-			icon.position = tile_center - (icon_size / 4.0)
-			event_icons[cell] = icon
+			
+			# Pass it directly to your UI script texture grabber
+			var final_texture = Ui.get_overworld_event_texture(str(fallback_string))
+			
+			if final_texture:
+				var icon = TextureRect.new()
+				tile_map_layer.add_child(icon)
+				icon.texture = final_texture
+				
+				# Position and scale using your original exact visual layout guidelines
+				var tile_center = tile_map_layer.map_to_local(cell)
+				icon.scale = Vector2(0.5, 0.5)
+				var icon_size = icon.texture.get_size()
+				icon.position = tile_center - (icon_size / 4.0)
+				event_icons[cell] = icon 
 
 func snap_player_to_start() -> void:
 	var current_cell = tile_map_layer.local_to_map(player.global_position)
@@ -149,7 +183,7 @@ func execute_cached_path() -> void:
 	line_2d.clear_points() # Clear visual paths during transit
 	selected_cell = Vector2i(-999, -999) # Reset target tracking
 	start_movement_loop()
-	
+
 func start_movement_loop() -> void:
 	is_moving = true
 	move_to_next_hex()
@@ -184,35 +218,109 @@ func move_to_next_hex() -> void:
 				event.trigger_interaction(player)
 				
 				# remove the event icon
-				event_icons[next_cell].queue_free()
-				event_icons.erase(next_cell)
+				if event_icons.has(next_cell):
+					event_icons[next_cell].queue_free()
+					event_icons.erase(next_cell)
+				else:
+					printerr("MAP ENGINE WARNING: Tried to delete event icon at cell ", next_cell, " but key was missing from event_icons array!")
+				GameManager.save_map_state(
+					next_cell,                # Current hex tile coordinate
+					map_events,               # Entire randomized dictionary cache
+				)
 				
 				# Force a full stop at the interaction center
 				current_path.clear()
 				is_moving = false
 				current_preview_cells.clear()
 				selected_cell = Vector2i(-999, -999) 
+				route_scene_transition(event)
 				return 
 			
 		# If there's no event, or the event was already visited, continue walking
 		move_to_next_hex()
 	)
 
+func route_scene_transition(event: MapEvent) -> void:
+	# Clean up or fade out the screen visual layers here first if desired
+	match event.type:
+		event.EventType.COMBAT:
+			print("Overworld: Transitioning to Combat Manager Canvas scene...")
+			get_tree().change_scene_to_packed(Preloads.combat_scene)
+		event.EventType.SHOP:
+			print("Overworld: Loading Shop UI interface module...")
+			get_tree().change_scene_to_packed(Preloads.shop_scene)
+		event.EventType.TAVERN:
+			print("Overworld: Entering Tavern recruitment bay...")
+			#get_tree().change_scene_to_packed("res://Scenes/TavernMenu.tscn")
+		event.EventType.ENCOUNTER:
+			print("Overworld: Entering a mysterious encounter...")
+			#get_tree().change_scene_to_packed("res://Scenes/TavernMenu.tscn")
+		event.EventType.BOSS:
+			print("Overworld: Entering THE BOSS BATTLE...")
+			#get_tree().change_scene_to_packed("res://Scenes/TavernMenu.tscn")
+
 func generate_map_events():
+	# Wipe old runtime memory data states
 	map_events.clear()
 	randomize()
-	for cell in tile_map_layer.get_used_cells():
+	
+	var designated_event_cells: Array[Vector2i] = []
+	var all_used_cells = tile_map_layer.get_used_cells()
+	
+	# --- PASS A: LOAD HARDCODED (SET IN STONE) TILES NATIVELY ---
+	for cell in all_used_cells:
 		var tile_data = tile_map_layer.get_cell_tile_data(cell)
-		if not tile_data: continue
-		if not tile_data.has_custom_data("event_resource"): continue
+		if not tile_data: 
+			continue
+		if not tile_data.has_custom_data("event_resource"): 
+			continue
+			
 		var resource_name: String = tile_data.get_custom_data("event_resource")
-		if not resource_name.is_empty():
-			var resource_template = Preloads.get(resource_name)
-			if resource_template:
-				var new_event: MapEvent = resource_template.duplicate()
-				new_event.unique_id = randi()
-				new_event.visited = false
-				map_events[cell] = new_event
+		if resource_name.is_empty():
+			continue
+			
+		# Case 1: If it's your placeholder token, isolate it for shuffling later
+		if resource_name == "encounter_event":
+			designated_event_cells.append(cell)
+		else:
+			# Case 2: It is a permanent hardcoded tile asset! 
+			# Pull its specific blueprint file straight from Preloads exactly like before
+			var static_template = Preloads.get(resource_name)
+			if static_template:
+				var new_static_event: MapEvent = static_template.duplicate()
+				new_static_event.unique_id = randi()
+				new_static_event.visited = false
+				
+				# Lock it securely into your global data tracker
+				map_events[cell] = new_static_event
+
+	# --- PASS B: RANDOMIZE AND INJECT THE SPREADSHEET RECIPE POOL ---
+	designated_event_cells.shuffle()
+	
+	var rigid_event_recipe: Array[String] = [
+		"combat_event", 
+		"combat_event",
+		"combat_event", 
+		"combat_event",
+		"shop_event", 
+		"tavern_event", 
+		"encounter_event"
+	]
+	
+	var total_to_loop = min(designated_event_cells.size(), rigid_event_recipe.size())
+	
+	for i in range(total_to_loop):
+		var target_cell = designated_event_cells[i]
+		var chosen_resource_name = rigid_event_recipe[i]
+		
+		var resource_template = Preloads.get(chosen_resource_name)
+		if resource_template:
+			var new_dynamic_event: MapEvent = resource_template.duplicate()
+			new_dynamic_event.unique_id = randi()
+			new_dynamic_event.visited = false
+			
+			# Inject your dynamic event straight alongside your permanent tiles
+			map_events[target_cell] = new_dynamic_event
 
 func remove_event_after_interaction(cell: Vector2i):
 	if map_events.has(cell):

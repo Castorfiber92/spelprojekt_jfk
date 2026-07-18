@@ -6,9 +6,10 @@ enum EventType { COMBAT, TAVERN, SHOP, ENCOUNTER, BOSS }
 var visited: bool = false
 var unique_id: int = 0
 
-# Update this for each event to a specific tile/graphic, rn we make it just green
+# Update this variable/function for each event to a specific tile/graphic, rn we do nothing
 @export var cleared_tile_coords: Vector2i = Vector2i(1, 0)
 
 func trigger_interaction(player_node: Node) -> void:
 	# Virtual method: overridden by specific sub-classes
-	pass
+	visited = true
+	GameEvents.map_event_triggered.emit(self)

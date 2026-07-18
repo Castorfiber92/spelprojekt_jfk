@@ -12,6 +12,7 @@ enum BehaviorTag {NEUTRAL, BURN, FREEZE, MARK, STUN, CURSE, ARMOR, POWER}
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
+@export var target_count: int = 1
 ##0 range for self-targeting or if we are not using a custom range
 @export_range(0,5) var range : int
 @export_category("Buff Settings")
@@ -85,21 +86,93 @@ func _apply_target_type(candidates: Array[HeroSlot], source: HeroSlot) -> Array[
 	if candidates.is_empty():
 		return candidates
 
-	# 1. Baseline engine calculation runs first, picks random target if single, otherwise all available targets
-	var resolved_targets : Array[HeroSlot] = []
-	if target_type == Enums.Target.SINGLE:
-		resolved_targets.append(candidates.pick_random())
-	else:
-		resolved_targets = candidates.duplicate()
-		
-	# 2. Attacker Hook runs second to change single target to multi-target (or vice versa)
+	var resolved_targets: Array[HeroSlot] = []
+
+	match target_type:
+		Enums.Target.ALL:
+			# Hits everything available unconditionally (ignores target_count)
+			resolved_targets = candidates.duplicate()
+
+		Enums.Target.SINGLE:
+			# hit exactly 1, 2, or 3 completely independent random targets
+			var pool = candidates.duplicate()
+			pool.shuffle()
+			# Clamps to prevent trying to grab more heroes than actually exist in the pool
+			var max_hits = clampi(target_count, 1, pool.size())
+			resolved_targets = pool.slice(0, max_hits)
+		## THIS DOESNT WORK RIGHT NOW AS IT SHOULD, or well, the targeting works, but not the
+		## simultaneously applied effect. Look into it if needed, otherwise dont use cleave
+		Enums.Target.CLEAVE:
+			if candidates.is_empty():
+				resolved_targets = []
+			else:
+				var primary_target = candidates.pick_random()
+				resolved_targets.append(primary_target)
+				
+				if target_count > 1:
+					var neighbors = _find_adjacent_neighbors(primary_target, candidates)
+					neighbors.shuffle() # Randomize left/right sweep direction
+					
+					var extra_hits = target_count - 1
+					# Safely clamp using the actual available alive neighbors array size
+					var max_extra = clampi(extra_hits, 0, neighbors.size())
+					
+					for i in range(max_extra):
+						resolved_targets.append(neighbors[i])
+						
+		Enums.Target.MULTI:
+			# Picks a primary target first, then grabs another randomly available target
+			var primary_target = candidates.pick_random()
+			resolved_targets.append(primary_target)
+			
+			if target_count > 1:
+					var other_candidates: Array[HeroSlot] = []
+					
+					for slot in candidates:
+						# Skip the primary target so we don't hit the same hero twice
+						if slot != primary_target:
+							other_candidates.append(slot)
+					
+					# Shuffle the remaining pool to ensure random selection order
+					other_candidates.shuffle()
+					
+					# Calculate how many extra hits we still need
+					var extra_hits = target_count - 1
+					var max_extra = clampi(extra_hits, 0, other_candidates.size())
+					
+					# Append the extra targets up to your limit
+					for i in range(max_extra):
+						resolved_targets.append(other_candidates[i])
+
+	# Attacker Hook
 	for b in source.hero.get_behaviors():
 		if b.has_method("modify_attacker_final_targets"):
-			# Passes the engine's choice AND the full available pool for context
 			resolved_targets = b.call("modify_attacker_final_targets", resolved_targets, candidates)
 			
 	return resolved_targets
+
+func _find_adjacent_neighbors(primary: HeroSlot, pool: Array[HeroSlot]) -> Array[HeroSlot]:
+	var neighbors: Array[HeroSlot] = []
+	var p_idx = primary.index
 	
+	# ---  Frontline is <= 1, Backline is > 1 ---
+	var is_primary_frontline = (p_idx <= 1)
+	
+	for slot in pool:
+		if slot == primary: 
+			continue
+			
+		var s_idx = slot.index
+		var is_slot_frontline = (s_idx <= 1)
+		
+		# --- ROW CHECK: Both primary and candidate must be in the same line context ---
+		if is_primary_frontline == is_slot_frontline:
+			# --- DISTANCE CHECK: Must be exactly 1 slot away horizontally ---
+			if abs(s_idx - p_idx) == 1:
+				neighbors.append(slot)
+				
+	return neighbors
+
 func get_distance(source: HeroSlot, target_slot: HeroSlot) -> int:
 	# Self targeting is always 0 distance
 	if target_team == Enums.Team.SELF or source == target_slot:

@@ -1,6 +1,12 @@
 extends Node
 enum Team {FRIEND, ENEMY, SELF}
-enum Target {SINGLE, MULTI}
+enum Target {
+	SINGLE,     # Picks exactly N random/specific targets from the pool
+	MULTI,     # Picks a primary target, then another
+	CLEAVE,
+	ALL        # Hits every single valid hero in the pool unconditionally
+	#RANDOM_BOUNCE # Hits a target, then jumps to N random targets successively
+}
 enum Tribe {CRITTER, ORC, UNDEAD, GNOME}
 const Tribe_MAP = {
 	"critter": Enums.Tribe.CRITTER,

@@ -8,7 +8,7 @@
 script = ExtResource("2_qfeiv")
 name = "Earth Shield"
 type = 1
-target_type = 1
+target_type = 3
 range = 3
 behaviors_to_apply = Array[ExtResource("1_1cca5")]([ExtResource("2_gpg43")])
 metadata/_custom_type_script = "uid://bdu7cd5a58sga"
