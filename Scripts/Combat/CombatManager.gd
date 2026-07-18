@@ -8,9 +8,6 @@ var player_slots : Array[HeroSlot]
 var enemy_slots : Array[HeroSlot]
 @export var active_slot : HeroSlot
 
-##Below is temporary, for testing
-@export var player_heroes : Array[HeroData]
-@export var enemy_heroes : Array[HeroData]
 
 ## Stack variables
 var effect_stack: Array[CombatEffect] = []
@@ -50,7 +47,7 @@ func run_combat_loop():
 		
 		# --- ADDED FOR TESTING: PACING DELAY BETWEEN ACTIONS ---
 		# Adjust the '0.5' to make the pause longer (e.g., 1.0) or shorter (e.g., 0.2)
-		await get_tree().create_timer(0.2).timeout
+		await get_tree().create_timer(0.3).timeout
 		# -------------------------------------------------------
 		
 		# Clean up this specific turn completely before going to the top of the while-loop
@@ -227,11 +224,14 @@ func reset_round():
 		slot.hero.trigger_behavior_event("on_round_start", slot)
 
 func create_slots():
-	##Here we will create slots according to the playerparty (which does not exist right now)
-	## and according to what type of enemies we want to generate. Right now this is temporary,
-	## so that we might begin just testing it. The generating/loading we will cover later on.
-	load_party(player_heroes, combat_ui.player_party, player_slots, Enums.Team.FRIEND)
-	load_party(enemy_heroes, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
+	## Here we will create slots according to the playerparty 
+	## and according to what type of enemies we want to generate.
+	
+	# Pass PlayerData.player_party directly because it now holds the live Hero nodes
+	load_party(PlayerData.player_party, combat_ui.player_party, player_slots, Enums.Team.FRIEND)
+	
+	# (Assuming enemy_heroes is still an array of raw HeroData blueprints)
+	#load_party(enemy_heroes, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
 	
 func set_hero(slot : HeroSlot, hero : Hero):
 	##Assign the corresponding hero to the slot
@@ -248,6 +248,10 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 	var frontline_ui = ui_parent.get_node("Frontline")
 	var backline_ui = ui_parent.get_node("Backline")
 	for i in range(party_data.size()):
+		# Skip empty positions (crucial for empty slots in your player party array)
+		if party_data[i] == null:
+			continue
+			
 		var slot: HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
 		# Route to the correct vertical column
@@ -255,12 +259,18 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 			frontline_ui.add_child(slot) # Slots 0, 1 stack vertically in Front
 		else:
 			backline_ui.add_child(slot)  # Slots 2, 3, 4 stack vertically in Back
-		##Create a Hero class from the HeroData (so we don't mess up the Resource)
-		var hero = Hero.new()
-		##Set the Hero data according to the HeroData in the array above
-		hero.hero_data = party_data[i]
-		hero.initialize_data()
+		
+		var hero: Hero = null
+		
+		# If it's already an active Hero node (from your PlayerData), use it directly.
+		# If it's a HeroData resource (like your enemies), spin up a new node instance.
+		if party_data[i] is Hero:
+			hero = party_data[i]
+		else:
+			hero = Hero.create(party_data[i])
+			
 		hero.team = team_enum
+		
 		# Add the slot to the corresponding array
 		target_slots_array.append(slot)
 		set_hero(slot, hero)

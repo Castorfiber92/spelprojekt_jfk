@@ -9,6 +9,8 @@ anchors_preset = 0
 mouse_filter = 2
 script = ExtResource("1_f6wyd")
 shop_ui = NodePath("ShopUI")
+max_party_size = null
+max_shop_size = null
 
 [node name="ShopUI" parent="." unique_id=1507633235 instance=ExtResource("2_f6wyd")]
 layout_mode = 0

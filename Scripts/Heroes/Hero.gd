@@ -16,9 +16,11 @@ var behaviors: Dictionary [String, Behavior]
 
 signal has_died
 
-func _ready() -> void:
-	## When the Hero Class loads (i.e. begins to exist) we call the functions below
-	initialize_data()
+static func create(data: HeroData) -> Hero:
+	var new_hero = Hero.new()
+	new_hero.hero_data = data
+	new_hero.initialize_data()
+	return new_hero
 
 func initialize_data():
 	## This loads the information from the base resource class HeroData (which we do NOT want to meddle with)

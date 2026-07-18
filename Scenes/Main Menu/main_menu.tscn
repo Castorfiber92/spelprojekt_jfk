@@ -1,0 +1,114 @@
+[gd_scene format=3 uid="uid://bgan7y5ucpv0f"]
+
+[ext_resource type="Script" uid="uid://cswsbqh516fp2" path="res://Scenes/Main Menu/main_menu_manager.gd" id="1_dtmfd"]
+[ext_resource type="Texture2D" uid="uid://6be4btruwucq" path="res://Graphics/UI/uiborder.png" id="2_armea"]
+
+[node name="MainMenu" type="Control" unique_id=757744467]
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_dtmfd")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1466906983]
+custom_minimum_size = Vector2(1920, 1080)
+layout_mode = 0
+offset_right = 540.0
+texture = ExtResource("2_armea")
+
+[node name="UI" type="Control" parent="." unique_id=645306352]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI" unique_id=1004075737]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -720.0
+offset_top = -360.0
+offset_right = 720.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/VBoxContainer" unique_id=643076897]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button" type="Button" parent="UI/VBoxContainer/HBoxContainer" unique_id=2127531890]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "CRITTERS"
+
+[node name="Control" type="Control" parent="UI/VBoxContainer/HBoxContainer" unique_id=169425604]
+custom_maximum_size = Vector2(200, -1)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button2" type="Button" parent="UI/VBoxContainer/HBoxContainer" unique_id=123904837]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "GNOME"
+
+[node name="Control2" type="Control" parent="UI/VBoxContainer/HBoxContainer" unique_id=1479186831]
+custom_maximum_size = Vector2(200, -1)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button3" type="Button" parent="UI/VBoxContainer/HBoxContainer" unique_id=554679545]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "UNDEAD"
+
+[node name="Control" type="Control" parent="UI/VBoxContainer" unique_id=1504015080]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="UI/VBoxContainer" unique_id=1482470205]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Button" type="Button" parent="UI/VBoxContainer/HBoxContainer2" unique_id=320786453]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "ORC"
+
+[node name="Control" type="Control" parent="UI/VBoxContainer/HBoxContainer2" unique_id=1636056077]
+custom_maximum_size = Vector2(200, -1)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button2" type="Button" parent="UI/VBoxContainer/HBoxContainer2" unique_id=849818322]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "???"
+
+[node name="Control2" type="Control" parent="UI/VBoxContainer/HBoxContainer2" unique_id=938389406]
+custom_maximum_size = Vector2(200, -1)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button3" type="Button" parent="UI/VBoxContainer/HBoxContainer2" unique_id=1761402854]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 35
+text = "???"

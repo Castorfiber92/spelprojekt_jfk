@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Spelprojekt JFK"
-run/main_scene="uid://dyw3gk74lxop3"
+run/main_scene="uid://bgan7y5ucpv0f"
 config/features=PackedStringArray("4.7", "Mobile")
 
 [autoload]
