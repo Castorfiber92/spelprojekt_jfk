@@ -83,24 +83,24 @@ func sell_selected_slot() -> void:
 	current_phase = ShopPhase.TRANSACTION
 	
 	var target_index: int = selected_slot.slot_number - 1
-	var item_to_sell: PurchaseableData = PlayerData.player_party[target_index]
-	
+	var hero_to_sell: Hero = PlayerData.player_party[target_index]
+	var blueprint: HeroData = hero_to_sell.hero_data
 	# Calculate dynamic refund based on the Tier (Bronze=1, Silver=2, Gold=3, Legendary=4)
 	var refund_amount: int = 1 # Base backup cost
-	if item_to_sell is HeroData:
-		match item_to_sell.current_tier:
-			HeroData.HeroTier.BRONZE:
-				refund_amount = 1 # Cost to buy: 2
-			HeroData.HeroTier.SILVER:
-				refund_amount = 2 # Cost to buy: 4
-			HeroData.HeroTier.GOLD, HeroData.HeroTier.LEGENDARY:
-				refund_amount = 3 # Cost to buy: 6 (Legendary retains Gold value)
-	
+	match blueprint.current_tier:
+		HeroData.HeroTier.BRONZE:
+			refund_amount = 1 # Cost to buy: 2
+		HeroData.HeroTier.SILVER:
+			refund_amount = 2 # Cost to buy: 4
+		HeroData.HeroTier.GOLD, HeroData.HeroTier.LEGENDARY:
+			refund_amount = 3 # Cost to buy: 6 (Legendary retains Gold value)
+			
+	hero_to_sell.queue_free()
 	# Process transaction data mutation
 	PlayerData.essence += refund_amount
 	PlayerData.player_party[target_index] = null
 	
-	print("Sold %s for %d Essence." % [item_to_sell.name, refund_amount])
+	print("Sold %s for %d Essence." % [blueprint.name, refund_amount])
 	
 	# Reset selection state
 	selected_slot = null
@@ -154,14 +154,15 @@ func execute_transaction(source_slot: ShopSlot, target_slot: ShopSlot) -> void:
 	if is_rearrangement:
 		_handle_party_rearrangement(source_slot, target_slot)
 	else:
+		var blueprint = incoming_data as HeroData
 		# Standard shop purchase logic
-		if not PlayerData.can_pay(incoming_data.cost):
-			print("Cannot afford: ", incoming_data.spiritName)
+		if not PlayerData.can_pay(blueprint.cost):
+			print("Cannot afford: ", blueprint.name)
 			current_phase = ShopPhase.IDLE
 			return
-			
-		if incoming_data is HeroData:
-			_handle_hero_placement(incoming_data, source_slot, target_slot)
+
+		PlayerData.deduct_cost(blueprint.cost)
+		_handle_hero_placement(blueprint, source_slot, target_slot)
 		
 	current_phase = ShopPhase.IDLE
 	update_shop_UI()
@@ -170,48 +171,34 @@ func _handle_party_rearrangement(source: ShopSlot, target: ShopSlot) -> void:
 	var source_index = source.slot_number - 1
 	var target_index = target.slot_number - 1
 	
-	# Grab references from the actual player party array
-	var source_hero = PlayerData.player_party[source_index]
-	var target_hero = PlayerData.player_party[target_index]
-	
-	# Swap the data positions in the backend array
-	PlayerData.player_party[target_index] = source_hero
-	PlayerData.player_party[source_index] = target_hero
+	var temp_hero: Hero = PlayerData.player_party[source_index]
+	PlayerData.player_party[source_index] = PlayerData.player_party[target_index]
+	PlayerData.player_party[target_index] = temp_hero
 	
 	print("Rearranged party: Swapped slot %d and slot %d." % [source.slot_number, target.slot_number])
 
-func _handle_hero_placement(hero: HeroData, shop: ShopSlot, target: ShopSlot) -> void:
-	var target_index = target.slot_number - 1
+func _handle_hero_placement(blueprint: HeroData, source_slot: ShopSlot, target_slot: ShopSlot) -> void:
+	var target_index: int = target_slot.slot_number - 1
 	
-	# Ensure backend data array matches our exact 5-slot grid boundary
-	if PlayerData.player_party.size() < 5:
-		PlayerData.player_party.resize(5)
+	# Check if the target party slot already has a character standing there
+	var existing_hero: Hero = PlayerData.player_party[target_index]
 	
-	# RULE 1: Merge Check (Same hero, upgrade tier)
-	if not target.slot_is_empty and target.slot_item is HeroData:
-		var target_hero: HeroData = PlayerData.player_party[target_index]
+	# 3. Create a unique runtime node instance from the shop's blueprint resource
+	var new_live_hero: Hero = Hero.create(blueprint)
+	
+	if existing_hero != null:
+		# OPTION A: If you want to overwrite and delete the old character:
+		existing_hero.queue_free()
+		PlayerData.player_party[target_index] = new_live_hero
 		
-		if target_hero.can_merge_with(hero):
-			PlayerData.deduct_cost(hero.cost)
-			target_hero.advance_tier() 
-			shop.clear_slot()
-			update_shop_UI() 
-			return
-		else:
-			# ---- FIXED: Deny placement outright if it's a different hero ----
-			print("Placement rejected: Slot is occupied.")
-			return
+		# OPTION B: If you want to merge duplicates (e.g. upgrating tiers), 
+		# you would handle that logic here instead of queue_free()!
+	else:
+		# Slot was empty, just place the new live hero node in the array
+		PlayerData.player_party[target_index] = new_live_hero
 		
-	# RULE 2: Open Slot (Clean placement)
-	if target.slot_is_empty:
-		PlayerData.deduct_cost(hero.cost)
-		
-		var hero_instance: HeroData = hero.duplicate() 
-		PlayerData.player_party[target_index] = hero_instance
-		
-		shop.clear_slot()
-		update_shop_UI()
-		return
+	# 4. Clear the shop counter item so it doesn't stay on the shelf (if that is your mechanic)
+	source_slot.slot_item = null 
 
 func update_shop_UI() -> void:
 	# 1. Update party grid board

@@ -8,7 +8,7 @@ class_name ShopSlot
 @export var cost_label : Label
 @export var sprite : TextureRect
 
-var slot_item: PurchaseableData = null
+var slot_item: Variant = null
 var slot_number : int
 var shop_manager: Node = null 
 
@@ -22,16 +22,30 @@ func _gui_input(event: InputEvent) -> void:
 		if shop_manager and shop_manager.has_method("handle_slot_clicked"):
 			shop_manager.handle_slot_clicked(self)
 
-func display_item(new_item: PurchaseableData) -> void:
+func display_item(new_item: Variant) -> void:
 	slot_item = new_item
+	
 	if slot_item:
 		UI.visible = true
-		cost_label.text = str(slot_item.cost)
-		sprite.texture = slot_item.texture
-		if slot_item is HeroData:
-			dmg_label.text = str(slot_item.base_damage)
-			hp_label.text = str(slot_item.base_HP)
-			#lvl_label.text = str(slot_item.level)
+		
+		# --- CASE A: This slot is acting as a Shop Shelf (Resource) ---
+		if slot_item is PurchaseableData:
+			cost_label.text = str(slot_item.cost)
+			sprite.texture = slot_item.texture
+			
+			if slot_item is HeroData:
+				dmg_label.text = str(slot_item.base_damage)
+				hp_label.text = str(slot_item.base_HP)
+				
+		# --- CASE B: This slot is acting as a Player Bench (Live Node) ---
+		elif slot_item is Hero:
+			# Pull static visual data from the nested resource blueprint
+			cost_label.text = str(slot_item.hero_data.cost)
+			sprite.texture = slot_item.hero_data.texture
+			
+			# Pull live combat stats straight from the active Node!
+			dmg_label.text = str(slot_item.current_damage)
+			hp_label.text = str(slot_item.current_HP) 
 	else:
 		clear_slot()
 
