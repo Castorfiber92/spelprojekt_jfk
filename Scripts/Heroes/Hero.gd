@@ -2,6 +2,7 @@ extends Node2D
 class_name Hero
 
 var hero_data : HeroData
+var current_tier : HeroData.HeroTier
 var current_HP : int
 var maximum_HP : int
 var current_damage : int

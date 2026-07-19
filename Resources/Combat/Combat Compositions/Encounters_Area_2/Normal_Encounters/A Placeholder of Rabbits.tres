@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CombatComposition" format=3 uid="uid://bxk3nijpam0rq"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_6xxfb"]
+[ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="2_4a6ly"]
+
+[resource]
+script = ExtResource("2_4a6ly")
+encounter_name = "A Placeholder of Rabbits"

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_8mfsi"]
 [ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/Base Scripts/cast_basic.tres" id="2_aagfh"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_ypkay"]
+[ext_resource type="SpriteFrames" uid="uid://cpqlm47b1ka3e" path="res://Graphics/Hero Sprites/Gnome/old_uncle_tea_sprites.tres" id="4_aagfh"]
 
 [resource]
 script = ExtResource("3_ypkay")
@@ -13,3 +14,4 @@ base_speed = 20
 base_range = 3
 base_action = ExtResource("2_aagfh")
 name = "Old Uncle Tea"
+sprites = ExtResource("4_aagfh")

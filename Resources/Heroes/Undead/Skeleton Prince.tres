@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_wfgvq"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_x40bm"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_fkc3l"]
+[ext_resource type="SpriteFrames" uid="uid://bod3wt0sh7mms" path="res://Graphics/Hero Sprites/Undead/skeleton_prince_sprites.tres" id="4_lf88g"]
 
 [resource]
 script = ExtResource("3_fkc3l")
@@ -13,3 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_x40bm")
 name = "Skeleton Prince"
+sprites = ExtResource("4_lf88g")

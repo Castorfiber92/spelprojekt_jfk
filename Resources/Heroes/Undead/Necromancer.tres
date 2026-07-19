@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_y1po0"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_tpu5u"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_xlh0b"]
+[ext_resource type="SpriteFrames" uid="uid://c3el87ywn3hb1" path="res://Graphics/Hero Sprites/Undead/necromancer_sprites.tres" id="4_k4lb4"]
 
 [resource]
 script = ExtResource("3_xlh0b")
@@ -13,3 +14,4 @@ base_speed = 10
 base_range = 1
 base_action = ExtResource("2_tpu5u")
 name = "Necromancer"
+sprites = ExtResource("4_k4lb4")

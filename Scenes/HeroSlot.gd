@@ -2,8 +2,8 @@ extends PanelContainer
 class_name HeroSlot
 
 @export var hero : Hero
-@onready var hp_label : Label = $VBoxContainer/HBoxContainer/HP/Label
-@onready var damage_label : Label = $VBoxContainer/HBoxContainer/DAMAGE/Label
+@onready var hp_label : Label = $HBoxContainer/HP/Label
+@onready var damage_label : Label = $HBoxContainer/DAMAGE/Label
 @onready var name_label : Label = $VBoxContainer/PanelContainer2/HeroName
 @onready var sprite: TextureRect = $VBoxContainer/PanelContainer/TextureRect
 @onready var buff_slots_buffs: HBoxContainer = $VBoxContainer/BuffSlots/HBoxContainer
@@ -29,6 +29,7 @@ func apply_damage_effect(crit : bool) -> Tween:
 		return VisualEffects.play_critical_hit(sprite)
 
 	VisualEffects.flash_sprite(sprite, Color.FIREBRICK)
+
 	return VisualEffects.shake_node(sprite)
 
 func apply_heal_effect() -> Tween:

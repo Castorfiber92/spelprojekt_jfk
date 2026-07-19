@@ -7,12 +7,13 @@ enum Target {
 	ALL        # Hits every single valid hero in the pool unconditionally
 	#RANDOM_BOUNCE # Hits a target, then jumps to N random targets successively
 }
-enum Tribe {CRITTER, ORC, UNDEAD, GNOME}
+enum Tribe {CRITTER, ORC, UNDEAD, GNOME, NEUTRAL}
 const Tribe_MAP = {
 	"critter": Enums.Tribe.CRITTER,
 	"orc": Enums.Tribe.ORC,
 	"undead": Enums.Tribe.UNDEAD,
-	"gnome": Enums.Tribe.GNOME
+	"gnome": Enums.Tribe.GNOME,
+	"neutral": Enums.Tribe.NEUTRAL
 }
 enum CombatPhase {IDLE, 
 	PRE_TURN,      # Buffs ticking down, "Start of turn" abilities

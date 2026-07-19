@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CombatComposition" format=3 uid="uid://c5wesugdrpjaq"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_bhhk6"]
+[ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="2_cn160"]
+
+[resource]
+script = ExtResource("2_cn160")
+encounter_name = "Owl Escort"

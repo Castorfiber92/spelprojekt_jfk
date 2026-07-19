@@ -217,7 +217,6 @@ func get_friendly_slots(source: Hero) -> Array[HeroSlot]:
 		return slot != null and is_instance_valid(slot.hero) 
 	)
 
-
 func reset_round():
 	for slot in hero_to_slot_map.values():
 		slot.hero.has_acted = false
@@ -229,9 +228,11 @@ func create_slots():
 	
 	# Pass PlayerData.player_party directly because it now holds the live Hero nodes
 	load_party(PlayerData.player_party, combat_ui.player_party, player_slots, Enums.Team.FRIEND)
-	
-	# (Assuming enemy_heroes is still an array of raw HeroData blueprints)
-	#load_party(enemy_heroes, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
+	if RunManager.current_encounter == null:
+		printerr("CombatManager: No active encounter found in RunManager! Cannot spawn enemies.")
+		return
+	var active_enemy_team: Array[HeroData] = RunManager.current_encounter.enemy_team
+	load_party(active_enemy_team, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
 	
 func set_hero(slot : HeroSlot, hero : Hero):
 	##Assign the corresponding hero to the slot
@@ -247,23 +248,31 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 	# Gets our vertical column containers
 	var frontline_ui = ui_parent.get_node("Frontline")
 	var backline_ui = ui_parent.get_node("Backline")
+	
 	for i in range(party_data.size()):
-		# Skip empty positions (crucial for empty slots in your player party array)
-		if party_data[i] == null:
-			continue
-			
 		var slot: HeroSlot = Preloads.hero_slot.instantiate()
 		slot.index = i 
+		
 		# Route to the correct vertical column
 		if i <= 1:
 			frontline_ui.add_child(slot) # Slots 0, 1 stack vertically in Front
 		else:
 			backline_ui.add_child(slot)  # Slots 2, 3, 4 stack vertically in Back
 		
+		# Add the slot to our tracking array
+		target_slots_array.append(slot)
+		
+		# --- HANDLING THE HERO NODE ENVIRONMENT ---
+		# If the spreadsheet row or player party index was empty, leave the slot empty
+		if party_data[i] == null:
+			slot.hero = null
+			slot.update_info() # Updates UI to look empty/invisible if needed
+			continue # Proceed to the next grid position safely
+			
 		var hero: Hero = null
 		
-		# If it's already an active Hero node (from your PlayerData), use it directly.
-		# If it's a HeroData resource (like your enemies), spin up a new node instance.
+		# If it's already an active Hero node (from PlayerData), we use it directly.
+		# If it's a HeroData resource (like our enemies), spin up a new node instance.
 		if party_data[i] is Hero:
 			hero = party_data[i]
 		else:
@@ -271,8 +280,7 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 			
 		hero.team = team_enum
 		
-		# Add the slot to the corresponding array
-		target_slots_array.append(slot)
+		# Assign the unit node to our freshly anchored empty container spot
 		set_hero(slot, hero)
 
 func remove_hero(slot : HeroSlot):

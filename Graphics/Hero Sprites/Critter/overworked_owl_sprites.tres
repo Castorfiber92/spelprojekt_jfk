@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bgypdq4niakri"]
+
+[ext_resource type="Texture2D" uid="uid://ckhs66a1cwq54" path="res://Graphics/Hero Sprites/Critter/Overworked Owl.png" id="1_d0cmd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdu3o"]
+atlas = ExtResource("1_d0cmd")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4jady"]
+atlas = ExtResource("1_d0cmd")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gdu3o")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4jady")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

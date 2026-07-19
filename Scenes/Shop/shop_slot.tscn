@@ -33,19 +33,23 @@ sprite = NodePath("Layout/Control/Sprite")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1177979296]
 layout_mode = 2
+mouse_filter = 2
 texture = ExtResource("2_eiwfq")
 expand_mode = 5
 
 [node name="Layout" type="VBoxContainer" parent="." unique_id=674040939]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 8
 
 [node name="Header" type="HBoxContainer" parent="Layout" unique_id=1713231102]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="HPPanel" type="PanelContainer" parent="Layout/Header" unique_id=1753603539]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_s71ko")
 
 [node name="HP" type="Label" parent="Layout/Header/HPPanel" unique_id=1886054881]
@@ -58,6 +62,7 @@ horizontal_alignment = 1
 [node name="Spring1" type="Control" parent="Layout/Header" unique_id=1196568833]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="LVLPanel" type="PanelContainer" parent="Layout/Header" unique_id=2144075319]
 layout_mode = 2
@@ -65,21 +70,24 @@ size_flags_horizontal = 3
 offset_transform_enabled = true
 offset_transform_position = Vector2(0, 10)
 offset_transform_visual_only = false
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_s71ko")
 
 [node name="LEVEL" type="Label" parent="Layout/Header/LVLPanel" unique_id=996583613]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "10"
+text = "SILVER"
 horizontal_alignment = 1
 
 [node name="Spring2" type="Control" parent="Layout/Header" unique_id=2014494101]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="DMGPanel" type="PanelContainer" parent="Layout/Header" unique_id=1013270098]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_xhosc")
 
 [node name="DAMAGE" type="Label" parent="Layout/Header/DMGPanel" unique_id=1773152626]
@@ -93,31 +101,37 @@ horizontal_alignment = 1
 self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="Sprite" type="TextureRect" parent="Layout/Control" unique_id=965383800]
 custom_maximum_size = Vector2(200, 150)
 layout_mode = 2
+mouse_filter = 2
 expand_mode = 2
-stretch_mode = 5
+stretch_mode = 6
 
 [node name="Footer" type="HBoxContainer" parent="Layout" unique_id=1463926970]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
+mouse_filter = 2
 alignment = 1
 
 [node name="COSTPanel" type="PanelContainer" parent="Layout/Footer" unique_id=750591027]
 layout_mode = 2
 offset_transform_position = Vector2(0, -2)
+mouse_filter = 2
 
 [node name="COSTICON" type="TextureRect" parent="Layout/Footer/COSTPanel" unique_id=1519358510]
 layout_mode = 2
+mouse_filter = 2
 texture = SubResource("AtlasTexture_5ohme")
 expand_mode = 3
 stretch_mode = 5
 
 [node name="PanelContainer2" type="PanelContainer" parent="Layout/Footer" unique_id=382136351]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="COST" type="Label" parent="Layout/Footer/PanelContainer2" unique_id=1498336149]
 layout_mode = 2

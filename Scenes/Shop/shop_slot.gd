@@ -31,17 +31,25 @@ func display_item(new_item: Variant) -> void:
 		# --- CASE A: This slot is acting as a Shop Shelf (Resource) ---
 		if slot_item is PurchaseableData:
 			cost_label.text = str(slot_item.cost)
-			sprite.texture = slot_item.texture
 			
+			# HeroData is a sub-class of PurchaseableData, but uses SpriteFrames instead of a flat texture
 			if slot_item is HeroData:
 				dmg_label.text = str(slot_item.base_damage)
 				hp_label.text = str(slot_item.base_HP)
+				# Pull the default idle frame from your generated SpriteFrames asset
+				if slot_item.sprites and slot_item.sprites.has_animation("idle"):
+					sprite.texture = slot_item.sprites.get_frame_texture("idle", 0)
+			else:
+				# Standard non-hero purchaseables use the default flat texture property
+				sprite.texture = slot_item.texture
 				
 		# --- CASE B: This slot is acting as a Player Bench (Live Node) ---
 		elif slot_item is Hero:
 			# Pull static visual data from the nested resource blueprint
 			cost_label.text = str(slot_item.hero_data.cost)
-			sprite.texture = slot_item.hero_data.texture
+			
+			if slot_item.hero_data and slot_item.hero_data.sprites:
+				sprite.texture = slot_item.hero_data.sprites.get_frame_texture("idle", 0)
 			
 			# Pull live combat stats straight from the active Node!
 			dmg_label.text = str(slot_item.current_damage)
@@ -59,33 +67,31 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 		
 	# Create a tiny visual preview sprite so the user sees what they are dragging
 	var preview = TextureRect.new()
-	preview.texture = slot_item.texture
+	
+	# FIXED: Safely grab whatever texture is currently visible on the slot UI card 
+	# to completely bypass missing property reference crashes!
+	preview.texture = sprite.texture
+	
 	preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	preview.custom_minimum_size = Vector2(64, 64)
 	set_drag_preview(preview)
 	
 	return self # Return the slot instance as the transfer payload
 	
-	# 1. Determines if this specific slot can accept the dragged item
+# 1. Determines if this specific slot can accept the dragged item
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	# Ensure the dragged object is actually another ShopSlot
 	if not data is ShopSlot:
 		return false
 		
 	var source_slot = data as ShopSlot
 	
-	# Safety check: make sure both slots are talking to a valid shop manager
 	if shop_manager == null or source_slot.shop_manager == null:
 		return false
 		
-	# CASE A: The player is dragging a slot from the shop inventory pool
 	if shop_manager.shop_slots.has(source_slot):
-		# They are ONLY allowed to drop it into a party bench slot
 		return shop_manager.party_slots.has(self)
 		
-	# CASE B: The player is dragging a slot from their own party bench
 	if shop_manager.party_slots.has(source_slot):
-		# They can drop it onto ANY other party bench slot to rearrange/swap
 		return shop_manager.party_slots.has(self)
 		
 	return false
@@ -94,6 +100,5 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	var source_slot = data as ShopSlot
 	
-	# Hand execution off to your centralized ShopManager transaction flow
 	if shop_manager and shop_manager.has_method("execute_transaction"):
 		shop_manager.execute_transaction(source_slot, self)

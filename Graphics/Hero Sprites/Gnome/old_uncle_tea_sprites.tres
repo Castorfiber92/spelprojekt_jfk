@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cpqlm47b1ka3e"]
+
+[ext_resource type="Texture2D" uid="uid://327j7nlhj63l" path="res://Graphics/Hero Sprites/Gnome/Old Uncle Tea.png" id="1_7oqyj"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l7pls"]
+atlas = ExtResource("1_7oqyj")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u2rpa"]
+atlas = ExtResource("1_7oqyj")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l7pls")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u2rpa")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]
