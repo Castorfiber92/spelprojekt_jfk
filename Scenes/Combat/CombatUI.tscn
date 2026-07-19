@@ -6,8 +6,8 @@
 [node name="CombatUI" type="Container" unique_id=1523996303 node_paths=PackedStringArray("player_party", "enemy_party", "phase_ui")]
 custom_minimum_size = Vector2(1920, 1080)
 script = ExtResource("1_4u6w4")
-player_party = NodePath("Background/VBoxContainer/Player Heroes")
-enemy_party = NodePath("Background/VBoxContainer/Enemy Heroes")
+player_party = NodePath("Background/VBoxContainer/HBoxContainer/Player Heroes")
+enemy_party = NodePath("Background/VBoxContainer/HBoxContainer/Enemy Heroes")
 phase_ui = NodePath("PhaseUI (temp)")
 metadata/_edit_use_anchors_ = true
 
@@ -16,62 +16,73 @@ custom_minimum_size = Vector2(1920, 1080)
 layout_mode = 2
 theme = ExtResource("2_38u0h")
 
-[node name="VBoxContainer" type="HBoxContainer" parent="Background" unique_id=133068845]
+[node name="VBoxContainer" type="VBoxContainer" parent="Background" unique_id=571211113]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Background/VBoxContainer" unique_id=1476378787]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=133068845]
 custom_maximum_size = Vector2(1920, 1080)
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="Control3" type="Control" parent="Background/VBoxContainer" unique_id=800463048]
+[node name="Control3" type="Control" parent="Background/VBoxContainer/HBoxContainer" unique_id=800463048]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Player Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=1502563938]
+[node name="Player Heroes" type="HBoxContainer" parent="Background/VBoxContainer/HBoxContainer" unique_id=1502563938]
 layout_mode = 2
 theme_override_constants/separation = 75
 
-[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/Player Heroes" unique_id=1861601472]
+[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=1861601472]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 75
 
-[node name="Control" type="Control" parent="Background/VBoxContainer/Player Heroes" unique_id=1152117207]
+[node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=1152117207]
 visible = false
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/Player Heroes" unique_id=2125787234]
+[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=2125787234]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 75
 
-[node name="Control" type="Control" parent="Background/VBoxContainer" unique_id=100819839]
+[node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer" unique_id=100819839]
 layout_mode = 2
 size_flags_horizontal = 6
 
-[node name="Enemy Heroes" type="HBoxContainer" parent="Background/VBoxContainer" unique_id=6382003]
+[node name="Enemy Heroes" type="HBoxContainer" parent="Background/VBoxContainer/HBoxContainer" unique_id=6382003]
 layout_mode = 2
 theme_override_constants/separation = 75
 
-[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/Enemy Heroes" unique_id=791122854]
+[node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=791122854]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 75
 
-[node name="Control" type="Control" parent="Background/VBoxContainer/Enemy Heroes" unique_id=33296883]
+[node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=33296883]
 visible = false
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/Enemy Heroes" unique_id=1181566452]
+[node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=1181566452]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 75
 
-[node name="Control2" type="Control" parent="Background/VBoxContainer" unique_id=2099619891]
+[node name="Control2" type="Control" parent="Background/VBoxContainer/HBoxContainer" unique_id=2099619891]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Control2" type="Control" parent="Background/VBoxContainer" unique_id=1054430822]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="PhaseUI (temp)" type="Label" parent="." unique_id=1133332302]
 layout_mode = 2

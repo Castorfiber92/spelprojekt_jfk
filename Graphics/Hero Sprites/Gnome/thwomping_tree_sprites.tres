@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://ufcksl4cqqou"]
+
+[ext_resource type="Texture2D" uid="uid://b03pbdv08xg0f" path="res://Graphics/Hero Sprites/Gnome/Thwomping Tree.png" id="1_j16ya"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lxjot"]
+atlas = ExtResource("1_j16ya")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_agmh5"]
+atlas = ExtResource("1_j16ya")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lxjot")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_agmh5")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

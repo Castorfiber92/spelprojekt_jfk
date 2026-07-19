@@ -3,7 +3,7 @@ extends Node
 var reroll_cost : int = 2
 
 var player_party: Array[Hero] = [null, null, null, null, null]
-var essence : int
+var essence : int = 10
 
 var active_roster: Array[HeroData] = []
 
@@ -15,7 +15,7 @@ func deduct_cost(amount : int):
 	
 func get_reroll_cost() -> int:
 	# put logic here if you have effects for the cost
-	return essence
+	return reroll_cost
 	
 # This does not belong here, but it is to add it later.	
 func add_hero_to_run_pool(selected_hero: Hero) -> void:

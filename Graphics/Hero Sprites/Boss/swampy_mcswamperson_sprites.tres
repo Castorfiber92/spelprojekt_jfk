@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dixysu1sg6ess"]
+
+[ext_resource type="Texture2D" uid="uid://dh1n7miytni2c" path="res://Graphics/Hero Sprites/Boss/Swampy McSwamperson.png" id="1_vau5h"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_itrj0"]
+atlas = ExtResource("1_vau5h")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4f7mc"]
+atlas = ExtResource("1_vau5h")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_itrj0")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4f7mc")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

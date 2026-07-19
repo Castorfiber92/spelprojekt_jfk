@@ -11,7 +11,6 @@ offset_right = 1920.0
 offset_bottom = 1080.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-mouse_filter = 2
 script = ExtResource("1_bp8o4")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1378101406]
@@ -27,6 +26,7 @@ offset_right = 960.0
 offset_bottom = 540.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 texture = ExtResource("1_f7vp0")
 
 [node name="Layout" type="HBoxContainer" parent="." unique_id=1941197110]
@@ -42,48 +42,58 @@ offset_right = 590.0
 offset_bottom = 350.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/separation = 24
 
 [node name="PartySlots" type="HBoxContainer" parent="Layout" unique_id=179086374]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 20
 
 [node name="Backline" type="VBoxContainer" parent="Layout/PartySlots" unique_id=682414749]
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_constants/separation = 75
 
 [node name="Control" type="Control" parent="Layout/PartySlots" unique_id=1670964239]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Frontline" type="VBoxContainer" parent="Layout/PartySlots" unique_id=1080652066]
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_constants/separation = 75
 
 [node name="Control" type="Control" parent="Layout" unique_id=594853369]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="ShopSlots" type="HBoxContainer" parent="Layout" unique_id=380873497]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 20
 
 [node name="Frontline" type="VBoxContainer" parent="Layout/ShopSlots" unique_id=316925257]
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_constants/separation = 75
 
 [node name="Control" type="Control" parent="Layout/ShopSlots" unique_id=2137956636]
 custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Backline" type="VBoxContainer" parent="Layout/ShopSlots" unique_id=837417253]
 layout_mode = 2
 size_flags_vertical = 4
+mouse_filter = 2
 theme_override_constants/separation = 75
 
 [node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=1418839775]
@@ -98,6 +108,7 @@ offset_bottom = 74.0
 grow_vertical = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(150, 0)
+mouse_filter = 2
 theme_override_constants/separation = 24
 
 [node name="SellButton" type="Button" parent="HBoxContainer" unique_id=652109427]
@@ -111,6 +122,7 @@ script = ExtResource("3_bp8o4")
 
 [node name="Control" type="Control" parent="HBoxContainer" unique_id=1348686343]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="RollButton" type="Button" parent="HBoxContainer" unique_id=716843288]
 layout_mode = 2

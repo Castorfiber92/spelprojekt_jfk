@@ -1,0 +1,2 @@
+EncounterName,CombatType,Front 1,Front 2,Back 1,Back 2,Back 3,REMEMBER IF YOU ADD A NEW AREA YOU HAVE TO ADD THE ID MANUALLY TO GODOT INSIDE THE TOOL SCRIPT
+A Placeholder of Rabbits,NORMAL,Boxer Badger,Boxer Badger,Mr Rabbit Monk,,Mr Rabbit Monk,

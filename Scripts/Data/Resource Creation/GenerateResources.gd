@@ -1,26 +1,39 @@
 @tool
 extends Node
 
-@export_file("*.csv") var csv_path: String
-@export_dir var output_dir: String = "res://Resources/Heroes/"
-
 @export_group("Generate Functions")
-@export_tool_button("Generate Heroes","Callable") var generate_heroes_action = generate_heroes 
-#@export_tool_button("Link Sprites to Existing Heroes","Callable") var link_sprites_action = link_sprites_to_heroes
+@export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive
+@export_tool_button("Generate Heroes", "Callable") var generate_heroes_action = generate_heroes 
+@export_tool_button("Generate Compositions", "Callable") var generate_compositions_action = run_composition_generation_loop
 
 @export_group("Google Drive Sync")
-## The ID from your Google Sheet URL
-@export var google_sheet_id: String = "17J7sFikfk8IrrhA2Krcp29_qytfdY_f5aiZjjxtkmh4"
-## The GID (Sheet Page ID) - 0 for the first sheet
+## --- HEROES --- ##
+@export var google_sheet_heroes_id: String = "17J7sFikfk8IrrhA2Krcp29_qytfdY_f5aiZjjxtkmh4"
+@export_file("*.csv") var csv_path: String
+@export_dir var output_dir: String = "res://Resources/Heroes/"
 @export var google_sheet_gid: String = "0"
-@export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive
+
+## --- ENCOUNTERS --- ##
+@export var google_sheet_encounters_id: String = "1-U_LSzEQR9fS4nsDWHDSip6ZBVMgPtCO8XRdEJCEIO0"
+## Just add your browser tab GIDs here in order!
+## Click "Add Element": Index 0 is Area 1, Index 1 is Area 2, etc.
+## Example: ["148302945", "882041763"]
+@export var encounter_tab_gids: Array[String] = [
+	"0",           # Area 1 GID
+	"1305347074"  # Area 2 GID
+	#"OUR_AREA_3_GID_HERE" # New pages here
+]
+## Target folder where combat encounter resources will be compiled and sorted
+@export_dir var compositions_output_dir: String = "res://Resources/Combat/Combat Compositions/"
 
 @export_group("Developer Utilities")
 @export_tool_button("Export Valid Behaviors List", "Callable") var export_behaviors_action = export_valid_behaviors_list
 
-var behavior_cache: Dictionary = {} # Key: "fireball.tres", Value: "res://path/to/fireball.tres"
-var sprite_cache: Dictionary = {}   # Key: "warrior_sprites.tres", Value: "res://path/...tres"
-
+# Caches and internal properties
+var compositions_csv_path: String = "" 
+var behavior_cache: Dictionary = {}
+var sprite_cache: Dictionary = {}   
+var hero_asset_cache: Dictionary = {}
 var all_files: Array[String] = []
 
 func export_valid_behaviors_list():
@@ -186,7 +199,8 @@ func generate_heroes():
 		var sprite_filename: String = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
 		if sprite_cache.has(sprite_filename):
 			res.sprites = load(sprite_cache[sprite_filename]) as SpriteFrames
-
+		else:
+			printerr("Sprite for ", h_name, " not found or mismatched string.")
 		# Save the resource
 		ResourceSaver.save(res, save_path)
 		print("Successfully Synced: ", h_name)
@@ -195,7 +209,157 @@ func generate_heroes():
 	file.close()
 	print("--- Import Task Finished ---")
 
-# --- FUNCTIONAL CHANGE: Updated to run lightning-fast memory checks ---
+func generate_compositions():
+	if not Engine.is_editor_hint():
+		return
+	
+	if compositions_csv_path == "" or not FileAccess.file_exists(compositions_csv_path):
+		printerr("Composition Importer: Invalid CSV path!")
+		return
+		
+	# --- 1. PRE-READ TARGETED CLEANUP ARCHITECTURE ---
+	var valid_encounter_filenames: Array[String] = []
+	var pre_read_file = FileAccess.open(compositions_csv_path, FileAccess.READ)
+	var _discard_headers = pre_read_file.get_csv_line()
+	
+	while not pre_read_file.eof_reached():
+		var row = pre_read_file.get_csv_line()
+		if row.size() < 7: continue
+		var name_check = row[0].strip_edges()
+		if name_check != "":
+			valid_encounter_filenames.append(name_check.validate_filename() + ".tres")
+	pre_read_file.close()
+
+	# --- 2. FILE SYSTEM SCAN & CACHE SYNCHRONIZATION ---
+	var efs = EditorInterface.get_resource_filesystem()
+	efs.scan()
+	while efs.is_scanning():
+		await Engine.get_main_loop().process_frame
+	
+	hero_asset_cache.clear()
+	var local_files: Array[String] = []
+	_get_all_files_on_disk("res://", local_files)
+	for path in local_files:
+		if path.ends_with(".tres"):
+			var file_name_lower = path.get_file().strip_edges().to_lower()
+			hero_asset_cache[file_name_lower] = path
+
+	# FIXED: Stripping the space-dash sequence cleanly so paths are perfectly formatted
+	var csv_filename = compositions_csv_path.get_file().get_basename()
+	var formatted_area_folder = csv_filename.replace(" - ", "_").replace(" ", "_")
+	
+	# --- 3. EXECUTE SMART PURGE OF ORPHANED ENCOUNTERS ONLY ---
+	var sub_folders = ["Normal_Encounters", "Elite_Encounters", "Boss_Encounters"]
+	for sub in sub_folders:
+		var check_folder = compositions_output_dir.path_join(formatted_area_folder).path_join(sub)
+		if DirAccess.dir_exists_absolute(check_folder):
+			var dir = DirAccess.open(check_folder)
+			dir.list_dir_begin()
+			var file_name = dir.get_next()
+			while file_name != "":
+				if file_name.ends_with(".tres") and not valid_encounter_filenames.has(file_name):
+					print("Composition Importer: Removing obsolete stale encounter -> ", file_name)
+					DirAccess.remove_absolute(check_folder.path_join(file_name))
+					var import_track = check_folder.path_join(file_name + ".import")
+					if FileAccess.file_exists(import_track):
+						DirAccess.remove_absolute(import_track)
+				file_name = dir.get_next()
+			dir.list_dir_end()
+
+	# --- 4. FLUSH PURGES FROM MEMORY BEFORE RECREATION ---
+	var efs_purge = EditorInterface.get_resource_filesystem()
+	efs_purge.scan()
+	while efs_purge.is_scanning():
+		await Engine.get_main_loop().process_frame
+
+	# --- 5. EXECUTE GENERATION PARSER LOOP AND RESOURCE CREATION ---
+	var file = FileAccess.open(compositions_csv_path, FileAccess.READ)
+	var _headers = file.get_csv_line() 
+	
+	while not file.eof_reached():
+		var row = file.get_csv_line()
+		if row.size() < 7: continue 
+		
+		# Direct index extraction with no extra string checks
+		var c_name = row[0]
+		if c_name == "": continue
+		
+		var c_type = row[1]
+		
+		var sub_folder_name = "Normal_Encounters"
+		if c_type == "ELITE": 
+			sub_folder_name = "Elite_Encounters"
+		elif c_type == "BOSS": 
+			sub_folder_name = "Boss_Encounters"
+			
+		var sub_dir = compositions_output_dir.path_join(formatted_area_folder).path_join(sub_folder_name)
+		
+		# Automatically create the missing target directories if they don't exist yet
+		if not DirAccess.dir_exists_absolute(sub_dir):
+			DirAccess.make_dir_recursive_absolute(sub_dir)
+			
+		var save_path = sub_dir.path_join(c_name.validate_filename() + ".tres")
+
+		# --- INSTANTIATE OR IN-PLACE LOAD YOUR CUSTOM COMPOSITION OBJECT ---
+		# NOTE: Change 'EncounterComposition' below to match your actual script class name!
+		var res: CombatComposition = load(save_path) if FileAccess.file_exists(save_path) else CombatComposition.new()
+		
+		# --- EXTRACT AND ASSIGN SPREADSHEET VARIABLES ---
+		res.encounter_name = c_name
+		
+		# Optional boilerplate: Parsing subsequent row indices for enemy lineups into arrays
+		var combatants_list: Array[String] = []
+		for idx in range(2, row.size()):
+			var enemy_entry = row[idx].strip_edges()
+			if enemy_entry != "":
+				combatants_list.append(enemy_entry)
+		
+		# Assuming your composition class has an array property tracking strings/rosters:
+		# res.enemy_roster = combatants_list
+		
+		# --- SAVE GENERATED RESOURCE WITH MEMORY PROTECTION FLAGS ---
+		res.take_over_path(save_path)
+		var save_status = ResourceSaver.save(res, save_path, ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
+		
+		if save_status == OK:
+			print("Successfully Synced Composition: ", c_name)
+		else:
+			printerr("Failed to save encounter composition file. Error code: ", save_status)
+			
+	file.close()
+	
+	# --- 6. FINAL POST-IMPORT INTERFACE SYNC ---
+	var efs_final = EditorInterface.get_resource_filesystem()
+	efs_final.scan()
+	while efs_final.is_scanning():
+		await Engine.get_main_loop().process_frame
+		
+	print("--- Composition Import Task Finished ---")
+		
+func run_composition_generation_loop() -> void:
+	var efs_reset = EditorInterface.get_resource_filesystem()
+	efs_reset.scan()
+	while efs_reset.is_scanning():
+		await Engine.get_main_loop().process_frame
+	print("============ [TOOL] COMPILING ENCOUNTER RESOURCES ============")
+	
+	if encounter_tab_gids.is_empty():
+		printerr("Composition Importer: No encounter tabs configured.")
+		return
+		
+	for i in range(encounter_tab_gids.size()):
+		var calculated_local_path = "res://Scripts/Data/CSV/Encounters - Area_" + str(i + 1) + ".csv"
+		
+		if not FileAccess.file_exists(calculated_local_path):
+			printerr("Composition Importer: File missing on disk, run Sync tool button first! Path: ", calculated_local_path)
+			continue
+			
+		compositions_csv_path = calculated_local_path 
+		print("Processing composition compilation for: ", calculated_local_path.get_file())
+		await generate_compositions()
+		
+	print("============ COMPOSITION RESOURCE COMPILATION COMPLETE ============")
+	
 func find_behavior_globally(behavior_name: String) -> Behavior:
 	var cleaned_name: String = behavior_name.strip_edges().to_lower()
 	if cleaned_name == "": return null
@@ -223,62 +387,75 @@ func _get_all_files_on_disk(path: String, file_list: Array[String]) -> void:
 		dir.list_dir_end()
 	
 func download_csv_from_drive():
-	if google_sheet_id == "":
-		printerr("Hero Importer: No ID provided!")
+	if google_sheet_heroes_id == "" or google_sheet_encounters_id == "":
+		printerr("Sync Action: Google Sheet IDs are missing!")
 		return
 
+	# FIXED: Changed from "://google.com" to the proper pure domain string
 	var host = "docs.google.com"
-	var url_path = "/spreadsheets/d/" + google_sheet_id + "/export?format=csv&gid=" + google_sheet_gid
-	
-	# Start the process with a redirect limit of 5
-	_perform_http_download(host, url_path, 5)
 
-func _perform_http_download(host: String, url_path: String, redirect_limit: int):
+	# --- 1. DOWNLOAD MASTER HEROES CSV ---
+	if csv_path != "":
+		var heroes_url = "/spreadsheets/d/" + google_sheet_heroes_id + "/export?format=csv&gid=" + google_sheet_gid
+		print("Sync Action: Downloading Master Heroes CSV...")
+		await _perform_http_download(host, heroes_url, 5, csv_path)
+	
+	# --- 2. LOOP DOWNLOAD COMPOSITIONS VIA AUTOMATIC INDEXING ---
+	if encounter_tab_gids.is_empty():
+		push_warning("Sync Action: No encounter GID tabs provided.")
+	else:
+		for i in range(encounter_tab_gids.size()):
+			var target_gid = encounter_tab_gids[i].strip_edges()
+			if target_gid == "": 
+				continue
+			
+			var calculated_local_path = "res://Scripts/Data/CSV/Encounters - Area_" + str(i + 1) + ".csv"
+			var url_path = "/spreadsheets/d/" + google_sheet_encounters_id + "/export?format=csv&gid=" + target_gid
+			
+			print("Sync Action: Fetching Area %d [GID: %s] -> %s" % [(i + 1), target_gid, calculated_local_path])
+			await _perform_http_download(host, url_path, 5, calculated_local_path)
+			
+	print("--- Sync Action: All CSV data downloads successfully processed ---")
+
+func _perform_http_download(host: String, url_path: String, redirect_limit: int, target_save_path: String):
 	if redirect_limit <= 0:
-		printerr("Hero Importer: Too many redirects!")
+		printerr("Importer: Too many redirects!")
 		return
 
-	print("Hero Importer: Connecting to: ", host)
+	print("Importer: Connecting to: ", host)
 	var http = HTTPClient.new()
 	
-	# Connect to the host
 	var err = http.connect_to_host(host, 443, TLSOptions.client())
 	if err != OK:
-		printerr("Hero Importer: Connection error: ", err)
+		printerr("Importer: Connection error: ", err)
 		return
 
-	# Wait for connection
 	while http.get_status() == HTTPClient.STATUS_CONNECTING or http.get_status() == HTTPClient.STATUS_RESOLVING:
 		http.poll()
 		OS.delay_msec(50)
 
-	# Send the GET request
 	http.request(HTTPClient.METHOD_GET, url_path, [])
 
-	# Wait for response headers
 	while http.get_status() == HTTPClient.STATUS_REQUESTING:
 		http.poll()
 		OS.delay_msec(50)
 
 	if http.has_response():
 		var code = http.get_response_code()
-		print("Hero Importer: Response Code: ", code)
+		print("Importer: Response Code: ", code)
 
-		# 1. Handle Redirects (Include 307 and 308)
 		if code == 301 or code == 302 or code == 307 or code == 308:
 			var headers = http.get_response_headers_as_dictionary()
 			var location = ""
 		
-			# Headers can be "Location" or "location" 
 			for key in headers:
 				if key.to_lower() == "location":
 					location = headers[key]
 					break
 		
 			if location != "":
-				print("Hero Importer: Redirecting to: ", location)
+				print("Importer: Redirecting to: ", location)
 			
-				# Ensure we handle absolute URLs from the redirect
 				var next_host = host
 				var next_path = url_path
 			
@@ -288,13 +465,13 @@ func _perform_http_download(host: String, url_path: String, redirect_limit: int)
 					next_host = stripped_url.substr(0, first_slash)
 					next_path = stripped_url.substr(first_slash)
 				else:
-					next_path = location # Relative redirect
+					next_path = location
 
 				http.close()
-				_perform_http_download(next_host, next_path, redirect_limit - 1)
+				# CRUCIAL: Pass target_save_path into the redirect call!
+				_perform_http_download(next_host, next_path, redirect_limit - 1, target_save_path)
 				return
 
-		# 2. Handle Actual Data (200 OK)
 		var response_body = PackedByteArray()
 		while http.get_status() == HTTPClient.STATUS_BODY:
 			http.poll()
@@ -304,17 +481,17 @@ func _perform_http_download(host: String, url_path: String, redirect_limit: int)
 			else:
 				OS.delay_msec(10)
 		
-		# Only save if we actually got a 200 OK
 		if code == 200:
-			var file = FileAccess.open(csv_path, FileAccess.WRITE)
+			# CHANGED: Open target_save_path instead of the old hardcoded csv_path
+			var file = FileAccess.open(target_save_path, FileAccess.WRITE)
 			if file:
 				file.store_buffer(response_body)
 				file.close()
 				EditorInterface.get_resource_filesystem().scan()
-				print("Hero Importer: CSV Sync Successful! [%s]" % Time.get_time_string_from_system())
+				print("Importer: CSV Sync Successful for %s! [%s]" % [target_save_path.get_file(), Time.get_time_string_from_system()])
 			else:
-				printerr("Hero Importer: Could not write to file path.")
+				printerr("Importer: Could not write to file path: ", target_save_path)
 		else:
-			printerr("Hero Importer: Failed with code ", code, ". Body received: ", response_body.get_string_from_utf8())
+			printerr("Importer: Failed with code ", code, ". Body received: ", response_body.get_string_from_utf8())
 	
 	http.close()

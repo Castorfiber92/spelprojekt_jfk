@@ -28,6 +28,8 @@ Ui="*uid://c7l6xcj52ho66"
 VisualEffects="*uid://cvyk6504j7lmn"
 PlayerData="*uid://d0j25wuqy1vis"
 GameManager="*uid://beb5mhxxuniew"
+RunManager="*uid://bt7kn2khadf2w"
+DatabaseManager="*uid://bor6af0ke8b7i"
 
 [display]
 

@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://c3el87ywn3hb1"]
+
+[ext_resource type="Texture2D" uid="uid://ds2mv1ri0nxvp" path="res://Graphics/Hero Sprites/Undead/Necromancer.png" id="1_ig01r"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4hj1v"]
+atlas = ExtResource("1_ig01r")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6doau"]
+atlas = ExtResource("1_ig01r")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4hj1v")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6doau")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

@@ -3,6 +3,7 @@ class_name ShopManager
 
 var party_slots: Array[ShopSlot] = []
 var shop_slots: Array[ShopSlot] = []
+
 @export var shop_ui : ShopUi
 @export var max_party_size: int = 5
 @export var max_shop_size: int = 5
@@ -13,7 +14,7 @@ var current_phase: ShopPhase = ShopPhase.IDLE
 
 func _ready() -> void:
 	initialize_slots()
-	
+	roll_shop_slots(true)
 	connect_ui_elements()
 
 func connect_ui_elements() -> void:
@@ -85,9 +86,12 @@ func sell_selected_slot() -> void:
 	var target_index: int = selected_slot.slot_number - 1
 	var hero_to_sell: Hero = PlayerData.player_party[target_index]
 	var blueprint: HeroData = hero_to_sell.hero_data
+	
 	# Calculate dynamic refund based on the Tier (Bronze=1, Silver=2, Gold=3, Legendary=4)
 	var refund_amount: int = 1 # Base backup cost
-	match blueprint.current_tier:
+	
+	# FIXED ERROR: Evaluated target live instance data tracker instead of structural template asset
+	match hero_to_sell.current_tier:
 		HeroData.HeroTier.BRONZE:
 			refund_amount = 1 # Cost to buy: 2
 		HeroData.HeroTier.SILVER:
@@ -122,31 +126,25 @@ func execute_shop_roll():
 	
 	# _update_currency_ui() # Direct call to refresh your gold/essence counters
 
-func roll_shop_slots() -> void:
+func roll_shop_slots(shop_loaded = false) -> void:
 	if current_phase != ShopPhase.IDLE: return
-	if PlayerData.active_roster.is_empty(): return
+	#if PlayerData.active_roster.is_empty(): return
 		
 	current_phase = ShopPhase.ROLLING
 	
-	for slot in shop_slots:
-		var random_index: int = randi() % PlayerData.active_roster.size()
-		var hero: HeroData = PlayerData.active_roster[random_index]
-		
-		slot.display_item(hero)
-		# Ensure the graphic is turned back on after being bought out previously
-		slot.UI.visible = true 
-		
+	fetch_shop_heroes()
+	if not shop_loaded:
+		for i in shop_slots:
+			VisualEffects.shake_node_rotation(i)
 	current_phase = ShopPhase.IDLE
-
 
 func execute_transaction(source_slot: ShopSlot, target_slot: ShopSlot) -> void:
 	if current_phase != ShopPhase.IDLE: return
 	if source_slot == target_slot: return # Can't drop onto itself
-	
 	var incoming_data = source_slot.slot_item
 	if incoming_data == null: return
 	
-	current_phase = ShopPhase.TRANSACTION
+
 	
 	# Check if we are moving an existing party member or buying a new one
 	var is_rearrangement: bool = party_slots.has(source_slot)
@@ -154,6 +152,9 @@ func execute_transaction(source_slot: ShopSlot, target_slot: ShopSlot) -> void:
 	if is_rearrangement:
 		_handle_party_rearrangement(source_slot, target_slot)
 	else:
+		# Guard clause, if there is an existing hero on the slot we try to drag on, we leave
+		if target_slot.slot_item != null: return
+		current_phase = ShopPhase.TRANSACTION
 		var blueprint = incoming_data as HeroData
 		# Standard shop purchase logic
 		if not PlayerData.can_pay(blueprint.cost):
@@ -174,29 +175,33 @@ func _handle_party_rearrangement(source: ShopSlot, target: ShopSlot) -> void:
 	var temp_hero: Hero = PlayerData.player_party[source_index]
 	PlayerData.player_party[source_index] = PlayerData.player_party[target_index]
 	PlayerData.player_party[target_index] = temp_hero
-	
+	VisualEffects.shake_node_rotation(target)
 	print("Rearranged party: Swapped slot %d and slot %d." % [source.slot_number, target.slot_number])
 
 func _handle_hero_placement(blueprint: HeroData, source_slot: ShopSlot, target_slot: ShopSlot) -> void:
 	var target_index: int = target_slot.slot_number - 1
 	
-	# Check if the target party slot already has a character standing there
-	var existing_hero: Hero = PlayerData.player_party[target_index]
+
 	
 	# 3. Create a unique runtime node instance from the shop's blueprint resource
 	var new_live_hero: Hero = Hero.create(blueprint)
 	
-	if existing_hero != null:
-		# OPTION A: If you want to overwrite and delete the old character:
-		existing_hero.queue_free()
-		PlayerData.player_party[target_index] = new_live_hero
+	##Below is for future stuff, if we want to allow merging or leveling or whatever
+	##Dont forget to remove the guard clause inside execute transaction if we do change this
+	# Check if the target party slot already has a character standing there
+	#var existing_hero: Hero = PlayerData.player_party[target_index]
+	#if existing_hero != null:
+		# OPTION A: If we want to overwrite and delete the old character:
+		#return
+		#existing_hero.queue_free()
+		#PlayerData.player_party[target_index] = new_live_hero
 		
 		# OPTION B: If you want to merge duplicates (e.g. upgrating tiers), 
 		# you would handle that logic here instead of queue_free()!
-	else:
+	#else:
 		# Slot was empty, just place the new live hero node in the array
-		PlayerData.player_party[target_index] = new_live_hero
-		
+	PlayerData.player_party[target_index] = new_live_hero
+	VisualEffects.shake_node_rotation(target_slot)
 	# 4. Clear the shop counter item so it doesn't stay on the shelf (if that is your mechanic)
 	source_slot.slot_item = null 
 
@@ -207,11 +212,24 @@ func update_shop_UI() -> void:
 			party_slots[i].display_item(PlayerData.player_party[i])
 		else:
 			party_slots[i].clear_slot()
-
-	# 2. Update shop inventory 
 	for i in range(shop_slots.size()):
 		if shop_slots[i].slot_item != null:
-			# Re-trigger display to ensure graphics/labels refresh cleanly
 			shop_slots[i].display_item(shop_slots[i].slot_item)
 		else:
 			shop_slots[i].clear_slot()
+
+
+func fetch_shop_heroes() -> void:
+	print("Rolling shop slots....")
+	# 2. Update shop inventory 
+	for i in range(shop_slots.size()):
+		var random_hero: HeroData = DatabaseManager.get_random_hero_data()
+		
+		if random_hero != null:
+			# Assign the raw data to the item state first
+			var shelf_copy = random_hero.duplicate()
+			shop_slots[i].display_item(shelf_copy)
+			shop_slots[i].UI.visible = true
+		else:
+			shop_slots[i].clear_slot()
+	update_shop_UI()

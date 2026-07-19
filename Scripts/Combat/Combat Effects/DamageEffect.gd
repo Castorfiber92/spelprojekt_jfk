@@ -19,6 +19,7 @@ func present(manager: CombatManager) -> void:
 	# 2. TARGET REACTS SECOND
 	if manager.hero_to_slot_map.has(target):
 		var target_slot: HeroSlot = manager.hero_to_slot_map[target]
+		# We await the exact texture shake tween returned from the slot function!
 		await target_slot.apply_damage_effect(is_crit).finished
 	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing

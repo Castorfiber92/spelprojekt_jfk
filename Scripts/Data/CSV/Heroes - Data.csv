@@ -22,3 +22,5 @@ Broom Basher,,Gnome,FALSE,20,2,10,1,attack_basic,bash(broom_basher),"Wields a br
 Turtlabode,,Gnome,TRUE,50,2,5,1,attack_multi,,"Strikes multiple targets, some kind of protect others ability (since it is a turtling house)"
 Old Uncle Tea,,Gnome,FALSE,32,1,20,3,cast_basic,,Buffs another friendly unit
 Thwomping Tree,,Gnome,FALSE,40,8,5,1,attack_basic,,Fragile trunk : när den slår skadar den sig själv med 3.
+NEUTRALS,,,,,,,,,,
+Worm,,Neutral,,5,1,1,1,attack_basic,,
