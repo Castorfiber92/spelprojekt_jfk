@@ -1,13 +1,13 @@
 Name,Description,Tribe,Legendary Status,Base HP (10-50),Base DMG (1-10),Base Speed (1-100),Base Range (1-3),Base Action,Base Abilities,INFORMATION (INTE MED)
-CRITTERS,,,,,,,"1 for frontline, 2 for backline, 3 for anything",,"De här laddas från Godot, skapa inga nya här utan använd verktyget i godot för att uppdatera den tillgängliga listan här. Skriv i informations-kolumnen till höger vad ni tänker er för abilities innan de existerar.",
+CRITTERS,,,,,,,"0 for selftarget, 1 for frontline, 2 for backline, 3 for anything",,"De här laddas från Godot, skapa inga nya här utan använd verktyget i godot för att uppdatera den tillgängliga listan här. Skriv i informations-kolumnen till höger vad ni tänker er för abilities innan de existerar.",
 Mr Rabbit Monk,,Critter,FALSE,20,5,10,1,attack_basic,,marked (Off balance): Nästa attack från laget på samma target puttar bak den i ledet.
 Boxer Badger,,Critter,FALSE,40,4,10,1,attack_basic,mark,marked: Nästa attack från laget på samma target gör extra skada
 Squirrel Slingshot Sniper,,Critter,FALSE,20,4,10,1,attack_basic,,on target: skjuter alltid på en enemy som är marked
 Overworked Owl,,Critter,FALSE,26,4,60,3,cast_basic,,"On death: Fully heals, but falls asleep for two rounds."
 UNDEAD,,,,,,,,,,
-Haunted doll,,Undead,FALSE,50,1,10,1,attack_basic,,"""Cursear"" attackers. curse reducear attack med 1(?) varje runda"
+Haunted doll,,Undead,FALSE,50,1,10,1,attack_basic,,"""Cursear"" attackers. curse reducear attack med 1(?) varje runda, när en cursead creature dör så skadar den på alla i laget med mängden stacks."
 Skeleton King,,Undead,FALSE,30,4,10,1,attack_basic,,Återuppväcks I en miniform efter den har dött en gång
-Skeleton Prince,,Undead,FALSE,20,2,10,1,attack_basic,,
+Skeleton Prince,,Undead,FALSE,10,3,10,1,attack_multi,,
 Necromancer,,Undead,FALSE,20,2,10,1,attack_basic,,Varje gång något dör ger han laget plus attack
 Vampiric crawler,,Undead,FALSE,35,3,10,1,attack_basic,,double strike - slår två slag varje attack. Siphon life - hälften av skadan den gör healar en random friendly hero. 
 ORC,,,,,,,,,,
@@ -15,9 +15,9 @@ Orc Hexblade,,Orc,FALSE,24,2,10,1,attack_basic,,"Siphon Soul: När han kommer ti
 Troll Ranger,,Orc,FALSE,20,6,10,1,attack_basic,,Flaming spears: Stackande burn med 2~ dmg per stack
 Earth Shaman,,Orc,FALSE,22,3,10,1,attack_basic,armor(earth_shaman),Earth Shield: Start av runda ger alla en sköld som tål 3~ skada. stackande eller ej osäkert beroende på balans 
 Troll Defender,,Orc,FALSE,45,3,10,1,attack_basic,,Trollhide: Minskar all skada med 2 (tar minst 1 skada). healar 2 på start av sin turn (ökas permanent med 1 varje gång han blir slagen (max 10) 
-Bat Intoxicator,,Orc,FALSE,30,0,20,2,cast_basic,,Puts poison on backline instead of attacking
+Bat Intoxicator,,Orc,FALSE,30,0,20,2,cast_basic_bat_intoxicator,,Puts poison on backline instead of attacking
 GNOME,,,,,,,,,,
-Mushroom Gobbler,,Gnome,FALSE,35,4,10,1,attack_basic,,"Eat mushrooms on turn start, gaining random buffs, damage, speed, range"
+Mushroom Gobbler,,Gnome,FALSE,35,4,10,0,cast_basic,,"Eat mushrooms on turn start, gaining random buffs, damage, speed, range"
 Broom Basher,,Gnome,FALSE,20,2,10,1,attack_basic,bash(broom_basher),"Wields a broom, chance to stun on attack."
 Turtlabode,,Gnome,TRUE,50,2,5,1,attack_multi,,"Strikes multiple targets, some kind of protect others ability (since it is a turtling house)"
 Old Uncle Tea,,Gnome,FALSE,32,1,20,3,cast_basic,,Buffs another friendly unit

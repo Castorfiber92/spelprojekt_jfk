@@ -1,4 +1,6 @@
-EncounterName,CombatType,Front 1,Front 2,Back 1,Back 2,Back 3,REMEMBER IF YOU ADD A NEW AREA YOU HAVE TO ADD THE ID MANUALLY TO GODOT INSIDE THE TOOL SCRIPT
+EncounterName,CombatType,Front 1,Front 2,Back 1,Back 2 (MID),Back 3,REMEMBER IF YOU ADD A NEW AREA YOU HAVE TO ADD THE ID MANUALLY TO GODOT INSIDE THE TOOL SCRIPT
 A Murder of Rabbits,NORMAL,Boxer Badger,Boxer Badger,Mr Rabbit Monk,,Mr Rabbit Monk,
-A Bunch of Badgers,NORMAL,Boxer Badger,Boxer Badger,Boxer Badger,Boxer Badger,Boxer Badger,
+A Bunch of Badgers,ELITE,Boxer Badger,Boxer Badger,Boxer Badger,Boxer Badger,Boxer Badger,
 Owl Escort,NORMAL,Boxer Badger,Boxer Badger,,Overworked Owl,,
+Worm Infestation,NORMAL,Worm,Worm,,,,
+Worm Infestation 2,NORMAL,Worm,Worm,,Worm,,

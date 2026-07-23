@@ -39,7 +39,7 @@ theme_override_constants/separation = 75
 [node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=1861601472]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = 75
+theme_override_constants/separation = 20
 
 [node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=1152117207]
 visible = false
@@ -50,7 +50,7 @@ size_flags_horizontal = 3
 [node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Player Heroes" unique_id=2125787234]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = 75
+theme_override_constants/separation = 20
 
 [node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer" unique_id=100819839]
 layout_mode = 2
@@ -63,7 +63,7 @@ theme_override_constants/separation = 75
 [node name="Frontline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=791122854]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = 75
+theme_override_constants/separation = 20
 
 [node name="Control" type="Control" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=33296883]
 visible = false
@@ -74,7 +74,7 @@ size_flags_horizontal = 3
 [node name="Backline" type="VBoxContainer" parent="Background/VBoxContainer/HBoxContainer/Enemy Heroes" unique_id=1181566452]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_constants/separation = 75
+theme_override_constants/separation = 20
 
 [node name="Control2" type="Control" parent="Background/VBoxContainer/HBoxContainer" unique_id=2099619891]
 layout_mode = 2

@@ -5,8 +5,12 @@
 
 [resource]
 script = ExtResource("2_bybg7")
+name = "Armored"
 type = 2
 target_team = 2
+target_type = 3
+target_count = 5
+range = 3
 stacks = 1
-tag = 6
+tag = 7
 metadata/_custom_type_script = "uid://do3uy17ek43s8"

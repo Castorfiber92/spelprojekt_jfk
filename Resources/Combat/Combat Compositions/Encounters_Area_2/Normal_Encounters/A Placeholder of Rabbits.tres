@@ -2,7 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_6xxfb"]
 [ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="2_4a6ly"]
+[ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="2_t82w7"]
+[ext_resource type="Resource" uid="uid://fyen4aa0645q" path="res://Resources/Heroes/Critter/Mr Rabbit Monk.tres" id="3_irghv"]
 
 [resource]
 script = ExtResource("2_4a6ly")
+enemy_team = Array[ExtResource("1_6xxfb")]([ExtResource("2_t82w7"), ExtResource("2_t82w7"), ExtResource("3_irghv"), null, ExtResource("3_irghv")])
 encounter_name = "A Placeholder of Rabbits"

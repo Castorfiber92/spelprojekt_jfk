@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://db0r6v7ny8q72"]
+
+[ext_resource type="Texture2D" uid="uid://blyoyo14lh310" path="res://Graphics/Hero Sprites/Neutral/Worm.png" id="1_4wplh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_heep7"]
+atlas = ExtResource("1_4wplh")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kbtmr"]
+atlas = ExtResource("1_4wplh")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_heep7")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kbtmr")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

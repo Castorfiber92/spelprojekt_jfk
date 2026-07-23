@@ -8,5 +8,6 @@ script = ExtResource("2_k5dj1")
 name = "Marked"
 type = 2
 target_team = 2
-tag = 3
+add_stacks = false
+tag = 4
 metadata/_custom_type_script = "uid://8uh6jm8u8814"

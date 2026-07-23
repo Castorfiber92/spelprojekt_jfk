@@ -67,6 +67,7 @@ func wait_for_input(action_name: String):
 			return # This 'resolves' the await in the calling function
 # BELOW IS FOR TESTING ONLY
 func emergency_exit_to_overworld() -> void:
+	await get_tree().process_frame
 	print("Combat Manager: Shutting down loops for safe escape...")
 	
 	# 1. Flip your loop variables to false to instantly break all active 'while true' loops
@@ -96,8 +97,10 @@ func update_UI():
 
 func _on_effect_requested(new_effect: CombatEffect):
 	effect_stack.append(new_effect)
-	if not is_processing:
-		await process_stack()
+	if is_processing:
+		return
+		
+	process_stack()
 
 func process_stack():
 	is_processing = true
@@ -106,19 +109,18 @@ func process_stack():
 		var effect = effect_stack.pop_front()
 		
 		# Safety fallback check
-		if not hero_to_slot_map.has(effect.target): 
+		if effect.target != null and not hero_to_slot_map.has(effect.target): 
+			push_warning("Skipping effect: Target hero is no longer on the battlefield.")
 			continue
 			
 		# 1. Pipeline (Modifiers are calculated first)
 		process_effect(effect)
 		
 		# 2. Polymorphic Execution & Visual Sequence Execution
-		await effect.present(self)  # Orchestrated graphics presentation sequences
 		effect.execute(self)       # Structural health changes
+		await effect.present(self)  # Orchestrated graphics presentation sequences
 		
 		update_UI()
-
-	is_processing = false
 
 	is_processing = false
 
@@ -166,7 +168,8 @@ func wait_for_stack_to_clear():
 		await get_tree().process_frame
 
 func _wrap_up_turn(hero: Hero):
-	hero.has_acted = true
+	if hero:
+		hero.has_acted = true
 	current_phase = Enums.CombatPhase.IDLE
 	clear_highlights()
 	
@@ -185,15 +188,17 @@ func _wrap_up_turn(hero: Hero):
 func process_effect(effect: CombatEffect):
 	# 1. We check the attacker's behaviors and modify the outgoing effect
 	# (Items, Strength buffs, Crit chances, etc.)
-	for b in effect.source.get_behaviors():
-		if b.has_method("modify_outgoing_effect"):
-			b.modify_outgoing_effect(effect)
+	if effect.source != null:
+		for b in effect.source.get_behaviors():
+			if b.has_method("modify_outgoing_effect"):
+				b.modify_outgoing_effect(effect)
 	
 	# 2. We check the target's behaviors and modify the incoming effect
 	# (Armor, Shields, Damage Reduction, etc.)
-	for b in effect.target.get_behaviors():
-		if b.has_method("modify_incoming_effect"):
-			b.modify_incoming_effect(effect)
+	if effect.target != null:
+		for b in effect.target.get_behaviors():
+			if b.has_method("modify_incoming_effect"):
+				b.modify_incoming_effect(effect)
 	
 func clear_highlights():
 	for i in player_slots:
@@ -234,64 +239,74 @@ func create_slots():
 	var active_enemy_team: Array[HeroData] = RunManager.current_encounter.enemy_team
 	load_party(active_enemy_team, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
 	
-func set_hero(slot : HeroSlot, hero : Hero):
-	##Assign the corresponding hero to the slot
+func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[HeroSlot], team_enum: Enums.Team):
+	var frontline_ui = ui_parent.get_node("Frontline")
+	var backline_ui = ui_parent.get_node("Backline")
+	
+	for i in range(party_data.size()):
+		# 1. Create and anchor the empty layout slot
+		var slot: HeroSlot = Preloads.hero_slot.instantiate()
+		slot.index = i 
+		target_slots_array.append(slot)
+		
+		if i <= 1:
+			frontline_ui.add_child(slot)
+		else:
+			backline_ui.add_child(slot)
+		
+		# 2. Populate the slot if data exists
+		var data = party_data[i]
+		if data == null:
+			slot.hero = null
+			slot.update_info()
+		else:
+			spawn_and_assign_hero(data, slot, team_enum)
+
+func add_hero(slot : HeroSlot, hero : Hero):
+	if slot.hero != null:
+		push_warning("Overwriting an occupied slot! Forcing removal of old hero.")
+		# Cleanly disconnect the living hero before removing them
+		var old_callable = remove_hero.bind(slot)
+		if slot.hero.has_died.is_connected(old_callable):
+			slot.hero.has_died.disconnect(old_callable)
+		remove_hero(slot)
+		
 	slot.hero = hero
 	slot.play_animation("idle")
 	##Map the slot/hero combination to the dictionary
 	hero_to_slot_map[hero] = slot
 	##Update the ui of the slot
 	slot.update_info()
-	hero.has_died.connect(remove_hero.bind(slot))
-
-func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[HeroSlot], team_enum: Enums.Team):
-	# Gets our vertical column containers
-	var frontline_ui = ui_parent.get_node("Frontline")
-	var backline_ui = ui_parent.get_node("Backline")
 	
-	for i in range(party_data.size()):
-		var slot: HeroSlot = Preloads.hero_slot.instantiate()
-		slot.index = i 
-		
-		# Route to the correct vertical column
-		if i <= 1:
-			frontline_ui.add_child(slot) # Slots 0, 1 stack vertically in Front
-		else:
-			backline_ui.add_child(slot)  # Slots 2, 3, 4 stack vertically in Back
-		
-		# Add the slot to our tracking array
-		target_slots_array.append(slot)
-		
-		# --- HANDLING THE HERO NODE ENVIRONMENT ---
-		# If the spreadsheet row or player party index was empty, leave the slot empty
-		if party_data[i] == null:
-			slot.hero = null
-			slot.update_info() # Updates UI to look empty/invisible if needed
-			continue # Proceed to the next grid position safely
-			
-		var hero: Hero = null
-		
-		# If it's already an active Hero node (from PlayerData), we use it directly.
-		# If it's a HeroData resource (like our enemies), spin up a new node instance.
-		if party_data[i] is Hero:
-			hero = party_data[i]
-		else:
-			hero = Hero.create(party_data[i])
-			
-		hero.team = team_enum
-		
-		# Assign the unit node to our freshly anchored empty container spot
-		set_hero(slot, hero)
+	# Connect death signal
+	hero.has_died.connect(remove_hero.bind(slot), CONNECT_ONE_SHOT)
 
-func remove_hero(slot : HeroSlot):
-	slot.hero.has_died.disconnect(remove_hero.bind(slot))
+func remove_hero(slot: HeroSlot):
+	if slot.hero == null:
+		return
+		
 	hero_to_slot_map.erase(slot.hero)
 	slot.hero = null
 	slot.update_info()
 	
+func spawn_and_assign_hero(hero_source: Variant,slot : HeroSlot, team : Enums.Team):
+	var hero: Hero
+	if hero_source is Hero:
+		# comes from playerdata
+		hero = hero_source
+	else:
+		# comes straight from the database/enemy team
+		hero = Hero.create(hero_source)
+		
+	hero.team = team
+	
+	# 2. Bind them to the slot and dictionaries
+	add_hero(slot, hero)
 
 func win_combat():
 	print("You win the battle!")
+	await wait_for_input("ui_accept")
+	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 	
 func lose_combat():
 	print("You lose the battle!")

@@ -61,7 +61,7 @@ func toggle_visibility(show = true):
 	else:
 		hp_label.visible = false
 		damage_label.visible = false
-		name_label.text = "DEAD"
+		name_label.text = ""
 
 func cleanup():
 	set_modulate(Color.WHITE) # Clears panel highlights

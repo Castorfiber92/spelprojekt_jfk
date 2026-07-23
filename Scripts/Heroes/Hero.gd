@@ -6,7 +6,7 @@ var current_tier : HeroData.HeroTier
 var current_HP : int
 var maximum_HP : int
 var current_damage : int
-var current_spellpower : int
+#var current_spellpower : int
 var current_speed : int
 var current_range : int
 
@@ -19,7 +19,7 @@ signal has_died
 
 static func create(data: HeroData) -> Hero:
 	var new_hero = Hero.new()
-	new_hero.hero_data = data
+	new_hero.hero_data = data.duplicate(true) as HeroData
 	new_hero.initialize_data()
 	return new_hero
 
@@ -31,18 +31,24 @@ func initialize_data():
 	# Add the basic abilities
 	for i in hero_data.abilities:
 		add_behavior(i)
+	for behavior_name in behaviors:
+		var b: Behavior = behaviors[behavior_name]
+		b.owner_hero = self 
 	current_HP = hero_data.base_HP
 	maximum_HP = current_HP
 	current_damage = hero_data.base_damage
 	current_speed = hero_data.base_speed
 	current_range = hero_data.base_range
-	current_spellpower = hero_data.base_spellpower
+	#current_spellpower = hero_data.base_spellpower
 
-func take_damage(damage : int, source : HeroSlot):
+func take_damage(damage : int, source : HeroSlot, trigger_behaviors = true):
 	#Here we call the on_take_damage event to check behaviors
 	#We deal damage according to the calculated damage
 	current_HP -= damage
-	await trigger_behavior_event("on_damage_taken", source)
+	# The triggers_behaviors is set to false if we dont want to trigger on damage taken for things
+	# such as poison, this is temporary right now, and everything still do trigger behaviors.
+	if trigger_behaviors:
+		await trigger_behavior_event("on_damage_taken", source)
 	if current_HP <= 0:
 		await trigger_behavior_event("on_death", source)
 		self.has_died.emit()
@@ -60,7 +66,7 @@ func can_act() -> bool:
 func add_behavior(behavior: Behavior):
 	## This is used when we add another behavior to the Hero. Such as when an item is added, when a buff
 	## is received, when they unlock a new ability etc. etc.
-	var new_behavior = behavior.duplicate() ## Creates a unique copy so we don't mess with the Resource itself
+	var new_behavior = behavior.duplicate(true) ## Creates a unique copy so we don't mess with the Resource itself
 	## We check if the dictionary of active_behaviors does NOT already have the behavior (i.e. if the Hero 
 	## already has crit for example, we don't want to add another instance of the same identical behavior.)
 	if behaviors.has(new_behavior.name) == false:
@@ -69,13 +75,21 @@ func add_behavior(behavior: Behavior):
 		behaviors[new_behavior.name] = new_behavior
 		return true
 	else:
-		# If it exists, but is a buff (just apply the stronger amount of stacks)
-		# Right now it only sets the stacks to the max when hit by the same name, so it wont apply properly for
-		# something that should increase the stacks, find a way to differentiate these types
-		# in the future. For now ok.
+		# If it exists, but is a buff
 		var existing_behavior = behaviors[new_behavior.name]
 		if existing_behavior.type == existing_behavior.BehaviorType.BUFF:
-			existing_behavior.stacks = new_behavior.stacks
+			if existing_behavior.stacks == 0 or new_behavior.stacks == 0:
+				print_stack() # <--- Add this temporary built-in Godot function!
+				print("Permanent/Non-stacking behavior found: ", existing_behavior.name)
+				return false
+			# Check if the behavior only wants to add its stacks rather than replace them
+			if existing_behavior.add_stacks == true:
+				existing_behavior.stacks += new_behavior.stacks 
+				print("Added stacks!")
+				return true
+			# Otherwise apply the largest strength of the buff
+			existing_behavior.stacks = max(existing_behavior.stacks, new_behavior.stacks)
+			#print(existing_behavior.name, "<-old"," -> new ", new_behavior.name )
 			print("Updated stacks!")
 			return true
 		##If it is already on the list, run error message

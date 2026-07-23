@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://ca3k3itdo55gm" path="res://Scenes/HeroSlot.gd" id="1_o71yv"]
 
 [node name="HeroSlot" type="PanelContainer" unique_id=1012603315]
-custom_minimum_size = Vector2(225, 250)
+custom_minimum_size = Vector2(225, 300)
 offset_right = 250.0
 offset_bottom = 250.0
 theme = ExtResource("1_adt3j")

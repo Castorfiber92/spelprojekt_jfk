@@ -8,5 +8,6 @@
 script = ExtResource("2_5e07u")
 name = "Mark"
 target_team = 1
+add_stacks = false
 behaviors_to_apply = Array[ExtResource("1_i8068")]([ExtResource("2_kwhw5")])
 metadata/_custom_type_script = "uid://by8ci0sp2kek2"

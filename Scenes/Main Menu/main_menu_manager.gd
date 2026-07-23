@@ -25,6 +25,7 @@ func connect_ui_elements() -> void:
 
 func on_button_pressed(selected_tribe: Enums.Tribe) -> void:
 	print("Loading party for tribe: ", Enums.Tribe.keys()[selected_tribe])
+	PlayerData.active_tribe = selected_tribe
 	load_random_party_by_tribe(selected_tribe)
 	get_tree().change_scene_to_packed(Preloads.overworld_scene)
 	

@@ -13,5 +13,5 @@ func modify_outgoing_effect(effect : CombatEffect):
 		effect.is_crit = true
 		effect.value = effect.value * damage_multiplier
 		for b in behaviors_to_apply:
-			effect.buffs.append(b.duplicate())
+			effect.buffs.append(b.duplicate(true))
 			print ("Effect " + name + " triggered!")

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_fqy6q"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="2_wv54a"]
-[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/Base Scripts/cast_basic.tres" id="2_xrwne"]
+[ext_resource type="Resource" uid="uid://dqnl0460t06kg" path="res://Resources/Behaviors/Basic Actions/Custom Actions/cast_basic_bat_intoxicator.tres" id="2_xrwne"]
 [ext_resource type="SpriteFrames" uid="uid://cvaffewfksjiu" path="res://Graphics/Hero Sprites/Orc/bat_intoxicator_sprites.tres" id="4_xrwne"]
 
 [resource]

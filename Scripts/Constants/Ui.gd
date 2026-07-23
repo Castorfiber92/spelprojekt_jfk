@@ -5,6 +5,7 @@ const BUFF_REGIONS = {
 	"neutral_icon": Rect2(166, 55, 236, 252), # Fallback frame
 	"burn_icon": Rect2(166, 55, 236, 252), 
 	"freeze_icon": Rect2(447, 57, 251, 249),
+	"poison_icon": Rect2(442,345,248,268),
 	"mark_icon": Rect2(758, 81, 231, 213),
 	"stun_icon": Rect2(1036, 83, 262, 211),
 	"curse_icon": Rect2(752,659,269,238),
