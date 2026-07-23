@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CombatComposition" format=3 uid="uid://bay06784rv5mn"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_u88fu"]
+[ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="2_ehs57"]
+[ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="2_m2rhb"]
+
+[resource]
+script = ExtResource("2_m2rhb")
+enemy_team = Array[ExtResource("1_u88fu")]([ExtResource("2_ehs57"), ExtResource("2_ehs57"), ExtResource("2_ehs57"), ExtResource("2_ehs57"), ExtResource("2_ehs57")])
+encounter_name = "A Bunch of Badgers"
+encounter_type = 1

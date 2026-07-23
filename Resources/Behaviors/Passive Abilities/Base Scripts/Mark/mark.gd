@@ -7,5 +7,5 @@ func modify_outgoing_effect(effect : CombatEffect):
 	if effect.target.team == effect.source.team:
 		return 
 	for b in behaviors_to_apply:
-		effect.buffs.append(b.duplicate())
+		effect.buffs.append(b.duplicate(true))
 		print ("Effect " + name + " triggered!")

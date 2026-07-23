@@ -223,7 +223,7 @@ func fetch_shop_heroes() -> void:
 	print("Rolling shop slots....")
 	# 2. Update shop inventory 
 	for i in range(shop_slots.size()):
-		var random_hero: HeroData = DatabaseManager.get_random_hero_data()
+		var random_hero: HeroData = DatabaseManager.get_all_heroes_by_tribe(PlayerData.active_tribe).pick_random()
 		
 		if random_hero != null:
 			# Assign the raw data to the item state first

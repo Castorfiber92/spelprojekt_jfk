@@ -3,13 +3,14 @@ class_name HeroData
 
 enum HeroTier { BRONZE, SILVER, GOLD, LEGENDARY }
 @export_group("Tribe and Mechanics")
+@export var is_minion : bool = false
 @export var tribe : Enums.Tribe
 @export var is_legendary_eligible: bool
 @export_group("Base Stats")
 @export var current_tier : HeroTier = HeroTier.BRONZE
 @export_range(10,50) var base_HP : int
 @export_range(1,10) var base_damage : int
-@export_range(1,10) var base_spellpower : int
+#@export_range(1,10) var base_spellpower : int
 @export_range(1,100) var base_speed : int
 @export_range(1,3) var base_range : int
 @export_group("Base abilities")

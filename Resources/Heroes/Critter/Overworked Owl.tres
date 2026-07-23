@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://blrrb4xfi6wx6"]
 
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_c02is"]
-[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/Base Scripts/cast_basic.tres" id="2_scvy0"]
+[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_scvy0"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_l5138"]
 [ext_resource type="SpriteFrames" uid="uid://bgypdq4niakri" path="res://Graphics/Hero Sprites/Critter/overworked_owl_sprites.tres" id="4_scvy0"]
 

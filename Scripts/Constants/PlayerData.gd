@@ -6,6 +6,7 @@ var player_party: Array[Hero] = [null, null, null, null, null]
 var essence : int = 10
 
 var active_roster: Array[HeroData] = []
+var active_tribe: Enums.Tribe = 0
 
 func can_pay(amount : int) -> bool:
 	return essence >= amount 

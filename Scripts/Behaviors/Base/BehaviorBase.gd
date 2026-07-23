@@ -5,21 +5,39 @@ class_name BehaviorBase
 @export var description_long : String
 @export var description_short : String
 var owner_hero: Hero
+@export_category("Event Settings")
+@export_enum(
+	"on_execute_action",
+	"on_start_of_battle",
+	"on_turn_start",
+	"on_turn_end",
+	"on_attack",
+	"on_damage_dealt",
+	"on_damage_taken",
+	"on_death"
+) var trigger_event: String = "on_execute_action"
 @export_category("Type Settings")
 enum BehaviorType { PASSIVE, ACTIVE, BUFF }
 @export var type: BehaviorType = BehaviorType.PASSIVE
-enum BehaviorTag {NEUTRAL, BURN, FREEZE, MARK, STUN, CURSE, ARMOR, POWER}
+enum BehaviorTag {NEUTRAL, BURN, FREEZE, POISON, MARK, STUN, CURSE, ARMOR, POWER}
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
 @export var target_count: int = 1
 ##0 range for self-targeting or if we are not using a custom range
-@export_range(0,5) var range : int
+@export_range(0,3) var range : int
+#Default is set at action animation, set to null inside the behaviors if no animation should trigger
+@export_category("Animation Settings")
+@export var animation : String = "action"
+@export var animation_duration : float = 0.15
 @export_category("Buff Settings")
 @export var stacks: int = 0 # 0 if not applicable
+@export var add_stacks : bool = true # false if the applied buff shouldn't increase existing stacks of same effect
 @export var tag : BehaviorTag = BehaviorTag.NEUTRAL
 @export var blocks_action : bool = false
 @export var behaviors_to_apply: Array[Behavior] = []
+@export_group("Summon Settings")
+@export var hero_to_summon : HeroData
 ##Below we will have functions for every event we want to check
 ##which means on_hit, on_death, on_taking_damage etc etc.
 ##Then, we create resources for each behaviorData and define what said behavior is doing on every 
@@ -234,6 +252,15 @@ func modify_defender_final_targets(reachables: Array[HeroSlot], defender_slot: H
 func modify_attacker_final_targets(resolved_targets: Array[HeroSlot], reachable_pool: Array[HeroSlot]) -> Array[HeroSlot]:
 	return resolved_targets
 
+func create_effect(effect_type: Script, target_hero: Hero, source_hero: Hero) -> Variant:
+	var effect = effect_type.new() as CombatEffect
+	effect.source = source_hero
+	effect.target = target_hero
+	effect.animation = self.animation
+	effect.animation_duration = self.animation_duration
+	effect.buffs = behaviors_to_apply.duplicate() 
+	return effect
+	
 func modify_range(value: int) -> int: return value
 func modify_defense(value: int) -> int: return value
 func modify_speed(value: int) -> int: return value

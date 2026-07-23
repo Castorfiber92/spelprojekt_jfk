@@ -5,9 +5,9 @@ class_name HealEffect
 func execute(_manager: CombatManager) -> void:
 	var source_slot: HeroSlot = _manager.hero_to_slot_map.get(source, null)
 	if target:
-		target.heal_HP(value, source)
+		await target.heal_HP(value, source)
 	for b in buffs:
-		target.add_behavior(b.duplicate())
+		target.add_behavior(b)
 		
 func present(manager: CombatManager) -> void:
 	var source_slot: HeroSlot = manager.hero_to_slot_map.get(source, null)

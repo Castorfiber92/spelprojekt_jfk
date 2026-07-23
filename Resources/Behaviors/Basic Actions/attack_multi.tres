@@ -7,6 +7,6 @@
 script = ExtResource("1_18o8k")
 name = "Basic Multi"
 target_team = 1
-target_type = 1
 target_count = 2
+range = 1
 metadata/_custom_type_script = "uid://d4igq00opuk1n"

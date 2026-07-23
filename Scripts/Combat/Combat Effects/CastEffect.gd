@@ -5,7 +5,7 @@ class_name CastEffect
 func execute(_manager: CombatManager) -> void:
 	var source_slot: HeroSlot = _manager.hero_to_slot_map.get(source, null)
 	for b in buffs:
-		target.add_behavior(b.duplicate())
+		target.add_behavior(b)
 
 
 func present(manager: CombatManager) -> void:

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_qbaxk"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_hkrkh"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2ky6y"]
+[ext_resource type="SpriteFrames" uid="uid://db0r6v7ny8q72" path="res://Graphics/Hero Sprites/Neutral/worm_sprites.tres" id="4_hkrkh"]
 
 [resource]
 script = ExtResource("3_2ky6y")
@@ -13,3 +14,4 @@ base_speed = 1
 base_range = 1
 base_action = ExtResource("2_hkrkh")
 name = "Worm"
+sprites = ExtResource("4_hkrkh")

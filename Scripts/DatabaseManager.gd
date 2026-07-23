@@ -38,18 +38,19 @@ func _crawl_and_index_recursive(path: String) -> void:
 		dir.list_dir_end()
 
 ## Your new, instantaneous randomizer function
-func get_random_hero_data() -> HeroData:
-	if not master_hero_roster.is_empty():
-		return master_hero_roster.pick_random()
+func get_random_hero_data(include_minions = false) -> HeroData:
+	var available_heroes = master_hero_roster.filter(func(hero): return include_minions or not hero.is_minion)
+	if not available_heroes.is_empty():
+		return available_heroes.pick_random()
 		
 	printerr("DatabaseManager: Runtime hero cache array is completely empty!")
 	return null
 	
-func get_all_heroes_by_tribe(target_tribe: Enums.Tribe) -> Array[HeroData]:
+func get_all_heroes_by_tribe(target_tribe: Enums.Tribe, include_minions = false) -> Array[HeroData]:
 	var matching_heroes: Array[HeroData] = []
 	
 	for hero in master_hero_roster:
-		if hero and hero.tribe == target_tribe:
+		if hero and hero.tribe == target_tribe and not hero.is_minion:
 			matching_heroes.append(hero)
 			
 	return matching_heroes

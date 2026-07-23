@@ -5,4 +5,6 @@
 
 [resource]
 script = ExtResource("2_fnf5p")
+name = "Basic Cast"
+range = 3
 metadata/_custom_type_script = "uid://dijrmg7rep4x8"

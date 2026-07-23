@@ -5,6 +5,7 @@ extends Node
 @export_tool_button("Sync CSV from Drive", "Callable") var sync_drive_action = download_csv_from_drive
 @export_tool_button("Generate Heroes", "Callable") var generate_heroes_action = generate_heroes 
 @export_tool_button("Generate Compositions", "Callable") var generate_compositions_action = run_composition_generation_loop
+@export_tool_button("Refresh Godot", "Callable") var refresh_godot_action = force_refresh_editor_cache
 
 @export_group("Google Drive Sync")
 ## --- HEROES --- ##
@@ -39,52 +40,107 @@ var all_files: Array[String] = []
 func export_valid_behaviors_list():
 	if not Engine.is_editor_hint(): return
 	
-	print("Hero Importer: Scanning files for behavior filenames...")
+	print("Hero Importer: Starting fresh multi-list behavior scan...")
+	
+	# The 4 specific target output paths
+	var files_to_write = {
+		"res://valid_basic_actions_list.txt": [],
+		"res://valid_effects_list.txt": [],
+		"res://res_items_list.txt": [],
+		"res://valid_passives_list.txt": []
+	}
+	
+	# --- 1. AUTOMATED PURGE ARCHITECTURE ---
+	print("Hero Importer: Clearing old text files from disk...")
+	for file_path in files_to_write:
+		if FileAccess.file_exists(file_path):
+			DirAccess.remove_absolute(file_path)
+				
+	var legacy_file = "res://valid_behaviors_list.txt"
+	if FileAccess.file_exists(legacy_file):
+		DirAccess.remove_absolute(legacy_file)
+
+	var efs_clear = EditorInterface.get_resource_filesystem()
+	efs_clear.scan()
+	while efs_clear.is_scanning():
+		await Engine.get_main_loop().process_frame
+		
+	# --- 2. DATA ACQUISITION & PATH PROCESSING ---
 	var all_files: Array[String] = []
 	_get_all_files_on_disk("res://", all_files)
 	
-	var valid_filenames: Array[String] = []
+	var basic_actions: Array[String] = []
+	var effects: Array[String] = []
+	var items: Array[String] = []
+	var passives: Array[String] = []
 	
-	# --- Define filenames you want to ignore ---
-	var ignored_behaviors = ["attack_basic", "heal_basic", "cast_basic", "attack_multi"]
-	
-	# Scan all files to find actual Behavior resources
 	for path in all_files:
 		if path.ends_with(".tres"):
+			
+			# Filter out any "base scripts" folder instantly in any directory level
+			if "/base scripts/" in path.to_lower():
+				continue
+				
 			var loaded_res = load(path)
 			
-			# Ensure it is a behavior script before tracking its filename
 			if loaded_res is Behavior:
-				# Get the exact filename without the path
 				var file_name_with_ext = path.get_file()
-				# Remove the ".tres" extension to get the raw string
 				var raw_filename = file_name_with_ext.replace(".tres", "").strip_edges()
 				
-				# --- Skip the filename if it matches our ignore list ---
-				if raw_filename in ignored_behaviors:
+				if raw_filename == "":
 					continue
+					
+				var path_parts = path.split("/")
 				
-				# Skip any filenames beginning with status, since these are the buffs being applied,
-				# not the actual abilities
-				if raw_filename.begins_with("status_"):
-					continue
+				if path_parts.size() >= 4:
+					var category_folder = ""
+					for part in path_parts:
+						var part_lower = part.to_lower().strip_edges()
+						
+						if part_lower in ["basic actions", "effects", "items", "passive abilities"]:
+							category_folder = part_lower
+							break
 					
-				if raw_filename != "" and not valid_filenames.has(raw_filename):
-					valid_filenames.append(raw_filename)
-					
-	valid_filenames.sort() # Sort alphabetically for easy spreadsheet management
+					match category_folder:
+						"basic actions":
+							if not basic_actions.has(raw_filename): basic_actions.append(raw_filename)
+						"effects":
+							if not effects.has(raw_filename): effects.append(raw_filename)
+						"items":
+							if not items.has(raw_filename): items.append(raw_filename)
+						"passive abilities":
+							if not passives.has(raw_filename): passives.append(raw_filename)
+
+	# Alphabetize data collections cleanly
+	basic_actions.sort()
+	effects.sort()
+	items.sort()
+	passives.sort()
 	
-	# Save this out as a plain text file in your project directory
-	var output_path = "res://valid_behaviors_list.txt"
-	var file = FileAccess.open(output_path, FileAccess.WRITE)
+	# Update target storage dictionaries with the fresh data arrays
+	files_to_write["res://valid_basic_actions_list.txt"] = basic_actions
+	files_to_write["res://valid_effects_list.txt"] = effects
+	files_to_write["res://res_items_list.txt"] = items
+	files_to_write["res://valid_passives_list.txt"] = passives
 	
-	if file:
-		for f_name in valid_filenames:
-			file.store_line(f_name)
-		file.close()
-		print("--- Exported %d valid behavior filenames to %s ---" % [valid_filenames.size(), output_path])
-	else:
-		printerr("Failed to write behavior list file.")
+	# --- 3. RECREATE FRESH DATA DOCUMENTS ---
+	for file_path in files_to_write:
+		var file = FileAccess.open(file_path, FileAccess.WRITE)
+		if file:
+			for f_name in files_to_write[file_path]:
+				file.store_line(f_name)
+			file.close()
+			print("--- Exported %d assets out to %s ---" % [files_to_write[file_path].size(), file_path])
+		else:
+			printerr("Failed to write fresh data file at: ", file_path)
+			
+	# --- 4. FINAL VISUAL INTERFACE SYNC ---
+	var efs_final = EditorInterface.get_resource_filesystem()
+	efs_final.scan()
+	while efs_final.is_scanning():
+		await Engine.get_main_loop().process_frame
+		
+	print("============ MULTI-LIST AUTOMATED EXPORT PASSED ============")
 		
 func generate_heroes():
 	# If we are not currently inside the editor, i.e. the game is running, do nothing
@@ -126,7 +182,7 @@ func generate_heroes():
 		var row = file.get_csv_line()
 		# Skip rows that are empty or do not have enough columns
 		# - keep this updated accordingly to how many values we have in the CSV
-		if row.size() < 10: 
+		if row.size() < 11: 
 			continue 
 		
 		# Declare which row is which data
@@ -148,6 +204,7 @@ func generate_heroes():
 		var h_rng    = int(row[7])
 		var act_name = row[8].strip_edges()
 		var abl_list = row[9].strip_edges()
+		var h_minion = row[10].strip_edges().to_lower() == "true"
 		
 		# Build the subfolder path based on the tribe name
 		# capitalize() turns "orc" into "Orc" for the folder name
@@ -174,6 +231,7 @@ func generate_heroes():
 		res.base_damage = clampi(h_dmg, 1, 10)
 		res.base_speed = clampi(h_spd, 1, 100)
 		res.base_range = clampi(h_rng, 1, 5)
+		res.is_minion = h_minion
 		
 		# --- FUNCTIONAL CHANGE: Find Base Action directly from optimized cache ---
 		res.base_action = find_behavior_globally(act_name)
@@ -280,7 +338,6 @@ func generate_compositions():
 		var row = file.get_csv_line()
 		if row.size() < 7: continue 
 		
-		# Direct index extraction with no extra string checks
 		var c_name = row[0]
 		if c_name == "": continue
 		
@@ -294,30 +351,57 @@ func generate_compositions():
 			
 		var sub_dir = compositions_output_dir.path_join(formatted_area_folder).path_join(sub_folder_name)
 		
-		# Automatically create the missing target directories if they don't exist yet
 		if not DirAccess.dir_exists_absolute(sub_dir):
 			DirAccess.make_dir_recursive_absolute(sub_dir)
 			
 		var save_path = sub_dir.path_join(c_name.validate_filename() + ".tres")
 
-		# --- INSTANTIATE OR IN-PLACE LOAD YOUR CUSTOM COMPOSITION OBJECT ---
-		# NOTE: Change 'EncounterComposition' below to match your actual script class name!
-		var res: CombatComposition = load(save_path) if FileAccess.file_exists(save_path) else CombatComposition.new()
+		var res: CombatComposition
+		if FileAccess.file_exists(save_path):
+			var existing_res = load(save_path)
+			if existing_res:
+				res = existing_res.duplicate()
+			else:
+				res = CombatComposition.new()
+		else:
+			res = CombatComposition.new()
 		
-		# --- EXTRACT AND ASSIGN SPREADSHEET VARIABLES ---
 		res.encounter_name = c_name
 		
-		# Optional boilerplate: Parsing subsequent row indices for enemy lineups into arrays
-		var combatants_list: Array[String] = []
-		for idx in range(2, row.size()):
-			var enemy_entry = row[idx].strip_edges()
-			if enemy_entry != "":
-				combatants_list.append(enemy_entry)
-		
-		# Assuming your composition class has an array property tracking strings/rosters:
-		# res.enemy_roster = combatants_list
-		
-		# --- SAVE GENERATED RESOURCE WITH MEMORY PROTECTION FLAGS ---
+		if c_type == "ELITE":
+			res.encounter_type = CombatComposition.CombatType.ELITE
+		elif c_type == "BOSS":
+			res.encounter_type = CombatComposition.CombatType.BOSS
+		else:
+			res.encounter_type = CombatComposition.CombatType.NORMAL
+
+		var temporary_team: Array[HeroData] = [null, null, null, null, null]
+
+		for i in range(5):
+			var csv_column_index = 2 + i
+			if csv_column_index >= row.size(): 
+				break
+				
+			var enemy_entry = row[csv_column_index].strip_edges()
+			if enemy_entry == "":
+				continue
+				
+			var expected_filename = enemy_entry.validate_filename().to_lower() + ".tres"
+			
+			if hero_asset_cache.has(expected_filename):
+				var asset_path = hero_asset_cache[expected_filename]
+				var loaded_hero = load(asset_path) as HeroData
+				
+				if loaded_hero:
+					temporary_team[i] = loaded_hero
+				else:
+					printerr("Composition Importer: File failed to cast to HeroData at path: ", asset_path)
+			else:
+				printerr("Composition Importer: Could not find HeroData asset file named: ", expected_filename)
+
+		res.enemy_team = temporary_team
+
+		# --- SAVE GENERATED RESOURCE TO DISK ---
 		res.take_over_path(save_path)
 		var save_status = ResourceSaver.save(res, save_path, ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
 		
@@ -333,7 +417,7 @@ func generate_compositions():
 	efs_final.scan()
 	while efs_final.is_scanning():
 		await Engine.get_main_loop().process_frame
-		
+	
 	print("--- Composition Import Task Finished ---")
 		
 func run_composition_generation_loop() -> void:
@@ -357,7 +441,6 @@ func run_composition_generation_loop() -> void:
 		compositions_csv_path = calculated_local_path 
 		print("Processing composition compilation for: ", calculated_local_path.get_file())
 		await generate_compositions()
-		
 	print("============ COMPOSITION RESOURCE COMPILATION COMPLETE ============")
 	
 func find_behavior_globally(behavior_name: String) -> Behavior:
@@ -495,3 +578,25 @@ func _perform_http_download(host: String, url_path: String, redirect_limit: int,
 			printerr("Importer: Failed with code ", code, ". Body received: ", response_body.get_string_from_utf8())
 	
 	http.close()
+	
+func force_refresh_editor_cache():
+	if not Engine.is_editor_hint():
+		return
+		
+	print("============ [TOOL] FORCING FILESYSTEM CACHE REFRESH ============")
+	
+	# 1. Fetch the master file system engine reference
+	var efs = EditorInterface.get_resource_filesystem()
+	
+	# 2. Re-scan the active directory structures from disk roots
+	efs.scan()
+	
+	# 3. Yield code control until the engine finishes background indexing
+	while efs.is_scanning():
+		await Engine.get_main_loop().process_frame
+		
+	# 4. CRITICAL: Force the Godot UI layout panels to visually redraw assets
+	var filesystem_dock = EditorInterface.get_file_system_dock()
+	filesystem_dock.navigate_to_path("res://")
+	
+	print("============ FILESYSTEM CACHE COMPLETED & VISUALLY REFRESHED ======")
