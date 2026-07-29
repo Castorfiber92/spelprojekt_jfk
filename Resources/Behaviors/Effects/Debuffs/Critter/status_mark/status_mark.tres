@@ -1,13 +1,14 @@
 [gd_resource type="Resource" script_class="status_mark_basic_behavior" format=3 uid="uid://c6pbdatpix4jh"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_6j7gn"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_ur06g"]
 [ext_resource type="Script" uid="uid://8uh6jm8u8814" path="res://Resources/Behaviors/Effects/Debuffs/Base Scripts/status_mark.gd" id="2_k5dj1"]
 
 [resource]
 script = ExtResource("2_k5dj1")
-name = "Marked"
 type = 2
 target_team = 2
+target_count = 0
+animation = ""
 add_stacks = false
 tag = 4
 metadata/_custom_type_script = "uid://8uh6jm8u8814"

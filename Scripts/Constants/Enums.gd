@@ -8,7 +8,7 @@ enum Target {
 	#RANDOM_BOUNCE # Hits a target, then jumps to N random targets successively
 }
 enum Tribe {CRITTER, ORC, UNDEAD, GNOME, NEUTRAL}
-const Tribe_MAP = {
+static var Tribe_MAP = {
 	"critter": Enums.Tribe.CRITTER,
 	"orc": Enums.Tribe.ORC,
 	"undead": Enums.Tribe.UNDEAD,
@@ -24,3 +24,26 @@ enum CombatPhase {IDLE,
 	AFTER_ACT,     # "On kill" effects, follow-up attacks
 	POST_TURN      # Cleanup
 	}
+
+enum TriggerEvent {
+	ON_EXECUTE_ACTION,
+	ON_START_OF_BATTLE,
+	ON_TURN_START,
+	ON_TURN_END,
+	ON_ATTACK,
+	ON_DAMAGE_DEALT,
+	ON_DAMAGE_TAKEN,
+	ON_DEATH
+}
+
+# Helper mapping function to convert Enums to strings for method calling
+const TRIGGER_STRINGS = {
+	TriggerEvent.ON_EXECUTE_ACTION: "on_execute_action",
+	TriggerEvent.ON_START_OF_BATTLE: "on_start_of_battle",
+	TriggerEvent.ON_TURN_START: "on_turn_start",
+	TriggerEvent.ON_TURN_END: "on_turn_end",
+	TriggerEvent.ON_ATTACK: "on_attack",
+	TriggerEvent.ON_DAMAGE_DEALT: "on_damage_dealt",
+	TriggerEvent.ON_DAMAGE_TAKEN: "on_damage_taken",
+	TriggerEvent.ON_DEATH: "on_death"
+}

@@ -2,4 +2,4 @@ attack_basic
 attack_multi
 cast_basic
 cast_basic_bat_intoxicator
-heal_basic
+cast_basic_earth_shaman

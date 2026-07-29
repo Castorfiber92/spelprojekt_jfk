@@ -1,13 +1,14 @@
-extends Behavior
+extends BehaviorData
 class_name status_poison_basic_behavior
 
-func on_turn_end(combatContext: CombatContext):
-	for target in combatContext.targets:
-		var effect = create_effect(DamageEffect, target.hero, combatContext.source.hero)
-		effect.value = stacks 
-		GameEvents.effect_created.emit(effect)
+func _execute_behavior_payload_override(combat_context: CombatContext, executor: Behavior):
+	var is_tick_crit: bool = executor.roll_crit_local(executor.owner_hero)
+	var effect = executor.create_effect(DamageEffect, combat_context.source, executor.owner_hero, combat_context.source) as CombatEffect
+	effect.is_crit = is_tick_crit
+	effect.value = int(executor.current_stacks * crit_multiplier) if is_tick_crit else executor.current_stacks
+	GameEvents.effect_created.emit(effect)
 		
 	# Tick down and clean up
-	stacks -= 1
-	if stacks <= 0:
-		combatContext.source.hero.remove_behavior(name)
+	executor.current_stacks -= 1
+	if executor.current_stacks <= 0:
+		executor.owner_hero.remove_behavior(executor)

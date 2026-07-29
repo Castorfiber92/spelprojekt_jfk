@@ -5,5 +5,4 @@
 
 [resource]
 script = ExtResource("2_bd5on")
-normal_encounters = Array[ExtResource("1_s8pba")]([null])
 metadata/_custom_type_script = "uid://3gnq7h43xwui"

@@ -1,14 +1,13 @@
-[gd_resource type="Resource" script_class="bash_basic_behavior" format=3 uid="uid://b7b4q5if8nhmi"]
+[gd_resource type="Resource" script_class="InfuseBuffsModifier" format=3 uid="uid://b7b4q5if8nhmi"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_hm5l5"]
-[ext_resource type="Script" uid="uid://cbxtm0wx1fx85" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/Bash/bash_basic.gd" id="2_e6tkf"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_g0lq6"]
 [ext_resource type="Resource" uid="uid://bejtkqbw62x76" path="res://Resources/Behaviors/Effects/Debuffs/Gnome/status_stun/status_stun(broom_basher).tres" id="2_taskv"]
+[ext_resource type="Script" uid="uid://bkqfvtirw6whu" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/infuse_buff_basic_behavior/infuse_buffs_basic_behavior.gd" id="3_g0lq6"]
 
 [resource]
-script = ExtResource("2_e6tkf")
-chance = 0.25
-name = "Broom Bash"
+script = ExtResource("3_g0lq6")
 target_team = 1
+trigger_on_innate_crit = true
 add_stacks = false
-behaviors_to_apply = Array[ExtResource("1_hm5l5")]([ExtResource("2_taskv")])
-metadata/_custom_type_script = "uid://cbxtm0wx1fx85"
+behaviors_to_apply = Array[ExtResource("1_g0lq6")]([ExtResource("2_taskv")])
+name = "Broom Bash"

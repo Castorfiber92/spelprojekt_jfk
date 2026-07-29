@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="crit_basic" format=3 uid="uid://cyesm6lcwprv3"]
-
-[ext_resource type="Script" uid="uid://cbr7687fkpjye" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/Crit/crit_basic.gd" id="1_y7nx0"]
-
-[resource]
-script = ExtResource("1_y7nx0")
-damage_multiplier = 2.0
-name = "Normal Crit"
-metadata/_custom_type_script = "uid://cbr7687fkpjye"

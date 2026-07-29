@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="CombatComposition" format=3 uid="uid://cspeira5ud0un"]
+
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_jo2sm"]
+[ext_resource type="Resource" uid="uid://0ta3x2jrh80o" path="res://Resources/Heroes/Neutral/Worm.tres" id="2_rcwhg"]
+[ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="3_rkmwc"]
+
+[resource]
+script = ExtResource("3_rkmwc")
+enemy_team = Array[ExtResource("1_jo2sm")]([ExtResource("2_rcwhg"), ExtResource("2_rcwhg"), null, ExtResource("2_rcwhg"), null])
+encounter_name = "Worm Infestation 2"

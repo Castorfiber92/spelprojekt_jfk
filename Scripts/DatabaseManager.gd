@@ -31,9 +31,12 @@ func _crawl_and_index_recursive(path: String) -> void:
 				# Support standard editor files (.tres) AND compiled export formats (.remap)
 				if file_name.ends_with(".tres") or file_name.ends_with(".remap"):
 					var clean_name = file_name.replace(".remap", "")
-					var res = load(path.path_join(clean_name)) as HeroData
-					if res:
-						master_hero_roster.append(res)
+					# Load it dynamically first without an aggressive casting line
+					var loaded_res = load(path.path_join(clean_name))
+
+					# Safely check if it matches your custom resource type
+					if loaded_res is HeroData:
+						master_hero_roster.append(loaded_res)
 			file_name = dir.get_next()
 		dir.list_dir_end()
 
@@ -50,7 +53,9 @@ func get_all_heroes_by_tribe(target_tribe: Enums.Tribe, include_minions = false)
 	var matching_heroes: Array[HeroData] = []
 	
 	for hero in master_hero_roster:
-		if hero and hero.tribe == target_tribe and not hero.is_minion:
-			matching_heroes.append(hero)
+		# Added include_minions filter pass to match your argument flag!
+		if hero and hero.tribe == target_tribe:
+			if include_minions or not hero.is_minion:
+				matching_heroes.append(hero)
 			
 	return matching_heroes

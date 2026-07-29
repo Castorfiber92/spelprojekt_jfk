@@ -109,7 +109,7 @@ func update_buff_slots():
 	# 2. Gather currently valid buffs from the hero
 	var current_buffs: Array = []
 	for b : Behavior in hero.behaviors.values():
-		if b.type == b.BehaviorType.BUFF:
+		if b.data.type == BehaviorData.BehaviorType.BUFF:
 			current_buffs.append(b)
 
 	# 3. Clean up expired buffs (removed from hero, but still have an icon)

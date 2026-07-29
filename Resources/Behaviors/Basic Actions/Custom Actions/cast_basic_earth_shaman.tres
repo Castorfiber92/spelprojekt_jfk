@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BasicActionBehavior" format=3 uid="uid://bm53nap0usx2s"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_cjr1e"]
+[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="2_cjr1e"]
+[ext_resource type="Resource" uid="uid://b8rw6bl3t2g00" path="res://Resources/Behaviors/Effects/Buffs/Orc/status_armor(earth_shaman).tres" id="2_ekp34"]
+
+[resource]
+script = ExtResource("2_cjr1e")
+action_profile = 1
+target_type = 3
+range = 3
+crit_multiplier = 2.0
+trigger_on_innate_crit = true
+add_stacks = false
+behaviors_to_apply = Array[ExtResource("1_cjr1e")]([ExtResource("2_ekp34")])
+name = "Cast Basic Earth Shaman"
+metadata/_custom_type_script = "uid://d4igq00opuk1n"
