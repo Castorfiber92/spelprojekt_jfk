@@ -1,8 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://ic6wbptmrbw3"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_pgevp"]
-[ext_resource type="Resource" uid="uid://dxw2w8hhbf75u" path="res://Resources/Behaviors/Passive Abilities/Orc/armor(earth_shaman).tres" id="2_bilrq"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_r40d3"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_s7asv"]
+[ext_resource type="Resource" uid="uid://bm53nap0usx2s" path="res://Resources/Behaviors/Basic Actions/Custom Actions/cast_basic_earth_shaman.tres" id="2_s7asv"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_i8utn"]
 [ext_resource type="SpriteFrames" uid="uid://qe0ys3n68ib2" path="res://Graphics/Hero Sprites/Orc/earth_shaman_sprites.tres" id="5_bilrq"]
 
@@ -13,7 +12,6 @@ base_HP = 22
 base_damage = 3
 base_speed = 10
 base_range = 1
-base_action = ExtResource("2_r40d3")
-abilities = Array[ExtResource("1_pgevp")]([ExtResource("2_bilrq")])
+base_action = ExtResource("2_s7asv")
 name = "Earth Shaman"
 sprites = ExtResource("5_bilrq")

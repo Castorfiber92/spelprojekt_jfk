@@ -1,14 +1,16 @@
-[gd_resource type="Resource" script_class="cast_basic_behavior" format=3 uid="uid://dqnl0460t06kg"]
+[gd_resource type="Resource" script_class="BasicActionBehavior" format=3 uid="uid://dqnl0460t06kg"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_cey12"]
-[ext_resource type="Script" uid="uid://dijrmg7rep4x8" path="res://Resources/Behaviors/Basic Actions/Base Scripts/cast_basic.gd" id="2_m33hr"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_m33hr"]
 [ext_resource type="Resource" uid="uid://c3els8cg05vxu" path="res://Resources/Behaviors/Effects/Debuffs/Orc/status_poison/status_poison(bat_intoxicator).tres" id="2_sw4iw"]
+[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="3_m33hr"]
 
 [resource]
-script = ExtResource("2_m33hr")
-name = "Cast Basic Bat Intoxicator"
+script = ExtResource("3_m33hr")
+action_profile = 1
 target_team = 1
 range = 2
-stacks = 2
-behaviors_to_apply = Array[ExtResource("1_cey12")]([ExtResource("2_sw4iw")])
-metadata/_custom_type_script = "uid://dijrmg7rep4x8"
+crit_multiplier = 2.0
+trigger_on_innate_crit = true
+add_stacks = false
+behaviors_to_apply = Array[ExtResource("1_m33hr")]([ExtResource("2_sw4iw")])
+name = "Cast Basic Bat Intoxicator"

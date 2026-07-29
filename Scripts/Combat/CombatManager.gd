@@ -8,6 +8,14 @@ var player_slots : Array[HeroSlot]
 var enemy_slots : Array[HeroSlot]
 @export var active_slot : HeroSlot
 
+# For death handling
+class DeathEventData:
+	var dead_hero: Hero
+	var original_slot: HeroSlot
+	
+	func _init(hero: Hero, slot: HeroSlot) -> void:
+		self.dead_hero = hero
+		self.original_slot = slot
 
 ## Stack variables
 var effect_stack: Array[CombatEffect] = []
@@ -25,6 +33,15 @@ func _ready() -> void:
 	GameEvents.effect_created.connect(_on_effect_requested)
 	create_slots()
 	await wait_for_input("ui_accept")
+	## For testing purposes
+	var all_slots = player_slots.duplicate()
+	all_slots.append_array(enemy_slots)
+	all_slots.shuffle()
+	for slot in all_slots:
+		if slot and slot.hero != null:
+			slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_START_OF_BATTLE, slot, [] as Array[HeroSlot], self)
+	await wait_for_stack_to_clear()
+	## Continue
 	run_combat_loop()
 
 func run_combat_loop():
@@ -80,8 +97,10 @@ func emergency_exit_to_overworld() -> void:
 
 func get_next_acting_hero() -> HeroSlot:
 	var candidates : Array[HeroSlot] = []
-	for slot in hero_to_slot_map.values():
-		if slot.hero and not slot.hero.has_acted:
+	var all_slots = player_slots + enemy_slots
+	for slot in all_slots:
+		# Ensure the slot exists, contains a living hero, and that hero hasn't acted yet
+		if slot and slot.hero != null and not slot.hero.has_acted:
 			candidates.append(slot)
 	
 	if candidates.is_empty():
@@ -99,73 +118,141 @@ func _on_effect_requested(new_effect: CombatEffect):
 	effect_stack.append(new_effect)
 	if is_processing:
 		return
-		
 	process_stack()
 
-func process_stack():
+func process_stack() -> void:
 	is_processing = true
 	
 	while not effect_stack.is_empty():
 		var effect = effect_stack.pop_front()
 		
 		# Safety fallback check
-		if effect.target != null and not hero_to_slot_map.has(effect.target): 
-			push_warning("Skipping effect: Target hero is no longer on the battlefield.")
-			continue
+		if effect.target != null: 
+			if effect.target.hero == null or not hero_to_slot_map.has(effect.target.hero):
+				printerr("Skipping effect: Target hero is no longer on the battlefield.")
+				continue
 			
 		# 1. Pipeline (Modifiers are calculated first)
 		process_effect(effect)
 		
 		# 2. Polymorphic Execution & Visual Sequence Execution
-		effect.execute(self)       # Structural health changes
+		var execution_result = effect.execute(self)       
 		await effect.present(self)  # Orchestrated graphics presentation sequences
+		if execution_result is CombatContext:
+			var dealt_damage = execution_result.get_damage_dealt_to(effect.target)
+	
+			if dealt_damage > 0 and effect.target.hero != null:
+				effect.target.hero.trigger_behavior_event(
+				Enums.TriggerEvent.ON_DAMAGE_TAKEN, 
+				execution_result
+				)
 		
+		check_and_process_deaths()
 		update_UI()
 
 	is_processing = false
+
+func check_and_process_deaths() -> void:
+	var deaths_to_process: Array[DeathEventData] = []
+	var all_slots = player_slots + enemy_slots
+	
+	# Step 1: Scan and create snapshots of all dead units simultaneously
+	for slot in all_slots:
+		if slot and slot.hero and slot.hero.current_HP <= 0:
+			var death_snapshot = DeathEventData.new(slot.hero, slot)
+			deaths_to_process.append(death_snapshot)
+			
+	if deaths_to_process.is_empty():
+		return
+		
+	# Step 2: Instant Board Clear. 
+	# They are gone from the map and slots BEFORE any triggers activate.
+	# Other triggered skills on the stack cannot target them.
+	for death in deaths_to_process:
+		hero_to_slot_map.erase(death.dead_hero)
+		death.original_slot.hero = null 
+		death.original_slot.update_info() 
+
+	# Step 3: Populate the Stack
+	# We loop through our snapshots. The behaviors read the location from the payload.
+	for death in deaths_to_process:
+		# Pass death.original_slot straight into the trigger!
+		# If it's a summon behavior, it uses this explicit slot reference.
+		death.dead_hero.trigger_behavior_event(
+			Enums.TriggerEvent.ON_DEATH, 
+			death.original_slot, 
+			[] as Array[HeroSlot], 
+			self
+		)
+		print("Pushed death trigger to stack for ", death.dead_hero.hero_data.name, " from slot ", death.original_slot.name)
+		
+	# Step 4: Yield to your MTG/Hearthstone stack processor
+	# This lets all the queued up deathrattles/summons fully resolve
+	#await wait_for_stack_to_clear()
+	
+	# Step 5: Final Memory Cleanup
+	for death in deaths_to_process:
+		var dead_hero = death.dead_hero
+		if is_instance_valid(dead_hero):
+			if dead_hero.team == Enums.Team.ENEMY:
+				dead_hero.queue_free()
+			else:
+				# Hide player heroes so they don't visually linger
+				dead_hero.visible = false 
+				print(dead_hero.hero_data.name, " remains in memory as defeated.")
 
 func execute_turn(slot: HeroSlot):
 	print("New turn for ", slot.hero.hero_data.name)
 	
 	# PHASE 1: PRE_TURN
 	current_phase = Enums.CombatPhase.PRE_TURN
-	slot.hero.trigger_behavior_event("on_turn_start", slot, [], self) 
+	slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_TURN_START, slot, [], self) 
 	await wait_for_stack_to_clear()
+	if not is_instance_valid(slot.hero): return
 	
 	# Status verification
 	if not slot.hero.can_act():
 		print(slot.hero.hero_data.name, " is incapacitated and skips their turn!")
-		slot.hero.trigger_behavior_event("on_turn_end", slot, [], self)
+		slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_TURN_END, slot, [], self)
 		await wait_for_stack_to_clear()
 		return
 		
 	# PHASE 2: BEFORE_ACT
 	current_phase = Enums.CombatPhase.BEFORE_ACT
-	slot.hero.trigger_behavior_event("on_before_act", slot, [], self)
+	#slot.hero.trigger_behavior_event("on_before_act", slot, [], self)
 	await wait_for_stack_to_clear()
-	
+	if not is_instance_valid(slot.hero): return
 	# PHASE 3: EXECUTE
 	current_phase = Enums.CombatPhase.EXECUTE
 	
 	# We pass an empty target array []. The hero's active attack behavior
 	# will resolve its targets automatically using the behavior's range rules
-	slot.hero.trigger_behavior_event("on_execute_action", slot, [], self)
+	slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_EXECUTE_ACTION, slot, [], self)
 	await wait_for_stack_to_clear()
-	slot.hero.has_acted = true
-	
+	if is_instance_valid(slot.hero):
+		slot.hero.has_acted = true
+	else:
+		return
 	# PHASE 4: AFTER_ACT
 	current_phase = Enums.CombatPhase.AFTER_ACT
-	slot.hero.trigger_behavior_event("on_after_act", slot, [], self)
+	#slot.hero.trigger_behavior_event(Enums.TriggerEvent.on, slot, [], self)
 	await wait_for_stack_to_clear()
-	
+	if not is_instance_valid(slot.hero): return
 	# PHASE 5: POST_TURN
-	slot.hero.trigger_behavior_event("on_turn_end", slot, [], self)
+	slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_TURN_END, slot, [], self)
 	await wait_for_stack_to_clear()
-
 
 func wait_for_stack_to_clear():
+	# If items exist and we aren't processing, start the loop intentionally
+	if not is_processing and not effect_stack.is_empty():
+		await process_stack()
+	
+	# Keep waiting if an active presentation is rendering on screen
 	while is_processing or not effect_stack.is_empty():
 		await get_tree().process_frame
+	## THe commented is the old, not sure which is best
+	#while is_processing or not effect_stack.is_empty():
+		#await get_tree().process_frame
 
 func _wrap_up_turn(hero: Hero):
 	if hero:
@@ -188,44 +275,55 @@ func _wrap_up_turn(hero: Hero):
 func process_effect(effect: CombatEffect):
 	# 1. We check the attacker's behaviors and modify the outgoing effect
 	# (Items, Strength buffs, Crit chances, etc.)
-	if effect.source != null:
-		for b in effect.source.get_behaviors():
-			if b.has_method("modify_outgoing_effect"):
-				b.modify_outgoing_effect(effect)
-	
+	if effect.effect_owner != null and is_instance_valid(effect.effect_owner):
+		for b in effect.effect_owner.get_behaviors():
+			# No string check needed! Every runtime behavior safely handles this now.
+			b.modify_outgoing_effect(effect)
 	# 2. We check the target's behaviors and modify the incoming effect
 	# (Armor, Shields, Damage Reduction, etc.)
-	if effect.target != null:
-		for b in effect.target.get_behaviors():
-			if b.has_method("modify_incoming_effect"):
-				b.modify_incoming_effect(effect)
-	
+	if effect.target != null and is_instance_valid(effect.target):
+		for b in effect.target.hero.get_behaviors():
+			# No string check needed!
+			b.modify_incoming_effect(effect)
+
+func handle_post_damage_pipeline(target_slot: HeroSlot, source_slot: HeroSlot, context: Dictionary) -> void:
+	# If no damage was actually dealt (e.g. shielded or immune), skip triggers
+	if context["damage_amount"] <= 0:
+		return
+		
+	# 1. Trigger ON_DAMAGE_TAKEN linearly through the manager
+	if target_slot.hero != null:
+		# Pass the source slot context so defensive behaviors know WHO attacked them
+		target_slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_DAMAGE_TAKEN, source_slot, [], self)
+		
+	# Note: We DO NOT check for death or run ON_DEATH triggers here!
+	# Your existing process_stack() loop already calls check_and_process_deaths() 
+	# right after the effect finishes presenting, which gathers and reaps all dead heroes perfectly.
+
 func clear_highlights():
 	for i in player_slots:
 		i.cleanup()
 	for i in enemy_slots:
 		i.cleanup()
 	
-func get_enemy_slots(source: Hero) -> Array[HeroSlot]:
-	var raw_slots = enemy_slots if source.team == Enums.Team.FRIEND else player_slots
+func get_enemy_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
+	var raw_slots = enemy_slots if acting_team == Enums.Team.FRIEND else player_slots
 	
-	# FILTER: Instantly weed out dead units or empty lanes at the source!
 	return raw_slots.filter(func(slot): 
-		return slot != null and is_instance_valid(slot.hero)
+		return slot != null and slot.hero != null and slot.hero.current_HP > 0
 	)
 
-func get_friendly_slots(source: Hero) -> Array[HeroSlot]:
-	var raw_slots = player_slots if source.team == Enums.Team.FRIEND else enemy_slots
+func get_friendly_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
+	var raw_slots = player_slots if acting_team == Enums.Team.FRIEND else enemy_slots
 	
-	# FILTER: Only hand back active, living allies to the context math
 	return raw_slots.filter(func(slot): 
-		return slot != null and is_instance_valid(slot.hero) 
+		return slot != null and slot.hero != null and slot.hero.current_HP > 0
 	)
 
 func reset_round():
 	for slot in hero_to_slot_map.values():
 		slot.hero.has_acted = false
-		slot.hero.trigger_behavior_event("on_round_start", slot)
+
 
 func create_slots():
 	## Here we will create slots according to the playerparty 
@@ -269,8 +367,10 @@ func add_hero(slot : HeroSlot, hero : Hero):
 		var old_callable = remove_hero.bind(slot)
 		if slot.hero.has_died.is_connected(old_callable):
 			slot.hero.has_died.disconnect(old_callable)
+		#var old_ui_callable = slot.update_buff_slots
+		#if slot.hero.behavior_removed.is_connected(old_ui_callable):
+			#slot.hero.behavior_removed.disconnect(old_ui_callable)
 		remove_hero(slot)
-		
 	slot.hero = hero
 	slot.play_animation("idle")
 	##Map the slot/hero combination to the dictionary
@@ -278,7 +378,8 @@ func add_hero(slot : HeroSlot, hero : Hero):
 	##Update the ui of the slot
 	slot.update_info()
 	
-	# Connect death signal
+	# Connect signals
+	hero.behavior_removed.connect(slot.update_buff_slots, CONNECT_REFERENCE_COUNTED)
 	hero.has_died.connect(remove_hero.bind(slot), CONNECT_ONE_SHOT)
 
 func remove_hero(slot: HeroSlot):
@@ -289,27 +390,48 @@ func remove_hero(slot: HeroSlot):
 	slot.hero = null
 	slot.update_info()
 	
-func spawn_and_assign_hero(hero_source: Variant,slot : HeroSlot, team : Enums.Team):
+func spawn_and_assign_hero(hero_source: Variant, slot: HeroSlot, team: Enums.Team) -> void:
 	var hero: Hero
-	if hero_source is Hero:
-		# comes from playerdata
-		hero = hero_source
-	else:
-		# comes straight from the database/enemy team
-		hero = Hero.create(hero_source)
-		
-	hero.team = team
 	
-	# 2. Bind them to the slot and dictionaries
+	if hero_source is Hero:
+		# Comes from player data and carries persisting data
+		hero = hero_source as Hero
+		hero.prepare_for_combat()
+	elif hero_source is HeroData:
+		# FIX: Pass 'hero_source' to your engine-safe factory method
+		hero = Hero.create(hero_source)
+	else:
+		printerr("CombatManager: Attempted to spawn a hero from an invalid source type!")
+		return
+	
+	# Assign their active battlefield team alignment
+	hero.team = team
+	# If the combat stack loop is actively processing a round, 
+	# we flag the new minion immediately so it skips the current round's action phase.
+	if is_processing:
+		hero.has_acted = true
+	# Bind them securely to the target HeroSlot node and tracker dictionaries
 	add_hero(slot, hero)
 
 func win_combat():
 	print("You win the battle!")
 	await wait_for_input("ui_accept")
+	for hero in PlayerData.player_party:
+		# Verify the hero exists and is currently attached to the combat screen tree
+		if hero != null and hero.get_parent() != null:
+			# Cleanly detach them so they are free agents for the overworld map
+			hero.get_parent().remove_child(hero)
 	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 	
 func lose_combat():
 	print("You lose the battle!")
+	await wait_for_input("ui_accept")
+	for hero in PlayerData.player_party:
+		# Verify the hero exists and is currently attached to the combat screen tree
+		if hero != null and hero.get_parent() != null:
+			# Cleanly detach them so they are free agents for the overworld map
+			hero.get_parent().remove_child(hero)
+	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 func initialize_combat():
 	pass
 	

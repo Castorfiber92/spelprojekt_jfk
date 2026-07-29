@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("2_gvyjp")
 name = "Stunned"
+trigger_event = 2
 type = 2
 target_team = 2
 stacks = 2

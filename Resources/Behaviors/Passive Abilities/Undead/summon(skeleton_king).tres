@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SummonBehavior" format=3 uid="uid://cjd1sxyjun1sp"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_s7tkr"]
+[ext_resource type="Resource" uid="uid://c2qxyt0lk0xm5" path="res://Resources/Heroes/Undead/Skeleton Prince.tres" id="2_ep1ww"]
+[ext_resource type="Script" uid="uid://cyhydntl21kq5" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/summon_basic_behavior/summon_behavior.gd" id="2_s7tkr"]
+
+[resource]
+script = ExtResource("2_s7tkr")
+hero_to_summon = ExtResource("2_ep1ww")
+trigger_event = 7
+target_team = 2
+name = "Skeleton Prince Summon"
+metadata/_custom_type_script = "uid://cyhydntl21kq5"

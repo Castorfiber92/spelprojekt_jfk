@@ -1,6 +1,2 @@
-armor(earth_shaman)
 bash(broom_basher)
-bonus_damage_1
-crit_basic
-crit_normal
 mark

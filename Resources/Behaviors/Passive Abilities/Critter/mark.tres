@@ -1,13 +1,14 @@
-[gd_resource type="Resource" script_class="mark_behavior" format=3 uid="uid://snkujh02atd0"]
+[gd_resource type="Resource" script_class="InfuseBuffsModifier" format=3 uid="uid://fq7jmuie3yr"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_i8068"]
-[ext_resource type="Script" uid="uid://by8ci0sp2kek2" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/Mark/mark.gd" id="2_5e07u"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_ndhiu"]
 [ext_resource type="Resource" uid="uid://c6pbdatpix4jh" path="res://Resources/Behaviors/Effects/Debuffs/Critter/status_mark/status_mark.tres" id="2_kwhw5"]
+[ext_resource type="Script" uid="uid://bkqfvtirw6whu" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/infuse_buff_basic_behavior/infuse_buffs_basic_behavior.gd" id="2_nruh0"]
 
 [resource]
-script = ExtResource("2_5e07u")
-name = "Mark"
+script = ExtResource("2_nruh0")
 target_team = 1
+range = 1
 add_stacks = false
-behaviors_to_apply = Array[ExtResource("1_i8068")]([ExtResource("2_kwhw5")])
-metadata/_custom_type_script = "uid://by8ci0sp2kek2"
+behaviors_to_apply = Array[ExtResource("1_ndhiu")]([ExtResource("2_kwhw5")])
+name = "Mark"
+metadata/_custom_type_script = "uid://bkqfvtirw6whu"

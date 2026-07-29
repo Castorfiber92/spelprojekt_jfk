@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="attack_basic_behavior" format=3 uid="uid://3ysv4ls6by1l"]
+[gd_resource type="Resource" script_class="BasicActionBehavior" format=3 uid="uid://3ysv4ls6by1l"]
 
-[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/attack_basic.gd" id="1_18o8k"]
+[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="1_18o8k"]
 [ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_bvvyi"]
 
 [resource]
@@ -9,4 +9,6 @@ name = "Basic Multi"
 target_team = 1
 target_count = 2
 range = 1
+crit_multiplier = 2.0
+trigger_on_innate_crit = true
 metadata/_custom_type_script = "uid://d4igq00opuk1n"

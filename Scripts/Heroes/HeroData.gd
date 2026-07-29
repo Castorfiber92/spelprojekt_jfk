@@ -13,9 +13,10 @@ enum HeroTier { BRONZE, SILVER, GOLD, LEGENDARY }
 #@export_range(1,10) var base_spellpower : int
 @export_range(1,100) var base_speed : int
 @export_range(1,3) var base_range : int
+@export var base_crit_chance : float = 0.05
 @export_group("Base abilities")
-@export var base_action : Behavior
-@export var abilities : Array[Behavior]
+@export var base_action : BehaviorData
+@export var abilities : Array[BehaviorData]
 
 
 

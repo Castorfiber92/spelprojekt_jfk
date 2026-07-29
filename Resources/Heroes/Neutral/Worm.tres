@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://0ta3x2jrh80o"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_qbaxk"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_hkrkh"]
+[ext_resource type="Resource" uid="uid://cjd1sxyjun1sp" path="res://Resources/Behaviors/Passive Abilities/Undead/summon(skeleton_king).tres" id="2_2ky6y"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_hkrkh"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2ky6y"]
 [ext_resource type="SpriteFrames" uid="uid://db0r6v7ny8q72" path="res://Graphics/Hero Sprites/Neutral/worm_sprites.tres" id="4_hkrkh"]
@@ -13,5 +14,6 @@ base_damage = 1
 base_speed = 1
 base_range = 1
 base_action = ExtResource("2_hkrkh")
+abilities = Array[ExtResource("1_hkrkh")]([ExtResource("2_2ky6y")])
 name = "Worm"
 sprites = ExtResource("4_hkrkh")

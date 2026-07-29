@@ -1,7 +1,7 @@
 extends Control
 class_name MainMenuManager
 
-const TRIBE_ORDER: Array[Enums.Tribe] = [
+var TRIBE_ORDER: Array[Enums.Tribe] = [
 	Enums.Tribe.CRITTER,
 	Enums.Tribe.GNOME,
 	Enums.Tribe.UNDEAD,

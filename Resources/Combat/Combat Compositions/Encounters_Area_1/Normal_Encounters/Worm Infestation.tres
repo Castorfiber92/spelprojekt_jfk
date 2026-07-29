@@ -6,5 +6,5 @@
 
 [resource]
 script = ExtResource("2_8hdgf")
-enemy_team = Array[ExtResource("1_7i7jb")]([ExtResource("2_diw54"), ExtResource("2_diw54"), null, ExtResource("2_diw54"), null])
+enemy_team = Array[ExtResource("1_7i7jb")]([ExtResource("2_diw54"), ExtResource("2_diw54"), null, null, null])
 encounter_name = "Worm Infestation"

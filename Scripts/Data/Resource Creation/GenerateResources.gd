@@ -13,7 +13,7 @@ extends Node
 @export_file("*.csv") var csv_path: String
 @export_dir var output_dir: String = "res://Resources/Heroes/"
 @export var google_sheet_gid: String = "0"
-
+const EnumsScript = preload("res://Scripts/Constants/Enums.gd")
 ## --- ENCOUNTERS --- ##
 @export var google_sheet_encounters_id: String = "1-U_LSzEQR9fS4nsDWHDSip6ZBVMgPtCO8XRdEJCEIO0"
 ## Just add your browser tab GIDs here in order!
@@ -76,14 +76,14 @@ func export_valid_behaviors_list():
 	
 	for path in all_files:
 		if path.ends_with(".tres"):
-			
-			# Filter out any "base scripts" folder instantly in any directory level
 			if "/base scripts/" in path.to_lower():
 				continue
 				
+			# FIX 1: Load the resource dynamically into a generic Variant first
 			var loaded_res = load(path)
 			
-			if loaded_res is Behavior:
+			# FIX 2: Check if it inherits from BehaviorData (the Resource class)
+			if loaded_res is BehaviorData:
 				var file_name_with_ext = path.get_file()
 				var raw_filename = file_name_with_ext.replace(".tres", "").strip_edges()
 				
@@ -182,7 +182,7 @@ func generate_heroes():
 		var row = file.get_csv_line()
 		# Skip rows that are empty or do not have enough columns
 		# - keep this updated accordingly to how many values we have in the CSV
-		if row.size() < 11: 
+		if row.size() < 12: 
 			continue 
 		
 		# Declare which row is which data
@@ -195,16 +195,24 @@ func generate_heroes():
 			continue
 		var h_description   = row[1].strip_edges()
 		var tribe_string = row[2].strip_edges().to_lower()
-		var h_tribe = Enums.Tribe_MAP.get(tribe_string, Enums.Tribe.CRITTER) # Default to Critter if not found
+		var h_tribe : int
+		match tribe_string:
+			"critter": h_tribe = EnumsScript.Tribe.CRITTER
+			"orc":     h_tribe = EnumsScript.Tribe.ORC
+			"undead":  h_tribe = EnumsScript.Tribe.UNDEAD
+			"gnome":   h_tribe = EnumsScript.Tribe.GNOME
+			"neutral": h_tribe = EnumsScript.Tribe.NEUTRAL
+			_:         h_tribe = EnumsScript.Tribe.CRITTER # Clear fallback default
 		var h_legendary = row[3].strip_edges().to_lower() == "true"
 		
 		var h_hp     = int(row[4])
 		var h_dmg    = int(row[5])
 		var h_spd    = int(row[6])
 		var h_rng    = int(row[7])
-		var act_name = row[8].strip_edges()
-		var abl_list = row[9].strip_edges()
-		var h_minion = row[10].strip_edges().to_lower() == "true"
+		var h_crit = float(row[8])
+		var act_name = row[9].strip_edges()
+		var abl_list = row[10].strip_edges()
+		var h_minion = row[11].strip_edges().to_lower() == "true"
 		
 		# Build the subfolder path based on the tribe name
 		# capitalize() turns "orc" into "Orc" for the folder name
@@ -231,27 +239,36 @@ func generate_heroes():
 		res.base_damage = clampi(h_dmg, 1, 10)
 		res.base_speed = clampi(h_spd, 1, 100)
 		res.base_range = clampi(h_rng, 1, 5)
+		res.base_crit_chance = h_crit
 		res.is_minion = h_minion
-		
 		# --- FUNCTIONAL CHANGE: Find Base Action directly from optimized cache ---
 		res.base_action = find_behavior_globally(act_name)
 		
 		# Find Array of Abilities, we clear it so we don't add multiple instances of same abilities
 		# However, keep in mind this means that the array of abilities will always be overwrited
 		# When we use this tool
-		var fresh_abilities: Array[Behavior] = [] # Hard-force a brand new mutable memory allocation
+		# --- FIX 1: Change to a relaxed, untyped temporary collector array ---
+		# This completely side-steps the tool-script constructor type-mismatch bug!
+		# 1. Initialize the temporary collector as a loose Array to stay safe inside tools
+		# 1. Initialize the array directly using the strict Typed Array Constructor syntax.
+		# This guarantees Godot builds the correct internal C++ metadata pointer layout immediately.
+		var fresh_abilities: Array[BehaviorData] = []
 		
-		# If the strings here are empty, there is simply no abilities
 		if abl_list != "":
-			# We separate the abilities by comma in the CSV
 			for a_name in abl_list.split(","):
-				# --- FUNCTIONAL CHANGE: Find correct behaviors via optimized cache ---
-				var behavior = find_behavior_globally(a_name.strip_edges())
-				if behavior:
-					# If we find the behavior, add it to the resource
-					fresh_abilities.append(behavior)
+				# Load generic file reference first
+				var behavior_res = find_behavior_globally(a_name.strip_edges())
+				
+				# 2. Check explicitly using 'is' statement
+				if behavior_res is BehaviorData:
+					# Push directly into our strongly typed array container
+					fresh_abilities.append(behavior_res)
 					
-		res.abilities = fresh_abilities # Assign the completely independent array to the resource
+		# 3. Clear and assign element-by-element if direct assignment hits a wall,
+		# or try direct assignment now that the metadata format is natively pristine:
+		res.abilities.clear()
+		for b in fresh_abilities:
+			res.abilities.append(b)
 					
 		# --- FUNCTIONAL CHANGE: Check if matching sprite file exists using optimized cache ---
 		var sprite_filename: String = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
@@ -375,7 +392,9 @@ func generate_compositions():
 		else:
 			res.encounter_type = CombatComposition.CombatType.NORMAL
 
-		var temporary_team: Array[HeroData] = [null, null, null, null, null]
+		# FIX 1: Initialize the grid array as a relaxed, generic array tracker.
+		# This completely evades the editor tool type-mismatch compilation bug!
+		var temporary_team: Array = [null, null, null, null, null]
 
 		for i in range(5):
 			var csv_column_index = 2 + i
@@ -390,19 +409,31 @@ func generate_compositions():
 			
 			if hero_asset_cache.has(expected_filename):
 				var asset_path = hero_asset_cache[expected_filename]
-				var loaded_hero = load(asset_path) as HeroData
 				
-				if loaded_hero:
+				# FIX 2: Load the raw resource completely unconstrained first
+				var loaded_hero = load(asset_path)
+				
+				# Check using an explicit 'is' evaluation to safely step around type errors
+				if loaded_hero is HeroData:
 					temporary_team[i] = loaded_hero
 				else:
 					printerr("Composition Importer: File failed to cast to HeroData at path: ", asset_path)
 			else:
 				printerr("Composition Importer: Could not find HeroData asset file named: ", expected_filename)
 
-		res.enemy_team = temporary_team
-
+		# FIX 3: Re-apply an explicit structural layout hint directly to the resource block.
+		# Godot will now convert the array configuration seamlessly into the true, clean
+		# export format inside the file header without any lingering corrupted pointer data.
 		# --- SAVE GENERATED RESOURCE TO DISK ---
 		res.take_over_path(save_path)
+		
+		# FIX: Instead of a direct '=' assignment which causes a tool mode crash,
+		# clear the resource array and manually push your checked elements into it.
+		# This completely side-steps the engine's internal type-marshalling bug!
+		res.enemy_team.clear()
+		for hero_data in temporary_team:
+			res.enemy_team.append(hero_data)
+
 		var save_status = ResourceSaver.save(res, save_path, ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
 		
 		if save_status == OK:
@@ -443,14 +474,14 @@ func run_composition_generation_loop() -> void:
 		await generate_compositions()
 	print("============ COMPOSITION RESOURCE COMPILATION COMPLETE ============")
 	
-func find_behavior_globally(behavior_name: String) -> Behavior:
+func find_behavior_globally(behavior_name: String) -> BehaviorData:
 	var cleaned_name: String = behavior_name.strip_edges().to_lower()
 	if cleaned_name == "": return null
 	
 	var target_filename: String = cleaned_name + ".tres"
 	
 	if behavior_cache.has(target_filename):
-		return load(behavior_cache[target_filename]) as Behavior
+		return load(behavior_cache[target_filename]) as BehaviorData
 			
 	printerr("Could not find Behavior resource: '", behavior_name, "'")
 	return null
@@ -462,7 +493,13 @@ func _get_all_files_on_disk(path: String, file_list: Array[String]) -> void:
 		var file_name = dir.get_next()
 		while file_name != "":
 			if dir.current_is_dir():
-				if not file_name.begins_with("."): # Skip hidden folders like .godot
+				# FIX: Explicitly ignore system cache folders and raw data scripts
+				var folder_lower = file_name.to_lower()
+				if folder_lower in [".godot", ".git", "csv"]:
+					file_name = dir.get_next()
+					continue
+					
+				if not file_name.begins_with("."): 
 					_get_all_files_on_disk(path.path_join(file_name), file_list)
 			else:
 				file_list.append(path.path_join(file_name))

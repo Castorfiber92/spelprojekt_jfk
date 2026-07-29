@@ -1,26 +1,39 @@
 extends CombatEffect
 class_name SummonEffect
 
-var hero_to_summon : Hero
+var hero_to_summon : HeroData
+var cached_team : Enums.Team # Saved by the behavior trigger payload at birth
 
-func _init(_source: Hero = null, _target: Hero = null, _value: int = 0, _animation: String = "", _animation_duration: float = 0.15, _buffs: Array[Behavior] = []):
-	super(_source, _target, 0, _animation, _animation_duration, [])
-
-func execute(_manager: CombatManager) -> void:
-	var source_slot: HeroSlot = _manager.hero_to_slot_map.get(source, null)
-	_manager.spawn_and_assign_hero(hero_to_summon, source_slot, source_slot.hero.team)
+func execute(_manager: CombatManager) -> Variant:
+	if hero_to_summon == null or source == null:
+		print("SummonEffect fizzled: Data or target slot metadata corrupted.")
+		return
+		
+	# STEP 1: Verify that the slot left behind by the dead unit is currently vacant.
+	# (Your stack's Step 2 guarantees this is empty!)
+	if source.hero != null:
+		print("SummonEffect fizzled: The slot ", source.name, " is already occupied by someone else!")
+		return
+		
+	# STEP 2: Spawn the minion and assign it straight to this empty death slot!
+	_manager.spawn_and_assign_hero(hero_to_summon, source, cached_team)
+	print("Deathrattle Success: Reoccupied slot ", source.name, " with summon: ", hero_to_summon.name)
+	return
 
 func present(manager: CombatManager) -> void:
-	var source_slot: HeroSlot = manager.hero_to_slot_map.get(source, null)
-	
-	# 1. Source plays animation
-	if source_slot and animation != "" and animation != "idle":
-		await source_slot.play_animation(animation, animation_duration)
+	# 1. Source caster plays their channel/summon animation first
+	#if source and animation != "" and animation != "idle":
+		#await source.play_animation(animation, animation_duration)
 		
-	# 2. TARGET REACTS SECOND, if they should from a buff?
-	if manager.hero_to_slot_map.has(target):
-		var target_slot: HeroSlot = manager.hero_to_slot_map[target]
-		await target_slot.apply_heal_effect().finished
-	else:
-		# Fallback delay so the coroutine loop doesn't snap if the target is missing
-		await manager.get_tree().process_frame
+	# 2. Summon visual animation sequence
+	# We need to find where the manager spawned the new hero so we can animate its slot!
+	# Assume your manager has a way to look up the slot containing the newly spawned minion.
+	#var spawned_slot = manager.get_slot_by_hero_data(hero_to_summon)
+	
+	#if spawned_slot:
+		# Play your custom spawn effect animation on the new slot (e.g., "spawn", "fade_in", "bounce")
+		# We await it so the combat timeline pauses naturally while the minion arrives!
+		#await spawned_slot.play_animation("spawn", 0.25)
+	#else:
+		# Fallback process delay so the coroutine sequence never snaps if the slot is elusive
+	await manager.get_tree().process_frame

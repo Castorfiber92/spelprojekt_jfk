@@ -1,1 +1,1 @@
-extends BehaviorBase
+extends BehaviorData

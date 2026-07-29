@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://cawegf2bt8cnq"]
 
-[ext_resource type="Script" uid="uid://cb8rq5mmrk0ol" path="res://Scripts/Behaviors/Behavior.gd" id="1_ceehn"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_dd7jd"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_dd7jd"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_r8vqy"]
 [ext_resource type="SpriteFrames" uid="uid://ufcksl4cqqou" path="res://Graphics/Hero Sprites/Gnome/thwomping_tree_sprites.tres" id="4_dd7jd"]
