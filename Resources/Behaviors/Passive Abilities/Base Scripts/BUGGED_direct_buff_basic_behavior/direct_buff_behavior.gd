@@ -1,32 +1,17 @@
-extends Behavior
+extends BehaviorData
 class_name DirectBuffBehavior
 ## DISCLAIMER We might not use this, keep basic actions for each hero, and infusions and special
 ## triggering behaviors, keep one action to one unit.
-func _execute_behavior_payload(context: CombatContext, is_crit : bool = false):
-	# If there are no buffs configured in this spreadsheet row, skip execution
-	if data.behaviors_to_apply.is_empty():
-		return
-	
-	for target in context.targets:
-		if target == null or target.hero == null:
-			continue
-			
-		# 1. Create your existing CastEffect container
-		var effect = create_effect(BuffEffect, target, owner_hero, context.source) as BuffEffect
-		
-		# 2. Match your spreadsheet configuration variables
-		effect.animation = data.animation
-		effect.animation_duration = data.animation_duration
-		
-		# 3. Inject the behaviors payload into the effect's built-in buffs array
-		for sub_behavior in data.behaviors_to_apply:
-			if sub_behavior:
-				print("Adding ", sub_behavior.name, " for ", target.hero.hero_data.name, " at slot ", target.index)
-				var behavior = sub_behavior.duplicate()
-				if is_crit:
-					behavior.stacks = int(behavior.stacks * behavior.crit_multiplier)
-				# Duplicate ensures memory isolation and double-pick immunity
-				effect.buffs.append(behavior)
-		
-		# 4. Emit cleanly to your MTG combat stack
+func _execute_behavior_payload_override(combatContext: CombatContext, executor: Behavior):
+	var source_slot = combatContext.source
+	var rolled_a_crit: bool = randf() < source_slot.hero.current_crit_chance
+	var runtime_owner = executor.owner_hero
+	for target in combatContext.targets:
+		var effect = executor.create_effect(BuffEffect, target, runtime_owner, source_slot) as CombatEffect
+		effect.is_crit = rolled_a_crit
+				
+		for behavior_data in behaviors_to_apply:
+			var new_runtime_buff = Behavior.create(behavior_data)
+			if rolled_a_crit:
+				new_runtime_buff.current_stacks = int(behavior_data.base_stacks * crit_multiplier)
 		GameEvents.effect_created.emit(effect)

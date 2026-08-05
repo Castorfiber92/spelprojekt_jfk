@@ -32,26 +32,14 @@ func apply_damage_effect(crit : bool) -> Tween:
 
 	return VisualEffects.shake_node(sprite)
 
-func apply_heal_effect() -> Tween:
-	var shake_intensity = 1.0
-	var shake_duration = 0.05
-	var flash_color = Color(0.0, 0.7, 0.407, 1.0) # Soft green
+func apply_heal_effect(crit : bool) -> Tween:
+	## Right now this is a damagecriteffect
+	if crit:
+		return VisualEffects.play_critical_hit(sprite)
 
-	# 1. SOFT GREEN FLASH
-	var color_tween = create_tween()
-	color_tween.tween_property(sprite, "modulate", flash_color, 0.1)
-	color_tween.tween_property(sprite, "modulate", Color.WHITE, 0.2)
-
-	# 2. SPRITE POSITION SHAKE
-	var shake_tween = create_tween()
-	var original_sprite_position = sprite.position
-	
-	for i in range(4):
-		var offset = Vector2(randf_range(-5, 5), randf_range(-5, 5)) * shake_intensity
-		shake_tween.tween_property(sprite, "position", original_sprite_position + offset, shake_duration)
-	
-	shake_tween.tween_property(sprite, "position", original_sprite_position, shake_duration)
-	return shake_tween
+	VisualEffects.flash_sprite(sprite, Color.WEB_GREEN)
+	var intensity: Vector2 = Vector2(2, -2)
+	return VisualEffects.shake_node(sprite, intensity)
 
 func toggle_visibility(show = true):
 	if show:

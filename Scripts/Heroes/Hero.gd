@@ -82,8 +82,13 @@ func take_damage(damage : int, source : HeroSlot) -> Dictionary:
 		"was_lethal": current_HP <= 0
 	}
 		
-func heal_HP(value: int, source : Hero):
+func heal_HP(value : int, source : HeroSlot) -> Dictionary:
+	var old_hp = current_HP
 	current_HP = clamp(current_HP + value, 0, maximum_HP)
+	return {
+		"value": value,
+		"was_fullheal" : current_HP == maximum_HP
+	}
 
 func can_act() -> bool:
 	# If any behavior in our dictionary blocks actions, the hero cannot act

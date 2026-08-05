@@ -19,7 +19,7 @@ func present(manager: CombatManager) -> void:
 		
 	# 2. TARGET REACTS SECOND, if they should from a buff?
 	if target and target.hero != null:
-		await target.apply_heal_effect().finished
+		await target.apply_heal_effect(is_crit).finished
 	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing
 		await manager.get_tree().process_frame
