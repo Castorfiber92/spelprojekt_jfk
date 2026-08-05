@@ -5,7 +5,6 @@
 
 [resource]
 script = ExtResource("2_wix84")
-trigger_event = 3
 type = 2
 target_team = 2
 base_stacks = 1

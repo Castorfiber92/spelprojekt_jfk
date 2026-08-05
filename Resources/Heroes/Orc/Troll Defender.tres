@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://c7boh6imv8asl"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_eb770"]
+[ext_resource type="Resource" uid="uid://ca7kynglq76uv" path="res://Resources/Behaviors/Effects/Buffs/Orc/status_troll_hide.tres" id="2_ts3ps"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_yj1a6"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_1gpm2"]
 [ext_resource type="SpriteFrames" uid="uid://j0pgan7nd8ka" path="res://Graphics/Hero Sprites/Orc/troll_defender_sprites.tres" id="4_eb770"]
@@ -13,5 +14,6 @@ base_damage = 3
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_yj1a6")
+abilities = Array[ExtResource("1_eb770")]([ExtResource("2_ts3ps")])
 name = "Troll Defender"
 sprites = ExtResource("4_eb770")

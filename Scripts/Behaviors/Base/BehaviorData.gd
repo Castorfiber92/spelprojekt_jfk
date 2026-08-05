@@ -7,6 +7,10 @@ class_name BehaviorData
 enum BehaviorType { PASSIVE, ACTIVE, BUFF }
 @export var type: BehaviorType = BehaviorType.PASSIVE
 enum BehaviorTag {NEUTRAL, BURN, FREEZE, POISON, MARK, STUN, CURSE, ARMOR, POWER}
+@export_category("Basic Settings")
+@export var value = 0
+@export var min_value = 0
+@export var max_value = 0
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
 @export var target_type: Enums.Target
