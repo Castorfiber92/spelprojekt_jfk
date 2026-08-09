@@ -12,3 +12,4 @@ extends Node
 @onready var encounter_event: = preload("res://Resources/Overworld/Events/encounter_event_basic.tres")
 @onready var combat_boss_event: = preload("res://Resources/Overworld/Events/combat_boss_event.tres")
 #@onready var heroes_folder = preload("res://Resources/Heroes/")
+@onready var custom_font: = preload("res://Graphics/Alegreya-VariableFont_wght.ttf")

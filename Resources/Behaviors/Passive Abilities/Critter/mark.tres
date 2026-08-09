@@ -6,8 +6,6 @@
 
 [resource]
 script = ExtResource("2_nruh0")
-target_team = 1
-range = 1
 add_stacks = false
 behaviors_to_apply = Array[ExtResource("1_ndhiu")]([ExtResource("2_kwhw5")])
 name = "Mark"

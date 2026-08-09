@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Status_siphon_soul" format=3 uid="uid://dflfw1rr0hjlv"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_7npyj"]
+[ext_resource type="Script" uid="uid://dc1q6554gedtj" path="res://Resources/Behaviors/Effects/Buffs/Base Scripts/status_siphon_soul.gd" id="2_n6yq8"]
+
+[resource]
+script = ExtResource("2_n6yq8")
+trigger_event = 6
+range = 3
+add_stacks = false
+name = "Siphon Soul"
+metadata/_custom_type_script = "uid://dc1q6554gedtj"

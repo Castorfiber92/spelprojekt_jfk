@@ -72,7 +72,7 @@ func clear_temporary_buffs():
 		
 func take_damage(damage : int, source : HeroSlot) -> Dictionary:
 	var old_hp = current_HP
-	
+	print (self.hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name)
 	# 1. Apply the damage math cleanly
 	current_HP -= damage
 	
@@ -152,6 +152,37 @@ func get_behaviors():
 	return behaviors.values()
 
 func trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: Variant, targets : Array[HeroSlot] = [], combat_manager : CombatManager = null):
+	var event_name = Enums.TRIGGER_STRINGS.get(event_type, "")
+	
+	# Extract our manager reference safely from the incoming snapshot
+	if source_or_context is CombatContext:
+		combat_manager = source_or_context.manager
+	
+	if combat_manager == null:
+		return
+
+	# Locate this hero's unique board slot anchor to map spatial/range rules
+	var local_hero_slot = combat_manager.hero_to_slot_map.get(self)
+	if local_hero_slot == null:
+		return
+
+	# Iterate through active passive listeners
+	for i in behaviors:
+		var behavior_instance = behaviors[i]
+		
+		if behavior_instance.has_method(event_name):
+			# 1. INDEPENDENT REACTION CONTEXT: Born completely blank and fresh!
+			# This is what behavior_instance will use to target its spells.
+			var reactive_context = CombatContext.new(local_hero_slot, [], combat_manager)
+			
+			# 2. AUTOMATION GATE: Because it is blank, this is guaranteed to execute, 
+			# matching Siphon Soul's blueprint settings (FRIEND, ALL, etc.) natively!
+			reactive_context.targets = reactive_context.resolve_targets(behavior_instance, combat_manager)
+			
+			# 3. THE TWO-ARGUMENT EMISSION: Pass the fresh targeting context AND the historical attack context data
+			behavior_instance.call(event_name, reactive_context, source_or_context)
+
+func old_trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: Variant, targets : Array[HeroSlot] = [], combat_manager : CombatManager = null):
 	var event_name = Enums.TRIGGER_STRINGS.get(event_type, "")
 	
 	# 1. Establish our execution context variable

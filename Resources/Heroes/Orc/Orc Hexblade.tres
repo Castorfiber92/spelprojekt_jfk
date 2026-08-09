@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://hdpjaf7iiama"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_de2ar"]
+[ext_resource type="Resource" uid="uid://dflfw1rr0hjlv" path="res://Resources/Behaviors/Effects/Buffs/Orc/status_siphon_soul.tres" id="2_8wcox"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_i8l0g"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_lrh0r"]
 [ext_resource type="SpriteFrames" uid="uid://brtvwlxkykox8" path="res://Graphics/Hero Sprites/Orc/orc_hexblade_sprites.tres" id="4_de2ar"]
@@ -8,10 +9,11 @@
 [resource]
 script = ExtResource("3_lrh0r")
 tribe = 1
-base_HP = 24
+base_HP = 10
 base_damage = 2
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_i8l0g")
+abilities = Array[ExtResource("1_de2ar")]([ExtResource("2_8wcox")])
 name = "Orc Hexblade"
 sprites = ExtResource("4_de2ar")

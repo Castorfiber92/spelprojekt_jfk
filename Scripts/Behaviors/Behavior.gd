@@ -7,19 +7,27 @@ var current_stacks: int
 
 static func create(_data : BehaviorData) -> Behavior:
 	var instance = Behavior.new()
-	instance.data = _data
+	var duplicated_data = _data.duplicate(true)
+	var sterile_array: Array[BehaviorData] = []
+	for nested_res in duplicated_data.behaviors_to_apply:
+		if nested_res != null:
+			# Explicitly clone the sub-resources so they can never share memory blocks
+			sterile_array.append(nested_res.duplicate(true))
+	duplicated_data.behaviors_to_apply = sterile_array
+	instance.data = duplicated_data
 	instance.current_stacks = _data.base_stacks
 	return instance
 
-# Hook connection entry points mapped dynamically by your CombatManager
-func on_execute_action(context: CombatContext): _check_trigger("on_execute_action", context)
-func on_start_of_battle(context: CombatContext): _check_trigger("on_start_of_battle", context)
-func on_turn_start(context: CombatContext):     _check_trigger("on_turn_start", context)
-func on_turn_end(context: CombatContext):       _check_trigger("on_turn_end", context)
-func on_attack(context: CombatContext):         _check_trigger("on_attack", context)
-func on_damage_dealt(context: CombatContext):   _check_trigger("on_damage_dealt", context)
-func on_damage_taken(context: CombatContext):   _check_trigger("on_damage_taken", context)
-func on_death(context: CombatContext):          _check_trigger("on_death", context)
+# Hook connection entry points mapped dynamically by the CombatManager
+func on_execute_action(context: CombatContext, trigger_data: Variant = null): _check_trigger("on_execute_action", context, trigger_data)
+func on_start_of_battle(context: CombatContext, trigger_data: Variant = null): _check_trigger("on_start_of_battle", context, trigger_data)
+func on_turn_start(context: CombatContext, trigger_data: Variant = null):     _check_trigger("on_turn_start", context, trigger_data)
+func on_turn_end(context: CombatContext, trigger_data: Variant = null):       _check_trigger("on_turn_end", context, trigger_data)
+func on_attack(context: CombatContext, trigger_data: Variant = null):         _check_trigger("on_attack", context, trigger_data)
+func on_damage_dealt(context: CombatContext, trigger_data: Variant = null):   _check_trigger("on_damage_dealt", context, trigger_data)
+func on_damage_taken(context: CombatContext, trigger_data: Variant = null):   _check_trigger("on_damage_taken", context, trigger_data)
+func on_death(context: CombatContext, trigger_data: Variant = null):          _check_trigger("on_death", context, trigger_data)
+func on_round_end(context: CombatContext, trigger_data: Variant = null):      _check_trigger("on_round_end", context, trigger_data)
 
 func modify_outgoing_effect(effect : CombatEffect):
 # Path A: Gated flow. If the resource implements 'modify_outgoing_effect', 
@@ -76,19 +84,19 @@ func modify_attacker_final_targets(resolved_targets: Array[HeroSlot], reachable_
 	return resolved_targets
 
 #Universal Validation Gate
-func _check_trigger(current_hook: String, context: CombatContext):
+func _check_trigger(current_hook: String, context: CombatContext, trigger_data: Variant):
 	var expected_hook_string = Enums.TRIGGER_STRINGS.get(data.trigger_event, "")
 	# If it is the current triggering event/combat phase
 	if current_hook != expected_hook_string:
 		return 
 		
 	# Execute the payload
-	_execute_behavior_payload(context)
+	_execute_behavior_payload(context,trigger_data)
 
-func _execute_behavior_payload(context: CombatContext):
-	# If the linked data resource asset contains a custom execution payload override, call it!
+func _execute_behavior_payload(context: CombatContext,trigger_data):
+	# If the linked data resource asset contains a custom execution payload override, we call it
 	if data.has_method("_execute_behavior_payload_override"):
-		data._execute_behavior_payload_override(context, self)
+		data._execute_behavior_payload_override(context, self, trigger_data)
 
 func roll_crit_local(checking_hero: Hero, main_action_crit: bool = false) -> bool:
 	# Gate 1: Check independent random proc chance
@@ -223,6 +231,14 @@ func _apply_target_type(candidates: Array[HeroSlot], source: HeroSlot) -> Array[
 			resolved_targets = pool.slice(0, max_hits)
 		## THIS DOESNT WORK RIGHT NOW AS IT SHOULD, or well, the targeting works, but not the
 		## simultaneously applied effect. Look into it if needed, otherwise dont use cleave
+		Enums.Target.REPEAT:
+			if not candidates.is_empty():
+				# 1. Lock onto one single primary target completely randomly
+				var primary_target = candidates.pick_random()
+				
+				# 2. Duplicate that EXACT SAME unit into the target queue 'target_count' times
+				for i in range(data.target_count):
+					resolved_targets.append(primary_target)
 		Enums.Target.CLEAVE:
 			if candidates.is_empty():
 				resolved_targets = []
@@ -242,28 +258,14 @@ func _apply_target_type(candidates: Array[HeroSlot], source: HeroSlot) -> Array[
 						resolved_targets.append(neighbors[i])
 						
 		Enums.Target.MULTI:
-			# Picks a primary target first, then grabs another randomly available target
-			var primary_target = candidates.pick_random()
-			resolved_targets.append(primary_target)
-			
-			if data.target_count > 1:
-					var other_candidates: Array[HeroSlot] = []
-					
-					for slot in candidates:
-						# Skip the primary target so we don't hit the same hero twice
-						if slot != primary_target:
-							other_candidates.append(slot)
-					
-					# Shuffle the remaining pool to ensure random selection order
-					other_candidates.shuffle()
-					
-					# Calculate how many extra hits we still need
-					var extra_hits = data.target_count - 1
-					var max_extra = clampi(extra_hits, 0, other_candidates.size())
-					
-					# Append the extra targets up to your limit
-					for i in range(max_extra):
-						resolved_targets.append(other_candidates[i])
+			# 1. Safety check: Ensure we actually have living candidates to hit
+			if not candidates.is_empty():
+				# 2. Loop exactly 'data.target_count' times to build your multi-strike queue
+				for i in range(data.target_count):
+				# Pick a target out of the full pool completely randomly.
+				# Because we don't remove them, the same hero can be picked multiple times!
+					var random_target = candidates.pick_random()
+					resolved_targets.append(random_target)
 
 	# Attacker Hook
 	for b in owner_hero.get_behaviors():

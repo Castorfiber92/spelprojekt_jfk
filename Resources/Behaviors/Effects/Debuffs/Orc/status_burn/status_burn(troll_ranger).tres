@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="status_burn_basic_behavior" format=3 uid="uid://daxwgknv15xsh"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_bf27m"]
+[ext_resource type="Script" uid="uid://0x0eor0sc0dc" path="res://Resources/Behaviors/Effects/Debuffs/Base Scripts/status_burn_basic_behavior.gd" id="2_pmxu4"]
+
+[resource]
+script = ExtResource("2_pmxu4")
+trigger_event = 2
+type = 2
+target_team = 2
+crit_multiplier = 2.0
+trigger_on_innate_crit = true
+animation = ""
+base_stacks = 2
+tag = 1
+name = "Burned"
+description = "Deals damage on turn start - can crit by using the innate crit chance of the affected unit (the better the crit the worse for the affected)"
+metadata/_custom_type_script = "uid://0x0eor0sc0dc"

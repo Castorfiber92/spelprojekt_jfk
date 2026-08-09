@@ -1,4 +1,4 @@
-extends Behavior
+extends BehaviorData
 class_name ModifyValueModifier
 
 # Keep in mind this currently ONLY works for outgoing effects, so think damage, range, etc.

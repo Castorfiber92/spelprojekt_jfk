@@ -5,7 +5,7 @@ enum ActionType { ATTACK, CAST }
 @export var action_profile: ActionType = ActionType.ATTACK
 	
 # We add '_executor: Behavior' as a parameter to safely proxy runtime operations
-func _execute_behavior_payload_override(combatContext: CombatContext, executor: Behavior):
+func _execute_behavior_payload_override(combatContext: CombatContext, executor: Behavior, attack_history: Variant = null):
 	var source_slot = combatContext.source
 	var rolled_a_crit: bool = randf() < source_slot.hero.current_crit_chance
 	var runtime_owner = executor.owner_hero

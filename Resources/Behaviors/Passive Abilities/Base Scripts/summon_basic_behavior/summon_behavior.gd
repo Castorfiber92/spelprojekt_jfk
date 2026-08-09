@@ -4,7 +4,7 @@ class_name SummonBehavior
 @export_group("Summon Settings")
 @export var hero_to_summon : HeroData
 
-func _execute_behavior_payload_override(context: CombatContext, executor: Behavior):
+func _execute_behavior_payload_override(context: CombatContext, executor: Behavior, attack_history: Variant = null):
 	if hero_to_summon == null: return
 	
 	var runtime_owner = executor.owner_hero
