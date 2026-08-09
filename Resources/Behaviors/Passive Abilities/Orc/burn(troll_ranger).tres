@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="InfuseBuffsModifier" format=3 uid="uid://4yoyq4q2e7ux"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_kkjue"]
+[ext_resource type="Resource" uid="uid://daxwgknv15xsh" path="res://Resources/Behaviors/Effects/Debuffs/Orc/status_burn/status_burn(troll_ranger).tres" id="2_hae1f"]
+[ext_resource type="Script" uid="uid://bkqfvtirw6whu" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/infuse_buff_basic_behavior/infuse_buffs_basic_behavior.gd" id="2_mgudw"]
+
+[resource]
+script = ExtResource("2_mgudw")
+animation = ""
+add_stacks = false
+behaviors_to_apply = Array[ExtResource("1_kkjue")]([ExtResource("2_hae1f")])
+name = "Flaming Spears"
+metadata/_custom_type_script = "uid://bkqfvtirw6whu"

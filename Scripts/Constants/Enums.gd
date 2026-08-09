@@ -1,9 +1,10 @@
 extends Node
 enum Team {FRIEND, ENEMY, SELF}
 enum Target {
-	SINGLE,     # Picks exactly N random/specific targets from the pool
-	MULTI,     # Picks a primary target, then another
-	CLEAVE,
+	SINGLE,    # Picks exactly N random targets from the pool according to settings
+	REPEAT,    # Picks exactly 1 random target, and then strikes it according to target count (fury swipes)
+	MULTI,     # Picks a primary target, then another (this CAN target the same target)
+	CLEAVE,    # Picks adjacent targets according to our rules and strikes all instantly
 	ALL        # Hits every single valid hero in the pool unconditionally
 	#RANDOM_BOUNCE # Hits a target, then jumps to N random targets successively
 }
@@ -15,6 +16,7 @@ static var Tribe_MAP = {
 	"gnome": Enums.Tribe.GNOME,
 	"neutral": Enums.Tribe.NEUTRAL
 }
+enum EffectType { DAMAGE, HEAL }
 enum CombatPhase {IDLE, 
 	PRE_TURN,      # Buffs ticking down, "Start of turn" abilities
 	SELECT_ACTION, # AI choosing or Player clicking
@@ -33,7 +35,8 @@ enum TriggerEvent {
 	ON_ATTACK,
 	ON_DAMAGE_DEALT,
 	ON_DAMAGE_TAKEN,
-	ON_DEATH
+	ON_DEATH,
+	ON_ROUND_END
 }
 
 # Helper mapping function to convert Enums to strings for method calling
@@ -45,5 +48,6 @@ const TRIGGER_STRINGS = {
 	TriggerEvent.ON_ATTACK: "on_attack",
 	TriggerEvent.ON_DAMAGE_DEALT: "on_damage_dealt",
 	TriggerEvent.ON_DAMAGE_TAKEN: "on_damage_taken",
-	TriggerEvent.ON_DEATH: "on_death"
+	TriggerEvent.ON_DEATH: "on_death",
+	TriggerEvent.ON_ROUND_END: "on_round_end"
 }

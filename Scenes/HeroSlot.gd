@@ -24,22 +24,32 @@ func play_animation(anim_name: String, anim_duration : float = 0.15) -> void:
 	if anim_name != "idle" and hero.hero_data.sprites and hero.hero_data.sprites.has_animation(anim_name):
 		sprite.texture = hero.hero_data.sprites.get_frame_texture("idle", 0)
 
-func apply_damage_effect(crit : bool) -> Tween:
+
+func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake = true) -> Tween:
+	var tween = create_tween()
+	var duration: float = 0.10 # Set our exact desired time here
+	var text_duration: float = 1.25
+	var buffer_duration: float = 0.15 # The tiny pause after it finishes
+	# Both functions inject their animations into the same timeline side-by-side
+	var flash_color = Color.FIREBRICK if type == Enums.EffectType.DAMAGE else Color.WEB_GREEN
+	var text_color = Color.RED if type == Enums.EffectType.DAMAGE else Color.GREEN
+	var prefix = "-" if type == Enums.EffectType.DAMAGE else "+"
+	VisualEffects.flash_sprite(sprite, flash_color, duration, 3, tween)
+	if shake:
+		VisualEffects.shake_node(sprite, Vector2(5, -5), duration, 3, tween)
 	if crit:
-		return VisualEffects.play_critical_hit(sprite)
+		VisualEffects.flicker_node(sprite, 0.03, 4, tween)
 
-	VisualEffects.flash_sprite(sprite, Color.FIREBRICK)
+	# Guard clause in case we dont want any floating text we use -1 for value
+	if value >= 0:
+		# below is temporary, we can change it to something else later
+		var text_string = str(prefix, value)
+		VisualEffects.spawn_floating_text(sprite, crit, text_string, text_color, text_duration)
+	# .chain() forces this step to wait until the flash/shake steps finish
+	tween.chain().tween_interval(buffer_duration)
+	return tween # Await this tween in your coroutine
 
-	return VisualEffects.shake_node(sprite)
 
-func apply_heal_effect(crit : bool) -> Tween:
-	## Right now this is a damagecriteffect
-	if crit:
-		return VisualEffects.play_critical_hit(sprite)
-
-	VisualEffects.flash_sprite(sprite, Color.WEB_GREEN)
-	var intensity: Vector2 = Vector2(2, -2)
-	return VisualEffects.shake_node(sprite, intensity)
 
 func toggle_visibility(show = true):
 	if show:
@@ -135,9 +145,14 @@ func animate_in(buff_slot: Control):
 	buff_slot.scale = Vector2.ZERO
 	
 	var tween = create_tween()
-	tween.set_trans(Tween.TRANS_BACK)
+	tween.set_trans(Tween.TRANS_BOUNCE)
 	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(buff_slot, "scale", Vector2.ONE, 0.25)
+	tween.tween_property(buff_slot, "scale", Vector2(1.3, 1.3), 0.20)
+	
+	# Step 2: Smoothly settle back down to normal size (1.0)
+	tween.set_trans(Tween.TRANS_CUBIC) # A smoother, cleaner transition for settling
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(buff_slot, "scale", Vector2.ONE, 0.10)
 
 func animate_out_and_free(buff_slot: Control):
 	buff_slot.pivot_offset = buff_slot.size / 2
@@ -145,7 +160,7 @@ func animate_out_and_free(buff_slot: Control):
 	var tween = create_tween()
 	tween.set_trans(Tween.TRANS_BACK)
 	tween.set_ease(Tween.EASE_IN) # Eases in so it shrinks away quickly
-	tween.tween_property(buff_slot, "scale", Vector2.ZERO, 0.15)
+	tween.tween_property(buff_slot, "scale", Vector2.ZERO, 0.10)
 	
 	# Free the memory automatically once the animation finishes
 	tween.tween_callback(buff_slot.queue_free)

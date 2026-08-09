@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Status_Trollhide" format=3 uid="uid://ca7kynglq76uv"]
+[gd_resource type="Resource" script_class="Status_trollhide" format=3 uid="uid://ca7kynglq76uv"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_a5hth"]
 [ext_resource type="Script" uid="uid://uboa6xxcflnh" path="res://Resources/Behaviors/Effects/Buffs/Base Scripts/status_troll_hide.gd" id="2_b5nem"]
@@ -8,7 +8,7 @@ script = ExtResource("2_b5nem")
 trigger_event = 2
 value = 2
 min_value = 1
-max_value = 10
+max_value = 5
 target_team = 2
 crit_multiplier = 2.0
 trigger_on_innate_crit = true

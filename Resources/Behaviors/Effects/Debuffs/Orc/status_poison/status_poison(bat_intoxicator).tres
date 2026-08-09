@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("2_br1hq")
+trigger_event = 8
 type = 2
 target_team = 2
 animation = ""

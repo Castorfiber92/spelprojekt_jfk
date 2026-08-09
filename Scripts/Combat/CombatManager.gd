@@ -50,7 +50,18 @@ func run_combat_loop():
 		
 		# If no heroes can act, the round is over!
 		if next_hero_slot == null:
-			print("Press SPACE to start the round...")
+			# 1. Trigger the round end behavior event for all living heroes
+			var all_slots = player_slots + enemy_slots
+			var living_slots = all_slots.filter(func(slot): return slot and slot.hero != null)
+			# Sort it via speed - fastest pops first
+			living_slots.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
+			for slot in living_slots:
+				if slot and slot.hero != null:
+					slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, slot, [] as Array[HeroSlot], self)
+			
+			# 2. Wait for any status damage, end-of-round heals, or triggers to completely resolve
+			await wait_for_stack_to_clear()
+			print("Press SPACE to start the next round...")
 			await wait_for_input("ui_accept")
 			print("Next round started!")
 			reset_round()
@@ -61,7 +72,7 @@ func run_combat_loop():
 		
 		# Linear execution: Code completely pauses here until the turn and all cascades finish
 		await execute_turn(active_slot)
-		
+		await wait_for_stack_to_clear()
 		# --- ADDED FOR TESTING: PACING DELAY BETWEEN ACTIONS ---
 		# Adjust the '0.5' to make the pause longer (e.g., 1.0) or shorter (e.g., 0.2)
 		await get_tree().create_timer(0.3).timeout
@@ -82,6 +93,11 @@ func wait_for_input(action_name: String):
 		# Check if the specific action (Space/Enter) was just pressed
 		if Input.is_action_just_pressed(action_name):
 			return # This 'resolves' the await in the calling function
+			
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("combat_restart"):
+		restart_combat_with_new_enemies()
+			
 # BELOW IS FOR TESTING ONLY
 func emergency_exit_to_overworld() -> void:
 	await get_tree().process_frame
@@ -141,13 +157,15 @@ func process_stack() -> void:
 		if execution_result is CombatContext:
 			var dealt_damage = execution_result.get_damage_dealt_to(effect.target)
 	
-			if dealt_damage > 0 and effect.target.hero != null:
-				effect.target.hero.trigger_behavior_event(
-				Enums.TriggerEvent.ON_DAMAGE_TAKEN, 
-				execution_result
+			effect.target.hero.trigger_behavior_event(
+					Enums.TriggerEvent.ON_DAMAGE_TAKEN, 
+					effect.source, 
+					[] as Array[HeroSlot], 
+					self
 				)
-		
+		await get_tree().process_frame
 		check_and_process_deaths()
+		await get_tree().process_frame
 		update_UI()
 
 	is_processing = false
@@ -278,27 +296,15 @@ func process_effect(effect: CombatEffect):
 	if effect.effect_owner != null and is_instance_valid(effect.effect_owner):
 		for b in effect.effect_owner.get_behaviors():
 			# No string check needed! Every runtime behavior safely handles this now.
-			b.modify_outgoing_effect(effect)
+			if b.owner_hero == effect.effect_owner:
+				b.modify_outgoing_effect(effect)
 	# 2. We check the target's behaviors and modify the incoming effect
 	# (Armor, Shields, Damage Reduction, etc.)
 	if effect.target != null and is_instance_valid(effect.target):
 		for b in effect.target.hero.get_behaviors():
+			if b.owner_hero == effect.target.hero:
 			# No string check needed!
-			b.modify_incoming_effect(effect)
-
-func handle_post_damage_pipeline(target_slot: HeroSlot, source_slot: HeroSlot, context: Dictionary) -> void:
-	# If no damage was actually dealt (e.g. shielded or immune), skip triggers
-	if context["damage_amount"] <= 0:
-		return
-		
-	# 1. Trigger ON_DAMAGE_TAKEN linearly through the manager
-	if target_slot.hero != null:
-		# Pass the source slot context so defensive behaviors know WHO attacked them
-		target_slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_DAMAGE_TAKEN, source_slot, [], self)
-		
-	# Note: We DO NOT check for death or run ON_DEATH triggers here!
-	# Your existing process_stack() loop already calls check_and_process_deaths() 
-	# right after the effect finishes presenting, which gathers and reaps all dead heroes perfectly.
+				b.modify_incoming_effect(effect)
 
 func clear_highlights():
 	for i in player_slots:
@@ -367,9 +373,7 @@ func add_hero(slot : HeroSlot, hero : Hero):
 		var old_callable = remove_hero.bind(slot)
 		if slot.hero.has_died.is_connected(old_callable):
 			slot.hero.has_died.disconnect(old_callable)
-		#var old_ui_callable = slot.update_buff_slots
-		#if slot.hero.behavior_removed.is_connected(old_ui_callable):
-			#slot.hero.behavior_removed.disconnect(old_ui_callable)
+	
 		remove_hero(slot)
 	slot.hero = hero
 	slot.play_animation("idle")
@@ -435,3 +439,63 @@ func lose_combat():
 func initialize_combat():
 	pass
 	
+func restart_combat_with_new_enemies():
+	if RunManager.current_encounter == null:
+		printerr("CombatManager: Cannot restart because current_encounter is missing!")
+		return
+		
+	print("CombatManager: Discarding match and regenerating board layout...")
+	
+	# 1. Capture the structural type of the battle before discarding it
+	# Check whether your CombatComposition resource calls it 'battle_type' or 'action_profile'
+	var active_battle_type = RunManager.current_encounter.encounter_type
+	
+	# 2. SIGNAL CLEANUP: Cleanly disconnect persistent player heroes before wiping the slots!
+	# This prevents the 'Signal already connected' error and stops reference corruption.
+	for slot in player_slots:
+		if is_instance_valid(slot) and is_instance_valid(slot.hero):
+			var current_player_hero = slot.hero
+			
+			# Safe disconnection tracking matching your exact add_hero() connection types
+			var die_callable = remove_hero.bind(slot)
+			if current_player_hero.has_died.is_connected(die_callable):
+				current_player_hero.has_died.disconnect(die_callable)
+				
+			if current_player_hero.behavior_removed.is_connected(slot.update_buff_slots):
+				current_player_hero.behavior_removed.disconnect(slot.update_buff_slots)
+				
+	# 3. CLEAN REAP: Clear out live variables and state machines
+	if "effect_stack" in self:
+		effect_stack.clear()
+	is_processing = false
+	combat_active = true 
+	
+	# 4. SEVER RELATIONSHIPS: Erase tracker memory data completely
+	hero_to_slot_map.clear()
+	
+	# 5. DESTROY VISUAL NODES: Completely free the old slot scenes from memory
+	for slot in player_slots:
+		if is_instance_valid(slot):
+			slot.queue_free()
+	player_slots.clear()
+	
+	for slot in enemy_slots:
+		if is_instance_valid(slot):
+			slot.queue_free()
+	enemy_slots.clear()
+	
+	# 6. GENERATE NEW ENCOUNTER: Pass the battle type back to your RunManager
+	RunManager.roll_next_encounter(active_battle_type)
+	
+	if RunManager.current_encounter == null:
+		printerr("CombatManager: RunManager failed to roll a new encounter. Aborting reset.")
+		return
+	
+	# 7. RE-INITIALIZE: Yield one single frame to let old children clean up, 
+	# then spawn the fresh teams onto the battlefield canvas
+	await get_tree().process_frame
+	
+	create_slots()
+	update_UI()
+	
+	print("CombatManager: Fresh encounter [", RunManager.current_encounter.encounter_name, "] successfully deployed!")

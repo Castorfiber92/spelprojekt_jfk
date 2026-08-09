@@ -15,11 +15,15 @@ func execute(_manager: CombatManager) -> Variant:
 func present(manager: CombatManager) -> void:
 	# 1. Source plays animation
 	if source and animation != "" and animation != "idle":
-		await source.play_animation(animation, animation_duration)
+		source.play_animation(animation, animation_duration)
 		
 	# 2. TARGET REACTS SECOND, if they should from a buff?
-	if target and target.hero != null:
-		await target.apply_heal_effect(is_crit).finished
+	if target != null:
+		if effect_owner.team == target.hero.team:
+			await target.apply_visual_effect(Enums.EffectType.HEAL, is_crit, -1, false).finished
+		else:
+			await target.apply_visual_effect(Enums.EffectType.DAMAGE,is_crit, -1, false).finished
 	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing
 		await manager.get_tree().process_frame
+	await manager.get_tree().create_timer(0.10).timeout
