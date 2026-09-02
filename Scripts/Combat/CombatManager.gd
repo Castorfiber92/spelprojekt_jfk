@@ -54,7 +54,7 @@ func run_combat_loop():
 			var all_slots = player_slots + enemy_slots
 			var living_slots = all_slots.filter(func(slot): return slot and slot.hero != null)
 			# Sort it via speed - fastest pops first
-			living_slots.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
+			living_slots.sort_custom(func(a, b): return a.hero.get_stat(Enums.StatType.SPEED) > b.hero.get_stat(Enums.StatType.SPEED))
 			for slot in living_slots:
 				if slot and slot.hero != null:
 					slot.hero.trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, slot, [] as Array[HeroSlot], self)

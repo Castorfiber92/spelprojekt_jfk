@@ -1,2 +1,4 @@
 bash(broom_basher)
+burn(troll_ranger)
 mark
+summon(skeleton_king)
