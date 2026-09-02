@@ -171,7 +171,7 @@ func get_reachable_targets(source: HeroSlot, candidates: Array[HeroSlot]) -> Arr
 			active_candidates = b.call("modify_initial_targets", active_candidates, source)
 		
 	var r = data.range if data.range > 0 else owner_hero.current_range
-	var action_range = get_modified_stat(owner_hero, "range", r)
+	var action_range = owner_hero.get_stat(Enums.StatType.SPEED)
 	
 	var reachables: Array[HeroSlot] = []
 	
@@ -223,7 +223,8 @@ func _apply_target_type(candidates: Array[HeroSlot], source: HeroSlot) -> Array[
 			resolved_targets = candidates.duplicate()
 
 		Enums.Target.SINGLE:
-			# hit exactly 1, 2, or 3 completely independent random targets
+			# hit exactly 1, 2, or 3 completely independent random targets, right now this works the same as
+			# multi
 			var pool = candidates.duplicate()
 			pool.shuffle()
 			# Clamps to prevent trying to grab more heroes than actually exist in the pool

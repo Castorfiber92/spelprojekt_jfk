@@ -26,19 +26,20 @@ func play_animation(anim_name: String, anim_duration : float = 0.15) -> void:
 
 
 func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake = true) -> Tween:
-	var tween = create_tween()
-	var duration: float = 0.10 # Set our exact desired time here
+	var master_tween = create_tween()
+	var duration: float = 0.20 # Set our exact desired time here
 	var text_duration: float = 1.25
-	var buffer_duration: float = 0.15 # The tiny pause after it finishes
+	#var buffer_duration: float = 0.15 # The tiny pause after it finishes
 	# Both functions inject their animations into the same timeline side-by-side
 	var flash_color = Color.FIREBRICK if type == Enums.EffectType.DAMAGE else Color.WEB_GREEN
 	var text_color = Color.RED if type == Enums.EffectType.DAMAGE else Color.GREEN
 	var prefix = "-" if type == Enums.EffectType.DAMAGE else "+"
-	VisualEffects.flash_sprite(sprite, flash_color, duration, 3, tween)
+	VisualEffects.flash_sprite(sprite, flash_color, duration, 6)
+	
 	if shake:
-		VisualEffects.shake_node(sprite, Vector2(5, -5), duration, 3, tween)
+		VisualEffects.shake_node(sprite, Vector2(5, -5), duration, 2)
 	if crit:
-		VisualEffects.flicker_node(sprite, 0.03, 4, tween)
+		VisualEffects.flicker_node(sprite, 0.03, 4)
 
 	# Guard clause in case we dont want any floating text we use -1 for value
 	if value >= 0:
@@ -46,8 +47,9 @@ func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake
 		var text_string = str(prefix, value)
 		VisualEffects.spawn_floating_text(sprite, crit, text_string, text_color, text_duration)
 	# .chain() forces this step to wait until the flash/shake steps finish
-	tween.chain().tween_interval(buffer_duration)
-	return tween # Await this tween in your coroutine
+	#tween.chain().tween_interval(buffer_duration)
+	master_tween.tween_interval(duration)
+	return master_tween 
 
 
 

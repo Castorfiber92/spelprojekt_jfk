@@ -38,13 +38,7 @@ func initialize_data():
 	for behavior_name in behaviors:
 		var b: Behavior = behaviors[behavior_name]
 		b.owner_hero = self 
-	current_HP = hero_data.base_HP
-	maximum_HP = current_HP
-	current_damage = hero_data.base_damage
-	current_speed = hero_data.base_speed
-	current_range = hero_data.base_range
-	current_crit_chance = hero_data.base_crit_chance
-	#current_spellpower = hero_data.base_spellpower
+	reset_temporary_data()
 
 func prepare_for_combat():
 	reset_temporary_data()
@@ -182,33 +176,25 @@ func trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: 
 			# 3. THE TWO-ARGUMENT EMISSION: Pass the fresh targeting context AND the historical attack context data
 			behavior_instance.call(event_name, reactive_context, source_or_context)
 
-func old_trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: Variant, targets : Array[HeroSlot] = [], combat_manager : CombatManager = null):
-	var event_name = Enums.TRIGGER_STRINGS.get(event_type, "")
+func get_stat(stat_type: Enums.StatType) -> int:
+	# 1. Establish the baseline nude stats
+	var calculated_stats = {
+		Enums.StatType.SPEED: hero_data.base_speed,
+		Enums.StatType.RANGE: hero_data.base_range,
+		Enums.StatType.DAMAGE: hero_data.base_damage,
+		Enums.StatType.MAX_HP: hero_data.base_HP,
+		Enums.StatType.CRIT: hero_data.base_crit_chance
+	}
 	
-	# 1. Establish our execution context variable
-	var context: CombatContext = null
-	
-	# 2. Check if the manager passed a pre-built context (e.g. from a damage execution)
-	if source_or_context is CombatContext:
-		context = source_or_context
-		# Update our local manager reference from the traveling context
-		combat_manager = context.manager 
-	else:
-		# Fallback: Create a fresh context if loose slots were passed instead
-		var source_slot = source_or_context as HeroSlot
-		context = CombatContext.new(source_slot, targets, combat_manager)
-
-	# 3. Iterate through behaviors and execute matches
-	for i in behaviors:
-		if behaviors[i].has_method(event_name):
-			# If the context targets are empty, let the behavior resolve its own targeting parameters
-			if context.targets.is_empty() and combat_manager != null:
-				# Note: Since resolve_targets modifies context.targets directly,
-				# we duplicate or re-assign carefully if multiple behaviors share the same context object.
-				context.targets = context.resolve_targets(behaviors[i], combat_manager)
-				
-			behaviors[i].call(event_name, context)
-
+	# 2. Automatically sweep behaviors for modifications
+	for b in get_behaviors():
+		# Direct data object reference (no method-string building required)
+		var data_res = b.data
+		if data_res.has_method("_execute_stat_modification"):
+			data_res._execute_stat_modification(calculated_stats)
+			
+	# 3. Safely return the requested stat type
+	return calculated_stats.get(stat_type, 0)
 ## Use this for modifying values (e.g., calculating damage)
 func apply_value_modifier(event_name: String, base_value) -> int:
 	var modified_value = base_value

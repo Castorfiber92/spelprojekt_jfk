@@ -1,4 +1,7 @@
 status_armor(earth_shaman)
+status_burn(troll_ranger)
 status_mark
 status_poison(bat_intoxicator)
+status_siphon_soul
 status_stun(broom_basher)
+status_troll_hide

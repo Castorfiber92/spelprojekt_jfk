@@ -17,6 +17,13 @@ static var Tribe_MAP = {
 	"neutral": Enums.Tribe.NEUTRAL
 }
 enum EffectType { DAMAGE, HEAL }
+enum StatType {
+	SPEED,
+	RANGE,
+	DAMAGE,
+	MAX_HP,
+	CRIT
+}
 enum CombatPhase {IDLE, 
 	PRE_TURN,      # Buffs ticking down, "Start of turn" abilities
 	SELECT_ACTION, # AI choosing or Player clicking
