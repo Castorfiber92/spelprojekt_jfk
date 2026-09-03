@@ -1,19 +1,19 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://70irkhpjxtg8"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_c8e0x"]
-[ext_resource type="Resource" uid="uid://b7b4q5if8nhmi" path="res://Resources/Behaviors/Passive Abilities/Gnome/bash(broom_basher).tres" id="2_c8e0x"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_l7nqu"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_c8e0x"]
-[ext_resource type="SpriteFrames" uid="uid://cemcg83a34ylx" path="res://Graphics/Hero Sprites/Gnome/broom_basher_sprites.tres" id="4_l7nqu"]
+[ext_resource type="Resource" uid="uid://b7b4q5if8nhmi" path="res://Resources/Behaviors/Passive Abilities/Gnome/bash(broom_basher).tres" id="2_hb47m"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="3_06gs6"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="4_k7ujf"]
+[ext_resource type="SpriteFrames" uid="uid://cemcg83a34ylx" path="res://Graphics/Hero Sprites/Gnome/broom_basher_sprites.tres" id="5_cyvdp"]
 
 [resource]
-script = ExtResource("3_c8e0x")
+script = ExtResource("4_k7ujf")
 tribe = 3
 base_HP = 20
 base_damage = 2
 base_speed = 10
 base_range = 1
-base_action = ExtResource("2_l7nqu")
-abilities = Array[ExtResource("1_c8e0x")]([ExtResource("2_c8e0x")])
+base_action = ExtResource("3_06gs6")
+abilities = Array[ExtResource("1_c8e0x")]([ExtResource("2_hb47m")])
 name = "Broom Basher"
-sprites = ExtResource("4_l7nqu")
+sprites = ExtResource("5_cyvdp")

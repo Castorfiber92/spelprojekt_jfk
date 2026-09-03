@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://biud86n8q8bhh"]
+[gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://dtb5fbpai0rec"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_3wu55"]
+[ext_resource type="Resource" uid="uid://cjd1sxyjun1sp" path="res://Resources/Behaviors/Passive Abilities/Undead/summon(skeleton_king).tres" id="2_gf2w8"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_vyk64"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2nd7a"]
 [ext_resource type="SpriteFrames" uid="uid://cqt3qgooodwsg" path="res://Graphics/Hero Sprites/Undead/skeleton_king_sprites.tres" id="4_3wu55"]
@@ -8,10 +9,11 @@
 [resource]
 script = ExtResource("3_2nd7a")
 tribe = 2
-base_HP = 30
+base_HP = 16
 base_damage = 4
 base_speed = 10
 base_range = 1
 base_action = ExtResource("2_vyk64")
+abilities = Array[ExtResource("1_3wu55")]([ExtResource("2_gf2w8")])
 name = "Skeleton King"
 sprites = ExtResource("4_3wu55")

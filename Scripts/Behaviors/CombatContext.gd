@@ -27,20 +27,5 @@ func get_heal_dealt_to(target_slot: HeroSlot) -> int:
 	return heal_dealt_map.get(target_slot, 0)
 
 func resolve_targets(behavior: Behavior, combat_manager: CombatManager) -> Array[HeroSlot]:
-	var candidates: Array[HeroSlot] = []
-	var source_team: Enums.Team = Enums.Team.FRIEND
-	source_team = behavior.owner_hero.team
-
-	# Match against team enum configuration
-	match behavior.data.target_team:
-		Enums.Team.SELF:
-			candidates = [source]
-		Enums.Team.FRIEND:
-			# Automatically passes the inner hero object to existing helper
-			candidates = combat_manager.get_friendly_slots(source_team)
-		Enums.Team.ENEMY:
-			# Automatically passes the inner hero object to existing helper
-			candidates = combat_manager.get_enemy_slots(source_team)
-		
-	# Runs range rules, row protections, and single/multi target hooks
-	return behavior.get_valid_targets(source, candidates)
+	# Simply bounces execution straight to the static solver!
+	return TargetingSolver.resolve_targets(behavior, self.source, combat_manager)

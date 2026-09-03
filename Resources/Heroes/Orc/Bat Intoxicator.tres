@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://dx0qth5uyvro7"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_xrwne"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="2_wv54a"]
-[ext_resource type="Resource" uid="uid://dqnl0460t06kg" path="res://Resources/Behaviors/Basic Actions/Custom Actions/cast_basic_bat_intoxicator.tres" id="2_xrwne"]
-[ext_resource type="SpriteFrames" uid="uid://cvaffewfksjiu" path="res://Graphics/Hero Sprites/Orc/bat_intoxicator_sprites.tres" id="4_xrwne"]
+[ext_resource type="Resource" uid="uid://dqnl0460t06kg" path="res://Resources/Behaviors/Basic Actions/Custom Actions/cast_basic_bat_intoxicator.tres" id="2_06d1b"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_r476a"]
+[ext_resource type="SpriteFrames" uid="uid://cvaffewfksjiu" path="res://Graphics/Hero Sprites/Orc/bat_intoxicator_sprites.tres" id="4_shpuw"]
 
 [resource]
-script = ExtResource("2_wv54a")
+script = ExtResource("3_r476a")
 tribe = 1
-base_HP = 30
+base_HP = 10
 base_damage = 1
 base_speed = 20
 base_range = 2
-base_action = ExtResource("2_xrwne")
+base_action = ExtResource("2_06d1b")
 name = "Bat Intoxicator"
-sprites = ExtResource("4_xrwne")
+sprites = ExtResource("4_shpuw")

@@ -55,10 +55,12 @@ func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake
 
 func toggle_visibility(show = true):
 	if show:
+		sprite.visible = true
 		hp_label.visible = true
 		damage_label.visible = true
 		name_label.visible = true
 	else:
+		sprite.visible = false
 		hp_label.visible = false
 		damage_label.visible = false
 		name_label.text = ""
@@ -82,11 +84,7 @@ func highlight_slot(source = true):
 		set_modulate(Colors.target_color)
 
 func update_info():
-	##We are calling this whenever we need to update the labels
-	##First we check that there is, in fact, a active hero in the slot (error-check)
 	if hero != null:
-		##If there is, we convert the correct variables to strings and update the information
-		##First, we show the labels again
 		toggle_visibility()
 		var max_health = hero.current_HP
 		hp_label.text = str(max_health)
@@ -94,14 +92,14 @@ func update_info():
 		damage_label.text = str(dynamic_damage)
 		name_label.text = hero.hero_data.name
 		update_buff_slots()
-
 	else:
-		##If there is NO hero
-		##Hide the labels
+		
+		clear_all_buff_slots()
 		toggle_visibility(false)
 
 
 func update_buff_slots():
+	
 	# 1. Ensure the container container exists once
 	if buff_slots_buffs.get_child_count() == 0:
 		var mg_container = MarginContainer.new()
@@ -110,7 +108,10 @@ func update_buff_slots():
 
 	# 2. Gather currently valid buffs from the hero
 	var current_buffs: Array = []
-	for b : Behavior in hero.behaviors.values():
+	
+	# FIXED: Instead of reading the obsolete .behaviors dictionary, 
+	# we call our backwards-compatible array function getter!
+	for b in hero.get_behaviors():
 		if b.data.type == BehaviorData.BehaviorType.BUFF:
 			current_buffs.append(b)
 
@@ -124,7 +125,6 @@ func update_buff_slots():
 	# 4. Add new buffs or refresh existing ones
 	for b in current_buffs:
 		if not active_slots.has(b):
-			# This is a brand new buff -> Create and animate it
 			var buff_slot = Preloads.buff_slot.instantiate()
 			buff_slots_buffs.add_child(buff_slot)
 			buff_slot.setup(b)
@@ -132,7 +132,6 @@ func update_buff_slots():
 			active_slots[b] = buff_slot
 			animate_in(buff_slot)
 		else:
-			# Buff already exists -> Just refresh its values (no animation)
 			active_slots[b].setup(b)
 
 func clear_all_buff_slots():

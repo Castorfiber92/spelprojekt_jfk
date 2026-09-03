@@ -1,22 +1,27 @@
-extends Node2D
+extends Node
 class_name Hero
 
 var hero_data : HeroData
 var current_tier : HeroData.HeroTier
 var current_HP : int
 var maximum_HP : int
-#var current_damage : int OBSOLETE
-#var current_spellpower : int OBSOLETE
-#var current_speed : int OBSOLETE
-#var current_range : int OBSOLETE
-#var current_crit_chance : float OBSOLETE
 @export var team: Enums.Team = Enums.Team.FRIEND
 
 var has_acted = false
-var behaviors: Dictionary[String, Behavior] = {}
 
-signal has_died
-signal behavior_removed()
+var stat_modifiers: Array[Behavior] = []   # Elements whose data.type == STAT
+var active_passives: Array[Behavior] = []  # Elements whose data.type == PASSIVE, BUFF, ACTIVE
+
+var event_listeners: Dictionary = {
+	Enums.TriggerEvent.ON_START_OF_BATTLE: [],
+	Enums.TriggerEvent.ON_TURN_START: [],
+	Enums.TriggerEvent.ON_EXECUTE_ACTION: [],
+	Enums.TriggerEvent.ON_TURN_END: [],
+	Enums.TriggerEvent.ON_ROUND_END: [],
+	Enums.TriggerEvent.ON_DAMAGE_TAKEN: [],
+	Enums.TriggerEvent.ON_DAMAGE_DEALT: [],
+	Enums.TriggerEvent.ON_DEATH: []
+}
 
 static func create(data: HeroData) -> Hero:
 	var new_hero = Hero.new()
@@ -24,20 +29,61 @@ static func create(data: HeroData) -> Hero:
 	new_hero.initialize_data()
 	return new_hero
 
-func initialize_data():
-	## This loads the information from the base resource class HeroData (which we do NOT want to meddle with)
-	## into the Hero class.
-	# Add the basic action-behavior
+func _enter_tree() -> void:
+	# Defensive design check: Safely isolate duplicates if an edge-case double connection occurs
+	disconnect_signals()
+	
+	GameEvents.battle_started.connect(_on_battle_started)
+	GameEvents.round_ended.connect(_on_round_ended)
+	GameEvents.turn_started.connect(_on_turn_started)
+	GameEvents.turn_ended.connect(_on_turn_ended)
+	GameEvents.action_execution_requested.connect(_on_action_execution_requested)
+
+
+# Triggers unconditionally the exact millisecond the node leaves a slot parent
+func _exit_tree() -> void:
+	disconnect_signals()
+
+
+## Helper routing component to ensure network cleanliness across scene transitions
+func disconnect_signals() -> void:
+	if GameEvents.battle_started.is_connected(_on_battle_started): GameEvents.battle_started.disconnect(_on_battle_started)
+	if GameEvents.round_ended.is_connected(_on_round_ended):       GameEvents.round_ended.disconnect(_on_round_ended)
+	if GameEvents.turn_started.is_connected(_on_turn_started):     GameEvents.turn_started.disconnect(_on_turn_started)
+	if GameEvents.turn_ended.is_connected(_on_turn_ended):         GameEvents.turn_ended.disconnect(_on_turn_ended)
+	if GameEvents.action_execution_requested.is_connected(_on_action_execution_requested): GameEvents.action_execution_requested.disconnect(_on_action_execution_requested)
+	
+func _on_battle_started(manager: CombatManager) -> void: trigger_behavior_event(Enums.TriggerEvent.ON_START_OF_BATTLE, [], manager)
+func _on_turn_started(slot: HeroSlot, combat_manager: CombatManager) -> void:
+	if slot.hero == self:
+		trigger_behavior_event(Enums.TriggerEvent.ON_TURN_START, [], combat_manager)
+
+func _on_turn_ended(slot: HeroSlot, combat_manager: CombatManager) -> void:
+	if slot.hero == self:
+		trigger_behavior_event(Enums.TriggerEvent.ON_TURN_END, [], combat_manager)
+
+func _on_action_execution_requested(slot: HeroSlot, combat_manager: CombatManager) -> void:
+	if slot.hero == self:
+		# FIXED: Passes the explicit manager reference provided directly by the signal channel!
+		trigger_behavior_event(Enums.TriggerEvent.ON_EXECUTE_ACTION, [], combat_manager)
+
+func initialize_data() -> void:
+	# Explicitly wipe and ensure the dictionary arrays are ready in memory first!
+	event_listeners = {
+		Enums.TriggerEvent.ON_START_OF_BATTLE: [],
+		Enums.TriggerEvent.ON_TURN_START: [],
+		Enums.TriggerEvent.ON_EXECUTE_ACTION: [],
+		Enums.TriggerEvent.ON_TURN_END: [],
+		Enums.TriggerEvent.ON_ROUND_END: [],
+		Enums.TriggerEvent.ON_DAMAGE_TAKEN: [],
+		Enums.TriggerEvent.ON_DAMAGE_DEALT: [],
+		Enums.TriggerEvent.ON_DEATH: []
+	}
+	
 	if hero_data.base_action:
-		var base_action_instance = Behavior.create(hero_data.base_action)
-		add_behavior(base_action_instance)
-	# Add the basic abilities
+		add_behavior(Behavior.create(hero_data.base_action))
 	for ability_res in hero_data.abilities:
-		var ability_instance = Behavior.create(ability_res)
-		add_behavior(ability_instance)
-	for behavior_name in behaviors:
-		var b: Behavior = behaviors[behavior_name]
-		b.owner_hero = self 
+		add_behavior(Behavior.create(ability_res))
 	reset_temporary_data()
 
 func prepare_for_combat():
@@ -46,159 +92,100 @@ func prepare_for_combat():
 
 func reset_temporary_data():
 	current_HP = hero_data.base_HP
-	maximum_HP = current_HP ## This probably needs changes since we are using the new get_data, so it gets updated
-	## properly outside of combat and before combat etc if you have permanent items and not just temporary buffs
-	#current_damage = hero_data.base_damage OBSOLETE
-	#current_speed = hero_data.base_speed OBSOLETE
-	#current_range = hero_data.base_range OBSOLETE
-	#current_crit_chance = hero_data.base_crit_chance OBSOLETE
+	maximum_HP = current_HP
 	has_acted = false
-	#current_spellpower = hero_data.base_spellpower
 	
 func clear_temporary_buffs():
-	var keys_to_remove: Array = []
-	for behavior_name in behaviors:
-		var behavior_instance = behaviors[behavior_name]
-		# Check if the behavior instance has a type property and if it equals buff
-		if "type" in behavior_instance.data and behavior_instance.data.type == BehaviorData.BehaviorType.BUFF:
-			keys_to_remove.append(behavior_name)
-	for behavior_name in keys_to_remove:
-		behaviors.erase(behavior_name)
-		
-func take_damage(damage : int, source : HeroSlot) -> Dictionary:
-	var old_hp = current_HP
-	print (self.hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name)
-	# 1. Apply the damage math cleanly
+	# Filter out anything that isn't a temporary buff, keeping only permanent skills/traits
+	active_passives = active_passives.filter(
+		func(b): return b.data.type != BehaviorData.BehaviorType.BUFF
+	)
+
+func _on_round_ended(manager: CombatManager) -> void:
+	var local_slot = manager.hero_to_slot_map.get(self)
+	if local_slot == null: return
+	var context = CombatContext.new(local_slot, [], manager)
+	trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, context, manager)
+
+func take_damage(damage : int, source : HeroSlot) -> void:
 	var active_max_hp = get_stat(Enums.StatType.MAX_HP)
 	current_HP = clamp(current_HP - damage, 0, active_max_hp)
+	print(hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name if source and source.hero else "unknown")
 	
-	# 2. Return a pure, synchronous data snapshot back to the DamageEffect
-	return {
-		"damage": damage,
-		"was_lethal": current_HP <= 0
-	}
+	GameEvents.hero_damaged.emit(self, source, damage)
+
 		
-func heal_HP(value : int, source : HeroSlot) -> Dictionary:
-	var old_hp = current_HP
+func heal_HP(value : int, source : HeroSlot) -> void:
 	var active_max_hp = get_stat(Enums.StatType.MAX_HP)
+	var old_hp = current_HP
 	current_HP = clamp(current_HP + value, 0, active_max_hp)
-	return {
-		"value": value,
-		"was_fullheal" : current_HP == active_max_hp
-	}
+	var actual_healed = current_HP - old_hp
+	print(hero_data.name, " heals for ", actual_healed)
+	
+	GameEvents.hero_healed.emit(self, source, actual_healed)
 
 func can_act() -> bool:
-	# If any behavior in our dictionary blocks actions, the hero cannot act
-	for behavior : Behavior in behaviors.values():
-		if behavior.data.blocks_action:
-			return false
-	return true
+	# If any logic behavior in our active passives array blocks actions (like Stun), return false
+	return not active_passives.any(func(behavior): return behavior.data.blocks_action)
 
-func add_behavior(new_behavior: Behavior):
-	## This is used when we add another behavior to the Hero. Such as when an item is added, when a buff
-	## is received, when they unlock a new ability etc. etc.
-	
-	if new_behavior == null:
-		return false
-		
-	var behavior_name = new_behavior.data.name
+func add_behavior(new_behavior: Behavior) -> bool:
+	if new_behavior == null: return false
 	new_behavior.owner_hero = self
 	
 	if new_behavior.data.type == BehaviorData.BehaviorType.STAT:
-		# Generate a unique dictionary key string using Godot's built-in object ID hashes
-		var unique_key = str(behavior_name, "_", new_behavior.get_instance_id()) 
-		## WARNING
-		# The get_instance_id() is temporary, it shouldn't be a problem as we reload all the behaviors
-		# upon loading the game or resetting the game, but I'm leaving this comment just in case
-		behaviors[unique_key] = new_behavior
+		stat_modifiers.append(new_behavior)
 		return true
-	
-	## We check if the dictionary of active_behaviors does NOT already have the behavior (i.e. if the Hero 
-	## already has crit for example, we don't want to add another instance of the same identical behavior.)
-	if behaviors.has(behavior_name) == false:
-		## If it's not already in the list, add it.
-		behaviors[behavior_name] = new_behavior
-		return true
-	else:
-		print("Applying Behavior " + behavior_name)
-		# If it exists, but is a buff
-		var existing_behavior = behaviors[behavior_name]
 		
-		if existing_behavior.data.type == BehaviorData.BehaviorType.BUFF:
-			if existing_behavior.data.base_stacks == 0 or new_behavior.data.base_stacks == 0:
-				print("Permanent/Non-stacking behavior found: ", existing_behavior.data.name)
-				return false
-			# Check if the behavior only wants to add its stacks rather than replace them
-			if existing_behavior.data.add_stacks == true:
-				existing_behavior.current_stacks += new_behavior.current_stacks 
-				print("Added stacks!")
+	if new_behavior.data.type == BehaviorData.BehaviorType.BUFF:
+		for existing in active_passives:
+			if existing.data.name == new_behavior.data.name:
+				if existing.data.base_stacks == 0 or new_behavior.data.base_stacks == 0: return false
+				if existing.data.add_stacks: existing.current_stacks += new_behavior.current_stacks
+				else: existing.current_stacks = max(existing.current_stacks, new_behavior.current_stacks)
 				return true
-			# Otherwise apply the largest strength of the buff
-			existing_behavior.current_stacks = max(existing_behavior.current_stacks, new_behavior.current_stacks)
-			print("Updated stacks!")
-			return true
-		print("Behavior " + new_behavior.data.name + "already exists in the dict.")
-		return false
+
+	# AUTOMATED SUBSCRIPTION: Scans the attached script file code blocks directly!
+	var data_res = new_behavior.data
+	if data_res.has_method("on_start_of_battle"): event_listeners[Enums.TriggerEvent.ON_START_OF_BATTLE].append(new_behavior)
+	if data_res.has_method("on_turn_start"):     event_listeners[Enums.TriggerEvent.ON_TURN_START].append(new_behavior)
+	if data_res.has_method("on_execute_action"):  event_listeners[Enums.TriggerEvent.ON_EXECUTE_ACTION].append(new_behavior)
+	if data_res.has_method("on_turn_end"):       event_listeners[Enums.TriggerEvent.ON_TURN_END].append(new_behavior)
+	if data_res.has_method("on_round_end"):      event_listeners[Enums.TriggerEvent.ON_ROUND_END].append(new_behavior)
+	if data_res.has_method("on_damage_taken"):   event_listeners[Enums.TriggerEvent.ON_DAMAGE_TAKEN].append(new_behavior)
+	if data_res.has_method("on_damage_dealt"):   event_listeners[Enums.TriggerEvent.ON_DAMAGE_DEALT].append(new_behavior)
+	if data_res.has_method("on_death"):          event_listeners[Enums.TriggerEvent.ON_DEATH].append(new_behavior)
+				
+	active_passives.append(new_behavior)
+	return true
 		
 func remove_behavior(behavior_instance: Behavior) -> void:
-	if behavior_instance == null or behavior_instance.data == null:
-		return
-		
-	var base_name: String = behavior_instance.data.name
-	var target_key: String = base_name
-	
-	# 1. Reconstruct the identical dynamic key pattern if this is a stat behavior
+	if behavior_instance == null: return
 	if behavior_instance.data.type == BehaviorData.BehaviorType.STAT:
-		target_key = str(base_name, "_", behavior_instance.get_instance_id())
-		
-	# 2. Defer the removal execution cleanly using the corrected key string
-	_deferred_remove.call_deferred(target_key, behavior_instance)
+		stat_modifiers.erase(behavior_instance)
+	else:
+		active_passives.erase(behavior_instance)
+		# Cleanly erase them out of the active listener matrix lines as well
+		for event_type in event_listeners:
+			event_listeners[event_type].erase(behavior_instance)
 
 
-func _deferred_remove(behavior_key: String, behavior_instance: Behavior) -> void:
-	# 3. Double-check for absolute safety before removing from the map
-	if behaviors.has(behavior_key):
-		# Verify it's the exact same object reference if accessing unique global slots
-		if behaviors[behavior_key] == behavior_instance:
-			behaviors.erase(behavior_key)
-			behavior_removed.emit() # Notify UI or game listeners cleanly
 
-func get_behaviors():
-	return behaviors.values()
-
-func trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: Variant, targets : Array[HeroSlot] = [], combat_manager : CombatManager = null):
-	var event_name = Enums.TRIGGER_STRINGS.get(event_type, "")
-	
-	# Extract our manager reference safely from the incoming snapshot
-	if source_or_context is CombatContext:
-		combat_manager = source_or_context.manager
-	
-	if combat_manager == null:
-		return
-
-	# Locate this hero's unique board slot anchor to map spatial/range rules
+func trigger_behavior_event(event_type: Enums.TriggerEvent, source_context: Variant, combat_manager: CombatManager) -> void:
+	if combat_manager == null: return
 	var local_hero_slot = combat_manager.hero_to_slot_map.get(self)
-	if local_hero_slot == null:
-		return
+	if local_hero_slot == null: return
 
-	# Iterate through active passive listeners
-	for i in behaviors:
-		var behavior_instance = behaviors[i]
+	# Zero searching loops! Fetches ONLY the explicit behaviors already sorted into this index
+	var active_listeners = event_listeners.get(event_type, [])
+	
+	for behavior in active_listeners:
+		var target_context = CombatContext.new(local_hero_slot, [], combat_manager)
+		target_context.targets = target_context.resolve_targets(behavior, combat_manager)
 		
-		if behavior_instance.has_method(event_name):
-			# 1. INDEPENDENT REACTION CONTEXT: Born completely blank and fresh!
-			# This is what behavior_instance will use to target its spells.
-			var reactive_context = CombatContext.new(local_hero_slot, [], combat_manager)
-			
-			# 2. AUTOMATION GATE: Because it is blank, this is guaranteed to execute, 
-			# matching Siphon Soul's blueprint settings (FRIEND, ALL, etc.) natively!
-			reactive_context.targets = reactive_context.resolve_targets(behavior_instance, combat_manager)
-			
-			# 3. THE TWO-ARGUMENT EMISSION: Pass the fresh targeting context AND the historical attack context data
-			behavior_instance.call(event_name, reactive_context, source_or_context)
+		# Directly route to the precise functional hook name inside your script documents
+		behavior.route_to_matching_hook(event_type, target_context, source_context)
 
 func get_stat(stat_type: Enums.StatType) -> Variant:
-	# 1. Establish the baseline nude stats
 	var calculated_stats = {
 		Enums.StatType.SPEED: float(hero_data.base_speed),
 		Enums.StatType.RANGE: float(hero_data.base_range),
@@ -206,35 +193,20 @@ func get_stat(stat_type: Enums.StatType) -> Variant:
 		Enums.StatType.MAX_HP: float(hero_data.base_HP),
 		Enums.StatType.CRIT: hero_data.base_crit_chance
 	}
-	
-	# 2. Automatically sweep behaviors for modifications
-	for b in get_behaviors():
-		# Direct data object reference (no method-string building required)
-		var data_res = b.data
-		if data_res.has_method("_execute_stat_modification"):
-			data_res._execute_stat_modification(calculated_stats)
-	
+	for b in stat_modifiers:
+		if b.data.has_method("_execute_stat_modification"):
+			b.data._execute_stat_modification(calculated_stats)
+			
 	var final_value = calculated_stats.get(stat_type, 0.0)
-	# 3. Enforce strict mechanical safety boundaries per stat type
 	match stat_type:
-		Enums.StatType.DAMAGE:
-			return int(maxf(1.0, final_value)) # Damage cannot drop below 1
-		Enums.StatType.SPEED:
-			return int(maxf(1.0, final_value)) # Speed cannot drop below 1 (prevents getting stuck or skipping turn queues)
+		Enums.StatType.DAMAGE, Enums.StatType.SPEED, Enums.StatType.MAX_HP:
+			return int(maxf(1.0, final_value))
 		Enums.StatType.RANGE:
 			return int(maxf(0.0, final_value))
-		Enums.StatType.MAX_HP:
-			return int(maxf(1.0, final_value)) # Max HP cannot drop below 1 (prevents instant unexplained deaths from debuffs)
 		Enums.StatType.CRIT:
-			return clampf(final_value, 0.0, 1.0)    # Returns clean float percent (e.g., 0.15)
-			
+			return clampf(final_value, 0.0, 1.0)
 	return final_value
-
-## Use this for modifying values (e.g., calculating damage)
-func old_apply_value_modifier(event_name: String, base_value) -> int:
-	var modified_value = base_value
-	for i in behaviors:
-		if behaviors[i].has_method(event_name):
-			## The 'call' method passes the current value and expects the modified value back
-			modified_value = behaviors[i].call(event_name, modified_value)
-	return modified_value
+	
+func get_behaviors() -> Array[Behavior]:
+	# Combines both for the UI layer to draw status icons smoothly
+	return active_passives + stat_modifiers

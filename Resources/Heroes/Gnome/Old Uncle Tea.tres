@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://6guw2yf8brt7"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_aagfh"]
-[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_aagfh"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_ypkay"]
-[ext_resource type="SpriteFrames" uid="uid://cpqlm47b1ka3e" path="res://Graphics/Hero Sprites/Gnome/old_uncle_tea_sprites.tres" id="4_aagfh"]
+[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_ypkay"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_ohxgk"]
+[ext_resource type="SpriteFrames" uid="uid://cpqlm47b1ka3e" path="res://Graphics/Hero Sprites/Gnome/old_uncle_tea_sprites.tres" id="4_4qw0a"]
 
 [resource]
-script = ExtResource("3_ypkay")
+script = ExtResource("3_ohxgk")
 tribe = 3
 base_HP = 32
 base_damage = 1
 base_speed = 20
 base_range = 3
-base_action = ExtResource("2_aagfh")
+base_action = ExtResource("2_ypkay")
 name = "Old Uncle Tea"
-sprites = ExtResource("4_aagfh")
+sprites = ExtResource("4_4qw0a")

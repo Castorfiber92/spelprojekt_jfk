@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://bnnjoip13th68"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_njnkk"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_njnkk"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_62lhn"]
-[ext_resource type="SpriteFrames" uid="uid://lap7hfddiymh" path="res://Graphics/Hero Sprites/Gnome/mushroom_gobbler_sprites.tres" id="4_njnkk"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_62lhn"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_v0isw"]
+[ext_resource type="SpriteFrames" uid="uid://lap7hfddiymh" path="res://Graphics/Hero Sprites/Gnome/mushroom_gobbler_sprites.tres" id="4_ea6nf"]
 
 [resource]
-script = ExtResource("3_62lhn")
+script = ExtResource("3_v0isw")
 tribe = 3
 base_HP = 35
 base_damage = 4
 base_speed = 10
 base_range = 1
-base_action = ExtResource("2_njnkk")
+base_action = ExtResource("2_62lhn")
 name = "Mushroom Gobbler"
-sprites = ExtResource("4_njnkk")
+sprites = ExtResource("4_ea6nf")

@@ -226,10 +226,15 @@ func generate_heroes():
 		# Define the path to the specific output directory and subfolder.
 		var save_path = tribe_dir.path_join(h_name.validate_filename() + ".tres")
 
-		# If the resource already exists, load it, otherwise create a new one
-		var res: HeroData = load(save_path) if FileAccess.file_exists(save_path) else HeroData.new()
+		# Keep ResourceLoader to prevent file-system locking conflicts!
+		var res: HeroData
+		if FileAccess.file_exists(save_path):
+			res = ResourceLoader.load(save_path, "", ResourceLoader.CACHE_MODE_IGNORE) as HeroData
 		
-		# Update the resources accordingly, we use clamp to make sure the values do not overextend
+		if res == null:
+			res = HeroData.new()
+			
+		# Update the resources accordingly
 		res.name = h_name
 		res.description = h_description
 		res.tribe = h_tribe
@@ -241,47 +246,47 @@ func generate_heroes():
 		res.base_range = clampi(h_rng, 1, 5)
 		res.base_crit_chance = h_crit
 		res.is_minion = h_minion
-		# --- FUNCTIONAL CHANGE: Find Base Action directly from optimized cache ---
 		res.base_action = find_behavior_globally(act_name)
 		
-		# Find Array of Abilities, we clear it so we don't add multiple instances of same abilities
-		# However, keep in mind this means that the array of abilities will always be overwrited
-		# When we use this tool
-		# --- FIX 1: Change to a relaxed, untyped temporary collector array ---
-		# This completely side-steps the tool-script constructor type-mismatch bug!
-		# 1. Initialize the temporary collector as a loose Array to stay safe inside tools
-		# 1. Initialize the array directly using the strict Typed Array Constructor syntax.
-		# This guarantees Godot builds the correct internal C++ metadata pointer layout immediately.
+		# Find Array of Abilities
 		var fresh_abilities: Array[BehaviorData] = []
 		
 		if abl_list != "":
 			for a_name in abl_list.split(","):
-				# Load generic file reference first
 				var behavior_res = find_behavior_globally(a_name.strip_edges())
 				
-				# 2. Check explicitly using 'is' statement
-				if behavior_res is BehaviorData:
-					# Push directly into our strongly typed array container
+				if behavior_res != null and behavior_res.get_script() != null:
 					fresh_abilities.append(behavior_res)
+				elif behavior_res is BehaviorData:
+					fresh_abilities.append(behavior_res)
+		
+		# ==============================================================================
+		# THE ULTIMATE OVERWRITE FIX:
+		# ==============================================================================
+		# Instead of modifying elements, we construct a completely fresh array layout.
+		# This assignment forces the change tracker to see the change, bypassing
+		# the C++ lock and cleanly forcing a hard disk rewrite!
+		res.abilities = fresh_abilities
 					
-		# 3. Clear and assign element-by-element if direct assignment hits a wall,
-		# or try direct assignment now that the metadata format is natively pristine:
-		res.abilities.clear()
-		for b in fresh_abilities:
-			res.abilities.append(b)
-					
-		# --- FUNCTIONAL CHANGE: Check if matching sprite file exists using optimized cache ---
+		# Check if matching sprite file exists using optimized cache
 		var sprite_filename: String = h_name.to_lower().replace(" ", "_") + "_sprites.tres"
 		if sprite_cache.has(sprite_filename):
 			res.sprites = load(sprite_cache[sprite_filename]) as SpriteFrames
 		else:
 			printerr("Sprite for ", h_name, " not found or mismatched string.")
-		# Save the resource
+			
+		# Save the resource securely
 		ResourceSaver.save(res, save_path)
 		print("Successfully Synced: ", h_name)
 			
 	# Close the file
 	file.close()
+	
+	# Cleanly refresh inspector layouts
+	var filesystem = EditorInterface.get_resource_filesystem()
+	filesystem.scan()
+	filesystem.scan_sources()
+	
 	print("--- Import Task Finished ---")
 
 func generate_compositions():
@@ -475,15 +480,13 @@ func run_composition_generation_loop() -> void:
 	print("============ COMPOSITION RESOURCE COMPILATION COMPLETE ============")
 	
 func find_behavior_globally(behavior_name: String) -> BehaviorData:
-	var cleaned_name: String = behavior_name.strip_edges().to_lower()
-	if cleaned_name == "": return null
-	
-	var target_filename: String = cleaned_name + ".tres"
-	
-	if behavior_cache.has(target_filename):
-		return load(behavior_cache[target_filename]) as BehaviorData
-			
-	printerr("Could not find Behavior resource: '", behavior_name, "'")
+	var file_lower = behavior_name.to_lower() + ".tres"
+	if behavior_cache.has(file_lower):
+		var file_path = behavior_cache[file_lower]
+		
+		# FIXED: Force Godot to ignore the editor cache when parsing the behavior data files!
+		return ResourceLoader.load(file_path, "", ResourceLoader.CACHE_MODE_IGNORE) as BehaviorData
+		
 	return null
 
 func _get_all_files_on_disk(path: String, file_list: Array[String]) -> void:
