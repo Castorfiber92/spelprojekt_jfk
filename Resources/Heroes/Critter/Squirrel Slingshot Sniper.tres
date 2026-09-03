@@ -7,7 +7,7 @@
 
 [resource]
 script = ExtResource("3_cer13")
-base_HP = 20
+base_HP = 10
 base_damage = 4
 base_speed = 10
 base_range = 1

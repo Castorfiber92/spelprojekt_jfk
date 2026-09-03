@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://binxrfkvnpmqq"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_wu58y"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_mmj3p"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_7bsb2"]
-[ext_resource type="SpriteFrames" uid="uid://b7h27lgci1lhk" path="res://Graphics/Hero Sprites/Undead/vampiric_crawler_sprites.tres" id="4_wu58y"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_5238w"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_3k4dr"]
+[ext_resource type="SpriteFrames" uid="uid://b7h27lgci1lhk" path="res://Graphics/Hero Sprites/Undead/vampiric_crawler_sprites.tres" id="4_wv25w"]
 
 [resource]
-script = ExtResource("3_7bsb2")
+script = ExtResource("3_3k4dr")
 tribe = 2
-base_HP = 35
+base_HP = 25
 base_damage = 3
 base_speed = 10
 base_range = 1
-base_action = ExtResource("2_mmj3p")
+base_action = ExtResource("2_5238w")
 name = "Vampiric crawler"
-sprites = ExtResource("4_wu58y")
+sprites = ExtResource("4_wv25w")

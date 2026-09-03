@@ -1,8 +1,6 @@
 extends PurchaseableData
 class_name BehaviorData
 
-@export_category("Event Settings")
-@export var trigger_event : Enums.TriggerEvent = Enums.TriggerEvent.ON_EXECUTE_ACTION
 @export_category("Type Settings")
 enum BehaviorType { PASSIVE, ACTIVE, BUFF, STAT }
 @export var type: BehaviorType = BehaviorType.PASSIVE

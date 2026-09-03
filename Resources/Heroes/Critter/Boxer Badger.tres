@@ -1,18 +1,18 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://beueq5pi0pxwf"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_e1afh"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_8cupc"]
-[ext_resource type="Resource" uid="uid://fq7jmuie3yr" path="res://Resources/Behaviors/Passive Abilities/Critter/mark.tres" id="3_e1afh"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_yomkm"]
-[ext_resource type="SpriteFrames" uid="uid://grbii4cwfivh" path="res://Graphics/Hero Sprites/Critter/boxer_badger_sprites.tres" id="4_808vy"]
+[ext_resource type="Resource" uid="uid://fq7jmuie3yr" path="res://Resources/Behaviors/Passive Abilities/Critter/mark.tres" id="2_bjlrg"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="3_m0w3a"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="4_v6ux5"]
+[ext_resource type="SpriteFrames" uid="uid://grbii4cwfivh" path="res://Graphics/Hero Sprites/Critter/boxer_badger_sprites.tres" id="5_psnpt"]
 
 [resource]
-script = ExtResource("3_yomkm")
-base_HP = 40
-base_damage = 4
-base_speed = 10
+script = ExtResource("4_v6ux5")
+base_HP = 25
+base_damage = 3
+base_speed = 20
 base_range = 1
-base_action = ExtResource("2_8cupc")
-abilities = Array[ExtResource("1_e1afh")]([ExtResource("3_e1afh")])
+base_action = ExtResource("3_m0w3a")
+abilities = Array[ExtResource("1_e1afh")]([ExtResource("2_bjlrg")])
 name = "Boxer Badger"
-sprites = ExtResource("4_808vy")
+sprites = ExtResource("5_psnpt")

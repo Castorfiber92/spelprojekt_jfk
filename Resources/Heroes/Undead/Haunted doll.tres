@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://cx4ofhhvsfflt"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_jcy6g"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_xdik6"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_nmtje"]
-[ext_resource type="SpriteFrames" uid="uid://xoygylqitkfi" path="res://Graphics/Hero Sprites/Undead/haunted_doll_sprites.tres" id="4_jcy6g"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_n26al"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_mq67a"]
+[ext_resource type="SpriteFrames" uid="uid://xoygylqitkfi" path="res://Graphics/Hero Sprites/Undead/haunted_doll_sprites.tres" id="4_recud"]
 
 [resource]
-script = ExtResource("3_nmtje")
+script = ExtResource("3_mq67a")
 tribe = 2
-base_HP = 50
+base_HP = 35
 base_damage = 1
 base_speed = 10
 base_range = 1
-base_action = ExtResource("2_xdik6")
+base_action = ExtResource("2_n26al")
 name = "Haunted doll"
-sprites = ExtResource("4_jcy6g")
+sprites = ExtResource("4_recud")

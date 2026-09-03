@@ -1,19 +1,20 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://2gs2cxqbmiy6"]
 
-[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_rlh8s"]
-[ext_resource type="Resource" uid="uid://4yoyq4q2e7ux" path="res://Resources/Behaviors/Passive Abilities/Orc/burn(troll_ranger).tres" id="2_3r4s8"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_tbtsd"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_hseww"]
-[ext_resource type="SpriteFrames" uid="uid://bco3rskbirb2q" path="res://Graphics/Hero Sprites/Orc/troll_ranger_sprites.tres" id="4_rlh8s"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_3r4s8"]
+[ext_resource type="Resource" uid="uid://4yoyq4q2e7ux" path="res://Resources/Behaviors/Passive Abilities/Orc/burn(troll_ranger).tres" id="2_rkcto"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="3_04w6k"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="4_88gl4"]
+[ext_resource type="SpriteFrames" uid="uid://bco3rskbirb2q" path="res://Graphics/Hero Sprites/Orc/troll_ranger_sprites.tres" id="5_ufhqt"]
 
 [resource]
-script = ExtResource("3_hseww")
+script = ExtResource("4_88gl4")
 tribe = 1
-base_HP = 20
-base_damage = 6
-base_speed = 10
-base_range = 1
-base_action = ExtResource("2_tbtsd")
-abilities = Array[ExtResource("1_rlh8s")]([ExtResource("2_3r4s8")])
+base_HP = 10
+base_damage = 3
+base_speed = 20
+base_range = 3
+base_crit_chance = 0.1
+base_action = ExtResource("3_04w6k")
+abilities = Array[ExtResource("1_3r4s8")]([ExtResource("2_rkcto")])
 name = "Troll Ranger"
-sprites = ExtResource("4_rlh8s")
+sprites = ExtResource("5_ufhqt")

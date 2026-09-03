@@ -1,16 +1,16 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://blrrb4xfi6wx6"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_scvy0"]
-[ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_scvy0"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_l5138"]
-[ext_resource type="SpriteFrames" uid="uid://bgypdq4niakri" path="res://Graphics/Hero Sprites/Critter/overworked_owl_sprites.tres" id="4_scvy0"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_l5138"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_jsk3k"]
+[ext_resource type="SpriteFrames" uid="uid://bgypdq4niakri" path="res://Graphics/Hero Sprites/Critter/overworked_owl_sprites.tres" id="4_qiasf"]
 
 [resource]
-script = ExtResource("3_l5138")
-base_HP = 26
-base_damage = 4
-base_speed = 60
+script = ExtResource("3_jsk3k")
+base_HP = 12
+base_damage = 2
+base_speed = 50
 base_range = 3
-base_action = ExtResource("2_scvy0")
+base_action = ExtResource("2_l5138")
 name = "Overworked Owl"
-sprites = ExtResource("4_scvy0")
+sprites = ExtResource("4_qiasf")

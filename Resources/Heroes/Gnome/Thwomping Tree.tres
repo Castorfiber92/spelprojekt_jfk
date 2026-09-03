@@ -1,17 +1,17 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://cawegf2bt8cnq"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_dd7jd"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_dd7jd"]
-[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_r8vqy"]
-[ext_resource type="SpriteFrames" uid="uid://ufcksl4cqqou" path="res://Graphics/Hero Sprites/Gnome/thwomping_tree_sprites.tres" id="4_dd7jd"]
+[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_r8vqy"]
+[ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_fv8m7"]
+[ext_resource type="SpriteFrames" uid="uid://ufcksl4cqqou" path="res://Graphics/Hero Sprites/Gnome/thwomping_tree_sprites.tres" id="4_b61tk"]
 
 [resource]
-script = ExtResource("3_r8vqy")
+script = ExtResource("3_fv8m7")
 tribe = 3
 base_HP = 40
 base_damage = 8
 base_speed = 5
 base_range = 1
-base_action = ExtResource("2_dd7jd")
+base_action = ExtResource("2_r8vqy")
 name = "Thwomping Tree"
-sprites = ExtResource("4_dd7jd")
+sprites = ExtResource("4_b61tk")

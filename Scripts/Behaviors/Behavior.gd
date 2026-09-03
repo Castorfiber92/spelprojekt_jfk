@@ -18,16 +18,51 @@ static func create(_data : BehaviorData) -> Behavior:
 	instance.current_stacks = _data.base_stacks
 	return instance
 
-# Hook connection entry points mapped dynamically by the CombatManager
-func on_execute_action(context: CombatContext, trigger_data: Variant = null): _check_trigger("on_execute_action", context, trigger_data)
-func on_start_of_battle(context: CombatContext, trigger_data: Variant = null): _check_trigger("on_start_of_battle", context, trigger_data)
-func on_turn_start(context: CombatContext, trigger_data: Variant = null):     _check_trigger("on_turn_start", context, trigger_data)
-func on_turn_end(context: CombatContext, trigger_data: Variant = null):       _check_trigger("on_turn_end", context, trigger_data)
-func on_attack(context: CombatContext, trigger_data: Variant = null):         _check_trigger("on_attack", context, trigger_data)
-func on_damage_dealt(context: CombatContext, trigger_data: Variant = null):   _check_trigger("on_damage_dealt", context, trigger_data)
-func on_damage_taken(context: CombatContext, trigger_data: Variant = null):   _check_trigger("on_damage_taken", context, trigger_data)
-func on_death(context: CombatContext, trigger_data: Variant = null):          _check_trigger("on_death", context, trigger_data)
-func on_round_end(context: CombatContext, trigger_data: Variant = null):      _check_trigger("on_round_end", context, trigger_data)
+# --- CLEANED DIRECT PASS-THROUGH HOOKS ---
+func route_to_matching_hook(event_type: Enums.TriggerEvent, context: CombatContext, history: Variant) -> void:
+	match event_type:
+		# FIXED: Calls the local pass-through hook on 'self', which cleanly passes 
+		# the context, the runtime instance, and the history down to your scripts!
+		Enums.TriggerEvent.ON_EXECUTE_ACTION: on_execute_action(context, history)
+		Enums.TriggerEvent.ON_START_OF_BATTLE: on_start_of_battle(context, history)
+		Enums.TriggerEvent.ON_TURN_START: on_turn_start(context, history)
+		Enums.TriggerEvent.ON_TURN_END: on_turn_end(context, history)
+		Enums.TriggerEvent.ON_ATTACK: on_attack(context, history)
+		Enums.TriggerEvent.ON_DAMAGE_DEALT: on_damage_dealt(context, history)
+		Enums.TriggerEvent.ON_DAMAGE_TAKEN: on_damage_taken(context, history)
+		Enums.TriggerEvent.ON_DEATH: on_death(context, history)
+		Enums.TriggerEvent.ON_ROUND_END: on_round_end(context, history)
+
+# ==============================================================================
+# Direct Pass-Through Event Hooks
+# ==============================================================================
+func on_execute_action(context: CombatContext, history: Variant = null) -> void: 
+	if data.has_method("on_execute_action"): data.on_execute_action(context, self, history)
+
+func on_start_of_battle(context: CombatContext, history: Variant = null) -> void: 
+	if data.has_method("on_start_of_battle"): data.on_start_of_battle(context, self, history)
+
+func on_turn_start(context: CombatContext, history: Variant = null) -> void:     
+	if data.has_method("on_turn_start"): data.on_turn_start(context, self, history)
+
+func on_turn_end(context: CombatContext, history: Variant = null) -> void:       
+	if data.has_method("on_turn_end"): data.on_turn_end(context, self, history)
+
+func on_attack(context: CombatContext, history: Variant = null) -> void:         
+	if data.has_method("on_attack"): data.on_attack(context, self, history)
+
+func on_damage_dealt(context: CombatContext, history: Variant = null) -> void:   
+	if data.has_method("on_damage_dealt"): data.on_damage_dealt(context, self, history)
+
+func on_damage_taken(context: CombatContext, history: Variant = null) -> void:   
+	if data.has_method("on_damage_taken"): data.on_damage_taken(context, self, history)
+
+func on_death(context: CombatContext, history: Variant = null) -> void:          
+	if data.has_method("on_death"): data.on_death(context, self, history)
+
+func on_round_end(context: CombatContext, history: Variant = null) -> void:      
+	if data.has_method("on_round_end"): data.on_round_end(context, self, history)
+
 
 func modify_outgoing_effect(effect : CombatEffect):
 # Path A: Gated flow. If the resource implements 'modify_outgoing_effect', 
@@ -99,49 +134,27 @@ func _execute_behavior_payload(context: CombatContext,trigger_data):
 		data._execute_behavior_payload_override(context, self, trigger_data)
 
 func roll_crit_local(checking_hero: Hero, main_action_crit: bool = false) -> bool:
-	# Gate 1: Check independent random proc chance
-	if data.proc_chance < 1.0 and randf() > data.proc_chance:
-		return false
-		
-	# Gate 2: Evaluate the Innate Roll if required
+	if data.proc_chance < 1.0 and randf() > data.proc_chance: return false
 	var rolled_innate: bool = randf() < checking_hero.get_stat(Enums.StatType.CRIT)
-	
-	# --- THE FIX FOR PIPELINE HARMONY ---
-	# If main_action_crit is passed, use it. If not (like a poison tick), fallback to rolled_innate!
 	var critical_to_check: bool = main_action_crit if main_action_crit != false else rolled_innate
+	if data.trigger_on_innate_crit and not critical_to_check: return false
 	
-	# Gate 3: Check if the Innate gate blocks it completely
-	if data.trigger_on_innate_crit and not critical_to_check:
-		return false
-		
-	# --- THE STREAMLINED CRIT VERDICT ---
-	var is_local_crit: bool = data.force_critical_strike or \
-							  (data.trigger_on_innate_crit and critical_to_check) or \
-							  (not data.trigger_on_innate_crit and data.proc_chance == 1.0 and rolled_innate)
-	return is_local_crit
+	return data.force_critical_strike or \
+		   (data.trigger_on_innate_crit and critical_to_check) or \
+		   (not data.trigger_on_innate_crit and data.proc_chance == 1.0 and rolled_innate)
 
-func create_effect(effect_type: Script, target_slot: HeroSlot, effect_owner: Hero, source_slot: HeroSlot) -> Variant:
+func create_effect(effect_type: Script, target_slot: HeroSlot, source_slot: HeroSlot) -> CombatEffect:
 	var effect = effect_type.new() as CombatEffect
 	effect.source = source_slot
 	effect.target = target_slot
-	
-	# to keep variable names clean and safe.
-	effect.effect_owner = effect_owner 
-	
+	effect.effect_owner = owner_hero 
 	effect.animation = data.animation
 	effect.animation_duration = data.animation_duration
 	
-	# FIX 2: Convert the raw data templates into runtime Behavior instances!
 	for data_template in data.behaviors_to_apply:
-		if data_template == null: 
-			continue
+		if data_template != null:
+			effect.buffs.append(Behavior.create(data_template))
 			
-		# Create a fresh, pristine runtime instance using your engine-safe factory method
-		var runtime_buff = Behavior.create(data_template)
-		
-		# Now it matches your Array[Behavior] perfectly! No type mismatch, no file corruption.
-		effect.buffs.append(runtime_buff)
-		
 	return effect
 
 

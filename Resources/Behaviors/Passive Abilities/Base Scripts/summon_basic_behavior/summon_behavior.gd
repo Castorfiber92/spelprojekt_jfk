@@ -4,24 +4,24 @@ class_name SummonBehavior
 @export_group("Summon Settings")
 @export var hero_to_summon : HeroData
 
-func _execute_behavior_payload_override(context: CombatContext, executor: Behavior, attack_history: Variant = null):
+func on_death(combatContext: CombatContext, executor: Behavior, attack_history: Variant = null) -> void:
+	print("ANYBODY HERE?")
 	if hero_to_summon == null: return
 	
 	var runtime_owner = executor.owner_hero
-	# Your stack processor passes the death slot straight out as context.source!
-	var caster_slot = context.source 
+	var caster_slot = combatContext.source 
 	
-	# Instantiate the effect wrapper using the death slot as the source anchor
-	var effect = executor.create_effect(SummonEffect, null, runtime_owner, caster_slot) as SummonEffect
+	# This commands the SummonEffect to safely occupy the exact grid slot left behind by the death.
+	var effect = executor.create_effect(SummonEffect, caster_slot, caster_slot) as SummonEffect
 	
 	if effect:
 		effect.hero_to_summon = hero_to_summon
 		
-		# SAFEGUARD: Cache the team alignment from the snapshot before it is wiped!
+		# Caches the team assignment smoothly from the snapshot
 		if runtime_owner:
 			effect.cached_team = runtime_owner.team
 		else:
-			# Fallback fallback layout mapping check
+			# Fallback if slot tracking is already clearing
 			effect.cached_team = caster_slot.team
 			
 		GameEvents.effect_created.emit(effect)
