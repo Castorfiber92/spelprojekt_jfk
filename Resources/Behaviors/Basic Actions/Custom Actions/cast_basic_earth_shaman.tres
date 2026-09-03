@@ -7,7 +7,7 @@
 [resource]
 script = ExtResource("2_cjr1e")
 action_profile = 1
-target_type = 3
+target_type = 4
 range = 3
 crit_multiplier = 2.0
 trigger_on_innate_crit = true

@@ -4,7 +4,7 @@ class_name BehaviorData
 @export_category("Event Settings")
 @export var trigger_event : Enums.TriggerEvent = Enums.TriggerEvent.ON_EXECUTE_ACTION
 @export_category("Type Settings")
-enum BehaviorType { PASSIVE, ACTIVE, BUFF }
+enum BehaviorType { PASSIVE, ACTIVE, BUFF, STAT }
 @export var type: BehaviorType = BehaviorType.PASSIVE
 enum BehaviorTag {NEUTRAL, BURN, FREEZE, POISON, MARK, STUN, CURSE, ARMOR, POWER}
 @export_category("Basic Settings")

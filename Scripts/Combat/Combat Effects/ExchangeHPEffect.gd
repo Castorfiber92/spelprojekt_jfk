@@ -15,10 +15,12 @@ func execute(_manager) -> CombatContext:
 	var stolen_hp = target.hero.current_HP
 	
 	# 2. swap hp to the source's hp
-	target.hero.current_HP = old_source_hp
+	var target_max_hp = target.hero.get_stat(Enums.StatType.MAX_HP)
+	target.hero.current_HP = clampi(old_source_hp, 0, target_max_hp)
 	
 	# 3. set the source's hp
-	source.hero.current_HP = clampi(stolen_hp, 0, source.hero.maximum_HP)
+	var source_max_hp = source.hero.get_stat(Enums.StatType.MAX_HP)
+	source.hero.current_HP = clampi(stolen_hp, 0, source_max_hp)
 	
 	return
 
@@ -34,4 +36,3 @@ func present(manager: CombatManager):
 	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing
 		await manager.get_tree().process_frame
-	await manager.get_tree().create_timer(0.10).timeout

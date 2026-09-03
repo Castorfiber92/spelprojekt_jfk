@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ModifyStatModifier" format=3 uid="uid://c1o4hvrsdmv13"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_sy4rl"]
+[ext_resource type="Script" uid="uid://cul2c1n0c1x4j" path="res://Resources/Behaviors/Passive Abilities/Base Scripts/modify_stat_modifier/modify_stat_modifier.gd" id="2_m0efa"]
+
+[resource]
+script = ExtResource("2_m0efa")
+target_stat = 2
+flat_modifier = -1.0
+type = 3
+animation = ""
+animation_duration = 0.0
+name = "-1 Damage"
+metadata/_custom_type_script = "uid://cul2c1n0c1x4j"

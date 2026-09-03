@@ -8,6 +8,7 @@ var player_slots : Array[HeroSlot]
 var enemy_slots : Array[HeroSlot]
 @export var active_slot : HeroSlot
 
+const EFFECT_BUFFER_DURATION: float = 0.10
 # For death handling
 class DeathEventData:
 	var dead_hero: Hero
@@ -123,7 +124,7 @@ func get_next_acting_hero() -> HeroSlot:
 		return null
 		
 	candidates.shuffle()
-	candidates.sort_custom(func(a, b): return a.hero.current_speed > b.hero.current_speed)
+	candidates.sort_custom(func(a, b): return a.hero.get_stat(Enums.StatType.SPEED) > b.hero.get_stat(Enums.StatType.SPEED))
 	return candidates[0]
 	
 func update_UI():
@@ -167,7 +168,8 @@ func process_stack() -> void:
 		check_and_process_deaths()
 		await get_tree().process_frame
 		update_UI()
-
+		await get_tree().create_timer(EFFECT_BUFFER_DURATION).timeout
+		
 	is_processing = false
 
 func check_and_process_deaths() -> void:

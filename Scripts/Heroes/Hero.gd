@@ -5,11 +5,11 @@ var hero_data : HeroData
 var current_tier : HeroData.HeroTier
 var current_HP : int
 var maximum_HP : int
-var current_damage : int
-#var current_spellpower : int
-var current_speed : int
-var current_range : int
-var current_crit_chance : float
+#var current_damage : int OBSOLETE
+#var current_spellpower : int OBSOLETE
+#var current_speed : int OBSOLETE
+#var current_range : int OBSOLETE
+#var current_crit_chance : float OBSOLETE
 @export var team: Enums.Team = Enums.Team.FRIEND
 
 var has_acted = false
@@ -46,11 +46,12 @@ func prepare_for_combat():
 
 func reset_temporary_data():
 	current_HP = hero_data.base_HP
-	maximum_HP = current_HP
-	current_damage = hero_data.base_damage
-	current_speed = hero_data.base_speed
-	current_range = hero_data.base_range
-	current_crit_chance = hero_data.base_crit_chance
+	maximum_HP = current_HP ## This probably needs changes since we are using the new get_data, so it gets updated
+	## properly outside of combat and before combat etc if you have permanent items and not just temporary buffs
+	#current_damage = hero_data.base_damage OBSOLETE
+	#current_speed = hero_data.base_speed OBSOLETE
+	#current_range = hero_data.base_range OBSOLETE
+	#current_crit_chance = hero_data.base_crit_chance OBSOLETE
 	has_acted = false
 	#current_spellpower = hero_data.base_spellpower
 	
@@ -68,7 +69,8 @@ func take_damage(damage : int, source : HeroSlot) -> Dictionary:
 	var old_hp = current_HP
 	print (self.hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name)
 	# 1. Apply the damage math cleanly
-	current_HP -= damage
+	var active_max_hp = get_stat(Enums.StatType.MAX_HP)
+	current_HP = clamp(current_HP - damage, 0, active_max_hp)
 	
 	# 2. Return a pure, synchronous data snapshot back to the DamageEffect
 	return {
@@ -78,10 +80,11 @@ func take_damage(damage : int, source : HeroSlot) -> Dictionary:
 		
 func heal_HP(value : int, source : HeroSlot) -> Dictionary:
 	var old_hp = current_HP
-	current_HP = clamp(current_HP + value, 0, maximum_HP)
+	var active_max_hp = get_stat(Enums.StatType.MAX_HP)
+	current_HP = clamp(current_HP + value, 0, active_max_hp)
 	return {
 		"value": value,
-		"was_fullheal" : current_HP == maximum_HP
+		"was_fullheal" : current_HP == active_max_hp
 	}
 
 func can_act() -> bool:
@@ -99,12 +102,21 @@ func add_behavior(new_behavior: Behavior):
 		return false
 		
 	var behavior_name = new_behavior.data.name
+	new_behavior.owner_hero = self
+	
+	if new_behavior.data.type == BehaviorData.BehaviorType.STAT:
+		# Generate a unique dictionary key string using Godot's built-in object ID hashes
+		var unique_key = str(behavior_name, "_", new_behavior.get_instance_id()) 
+		## WARNING
+		# The get_instance_id() is temporary, it shouldn't be a problem as we reload all the behaviors
+		# upon loading the game or resetting the game, but I'm leaving this comment just in case
+		behaviors[unique_key] = new_behavior
+		return true
 	
 	## We check if the dictionary of active_behaviors does NOT already have the behavior (i.e. if the Hero 
 	## already has crit for example, we don't want to add another instance of the same identical behavior.)
 	if behaviors.has(behavior_name) == false:
 		## If it's not already in the list, add it.
-		new_behavior.owner_hero = self
 		behaviors[behavior_name] = new_behavior
 		return true
 	else:
@@ -128,19 +140,28 @@ func add_behavior(new_behavior: Behavior):
 		print("Behavior " + new_behavior.data.name + "already exists in the dict.")
 		return false
 		
-func remove_behavior(behavior_instance: Behavior):
+func remove_behavior(behavior_instance: Behavior) -> void:
 	if behavior_instance == null or behavior_instance.data == null:
 		return
-	## Check if the behavior exists in the dictionary
-	## we might want to change this so that it checks for the specific behavior instead of string
-	var behavior_key: String = behavior_instance.data.name
-	_deferred_remove.call_deferred(behavior_key)
+		
+	var base_name: String = behavior_instance.data.name
+	var target_key: String = base_name
+	
+	# 1. Reconstruct the identical dynamic key pattern if this is a stat behavior
+	if behavior_instance.data.type == BehaviorData.BehaviorType.STAT:
+		target_key = str(base_name, "_", behavior_instance.get_instance_id())
+		
+	# 2. Defer the removal execution cleanly using the corrected key string
+	_deferred_remove.call_deferred(target_key, behavior_instance)
 
 
-func _deferred_remove(behavior_key: String):
+func _deferred_remove(behavior_key: String, behavior_instance: Behavior) -> void:
+	# 3. Double-check for absolute safety before removing from the map
 	if behaviors.has(behavior_key):
-		behaviors.erase(behavior_key)
-		behavior_removed.emit() # Notify UI or game listeners cleanly
+		# Verify it's the exact same object reference if accessing unique global slots
+		if behaviors[behavior_key] == behavior_instance:
+			behaviors.erase(behavior_key)
+			behavior_removed.emit() # Notify UI or game listeners cleanly
 
 func get_behaviors():
 	return behaviors.values()
@@ -176,13 +197,13 @@ func trigger_behavior_event(event_type : Enums.TriggerEvent, source_or_context: 
 			# 3. THE TWO-ARGUMENT EMISSION: Pass the fresh targeting context AND the historical attack context data
 			behavior_instance.call(event_name, reactive_context, source_or_context)
 
-func get_stat(stat_type: Enums.StatType) -> int:
+func get_stat(stat_type: Enums.StatType) -> Variant:
 	# 1. Establish the baseline nude stats
 	var calculated_stats = {
-		Enums.StatType.SPEED: hero_data.base_speed,
-		Enums.StatType.RANGE: hero_data.base_range,
-		Enums.StatType.DAMAGE: hero_data.base_damage,
-		Enums.StatType.MAX_HP: hero_data.base_HP,
+		Enums.StatType.SPEED: float(hero_data.base_speed),
+		Enums.StatType.RANGE: float(hero_data.base_range),
+		Enums.StatType.DAMAGE: float(hero_data.base_damage),
+		Enums.StatType.MAX_HP: float(hero_data.base_HP),
 		Enums.StatType.CRIT: hero_data.base_crit_chance
 	}
 	
@@ -192,11 +213,25 @@ func get_stat(stat_type: Enums.StatType) -> int:
 		var data_res = b.data
 		if data_res.has_method("_execute_stat_modification"):
 			data_res._execute_stat_modification(calculated_stats)
+	
+	var final_value = calculated_stats.get(stat_type, 0.0)
+	# 3. Enforce strict mechanical safety boundaries per stat type
+	match stat_type:
+		Enums.StatType.DAMAGE:
+			return int(maxf(1.0, final_value)) # Damage cannot drop below 1
+		Enums.StatType.SPEED:
+			return int(maxf(1.0, final_value)) # Speed cannot drop below 1 (prevents getting stuck or skipping turn queues)
+		Enums.StatType.RANGE:
+			return int(maxf(0.0, final_value))
+		Enums.StatType.MAX_HP:
+			return int(maxf(1.0, final_value)) # Max HP cannot drop below 1 (prevents instant unexplained deaths from debuffs)
+		Enums.StatType.CRIT:
+			return clampf(final_value, 0.0, 1.0)    # Returns clean float percent (e.g., 0.15)
 			
-	# 3. Safely return the requested stat type
-	return calculated_stats.get(stat_type, 0)
+	return final_value
+
 ## Use this for modifying values (e.g., calculating damage)
-func apply_value_modifier(event_name: String, base_value) -> int:
+func old_apply_value_modifier(event_name: String, base_value) -> int:
 	var modified_value = base_value
 	for i in behaviors:
 		if behaviors[i].has_method(event_name):

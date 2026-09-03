@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="status_curse_basic_behavior" format=3 uid="uid://6587xlssfxrs"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_r73yg"]
+[ext_resource type="Resource" uid="uid://c1o4hvrsdmv13" path="res://Resources/Behaviors/Passive Abilities/Undead/damage(-1).tres" id="2_git8h"]
+[ext_resource type="Script" uid="uid://b7nodxm8x8xc2" path="res://Resources/Behaviors/Effects/Debuffs/Base Scripts/status_curse_basic.gd" id="2_iiqku"]
+
+[resource]
+script = ExtResource("2_iiqku")
+trigger_event = 8
+type = 2
+base_stacks = 1
+tag = 6
+behaviors_to_apply = Array[ExtResource("1_r73yg")]([ExtResource("2_git8h")])
+metadata/_custom_type_script = "uid://b7nodxm8x8xc2"

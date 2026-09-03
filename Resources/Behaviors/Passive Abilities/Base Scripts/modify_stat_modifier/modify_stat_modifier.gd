@@ -1,5 +1,5 @@
 extends BehaviorData
-
+class_name ModifyStatModifier
 # This is if an ability or item should lower the raw stats by x amount, use the modify_value_modifier if you
 # want to modify the value of an COMBATEFFECT
 
