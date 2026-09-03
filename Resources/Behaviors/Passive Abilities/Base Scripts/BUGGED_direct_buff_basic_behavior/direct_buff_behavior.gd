@@ -4,7 +4,7 @@ class_name DirectBuffBehavior
 ## triggering behaviors, keep one action to one unit.
 func _execute_behavior_payload_override(combatContext: CombatContext, executor: Behavior):
 	var source_slot = combatContext.source
-	var rolled_a_crit: bool = randf() < source_slot.hero.current_crit_chance
+	var rolled_a_crit: bool = randf() < source_slot.hero.get_stat(Enums.StatType.CRIT)
 	var runtime_owner = executor.owner_hero
 	for target in combatContext.targets:
 		var effect = executor.create_effect(BuffEffect, target, runtime_owner, source_slot) as CombatEffect

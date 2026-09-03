@@ -7,7 +7,7 @@ enum ActionType { ATTACK, CAST }
 # We add '_executor: Behavior' as a parameter to safely proxy runtime operations
 func _execute_behavior_payload_override(combatContext: CombatContext, executor: Behavior, attack_history: Variant = null):
 	var source_slot = combatContext.source
-	var rolled_a_crit: bool = randf() < source_slot.hero.current_crit_chance
+	var rolled_a_crit: bool = randf() < source_slot.hero.get_stat(Enums.StatType.CRIT)
 	var runtime_owner = executor.owner_hero
 	for target in combatContext.targets:
 		match action_profile:
@@ -15,7 +15,7 @@ func _execute_behavior_payload_override(combatContext: CombatContext, executor: 
 				# Use the runtime executor instance to access factory methods and unique ownership details
 				var effect = executor.create_effect(DamageEffect, target, runtime_owner, source_slot) as CombatEffect
 				effect.is_crit = rolled_a_crit
-				var final_damage = source_slot.hero.current_damage
+				var final_damage = source_slot.hero.get_stat(Enums.StatType.DAMAGE)
 				if rolled_a_crit:
 					# We read crit_multiplier cleanly from the local resource instance properties
 					final_damage = int(final_damage * crit_multiplier)

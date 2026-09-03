@@ -88,8 +88,10 @@ func update_info():
 		##If there is, we convert the correct variables to strings and update the information
 		##First, we show the labels again
 		toggle_visibility()
-		hp_label.text = str(hero.current_HP)
-		damage_label.text = str(hero.current_damage)
+		var max_health = hero.current_HP
+		hp_label.text = str(max_health)
+		var dynamic_damage = hero.get_stat(Enums.StatType.DAMAGE)
+		damage_label.text = str(dynamic_damage)
 		name_label.text = hero.hero_data.name
 		update_buff_slots()
 

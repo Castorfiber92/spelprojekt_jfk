@@ -26,4 +26,3 @@ func present(manager: CombatManager) -> void:
 	else:
 		# Fallback delay so the coroutine loop doesn't snap if the target is missing
 		await manager.get_tree().process_frame
-	await manager.get_tree().create_timer(0.10).timeout

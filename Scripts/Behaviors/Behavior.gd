@@ -104,7 +104,7 @@ func roll_crit_local(checking_hero: Hero, main_action_crit: bool = false) -> boo
 		return false
 		
 	# Gate 2: Evaluate the Innate Roll if required
-	var rolled_innate: bool = randf() < checking_hero.current_crit_chance
+	var rolled_innate: bool = randf() < checking_hero.get_stat(Enums.StatType.CRIT)
 	
 	# --- THE FIX FOR PIPELINE HARMONY ---
 	# If main_action_crit is passed, use it. If not (like a poison tick), fallback to rolled_innate!
@@ -143,10 +143,7 @@ func create_effect(effect_type: Script, target_slot: HeroSlot, effect_owner: Her
 		effect.buffs.append(runtime_buff)
 		
 	return effect
-	
-func modify_range(value: int) -> int: return value
-func modify_defense(value: int) -> int: return value
-func modify_speed(value: int) -> int: return value
+
 
 ##Below we will have functions for every event we want to check
 ##which means on_hit, on_death, on_taking_damage etc etc.
@@ -170,8 +167,8 @@ func get_reachable_targets(source: HeroSlot, candidates: Array[HeroSlot]) -> Arr
 		if b.has_method("modify_initial_targets"):
 			active_candidates = b.call("modify_initial_targets", active_candidates, source)
 		
-	var r = data.range if data.range > 0 else owner_hero.current_range
-	var action_range = owner_hero.get_stat(Enums.StatType.SPEED)
+	var r = data.range if data.range > 0 else owner_hero.get_stat(Enums.StatType.RANGE)
+	var action_range = owner_hero.get_stat(Enums.StatType.RANGE)
 	
 	var reachables: Array[HeroSlot] = []
 	
@@ -304,13 +301,3 @@ func get_distance(source: HeroSlot, target_slot: HeroSlot) -> int:
 	
 	# Frontline (indexes 0, 1) is distance 1. Backline (2, 3, 4) is distance 2.
 	return 1 if target_slot.index <= 1 else 2
-
-# This is to check whether there are stats indepent from specific behaviors. Such as flat increases
-func get_modified_stat(hero: Hero, stat_name: String, base_value: int) -> int:
-	var modified_value = base_value
-	var hook_name = "modify_" + stat_name # e.g., "modify_range"
-	
-	for b in hero.get_behaviors():
-		if b.has_method(hook_name):
-			modified_value = b.call(hook_name, modified_value)
-	return modified_value

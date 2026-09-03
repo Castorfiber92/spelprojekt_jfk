@@ -52,7 +52,7 @@ func display_item(new_item: Variant) -> void:
 				sprite.texture = slot_item.hero_data.sprites.get_frame_texture("idle", 0)
 			
 			# Pull live combat stats straight from the active Node!
-			dmg_label.text = str(slot_item.current_damage)
+			dmg_label.text = str(slot_item.get_stat(Enums.StatType.DAMAGE))
 			hp_label.text = str(slot_item.current_HP) 
 	else:
 		clear_slot()
