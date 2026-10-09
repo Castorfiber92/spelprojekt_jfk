@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Enchantment" format=3 uid="uid://cl6rbavd1pvnt"]
+
+[ext_resource type="Script" uid="uid://b2iiuk1jfjhnt" path="res://Scripts/Enchantments/Enchantment.gd" id="1_shmpg"]
+
+[resource]
+script = ExtResource("1_shmpg")
+type = 1
+stacks = 2
+metadata/_custom_type_script = "uid://b2iiuk1jfjhnt"

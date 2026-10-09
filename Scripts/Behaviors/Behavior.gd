@@ -4,6 +4,7 @@ class_name Behavior
 var data: BehaviorData # Holds our configuration parameters safely
 var owner_hero: Hero   # Unique runtime owner, completely safe from overwrites!
 var current_stacks: int
+var status_type: Enums.StatusType
 
 static func create(_data : BehaviorData) -> Behavior:
 	var instance = Behavior.new()

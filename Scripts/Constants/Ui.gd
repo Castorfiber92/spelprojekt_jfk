@@ -3,14 +3,14 @@ extends Node
 # (Change the Rect2 coordinates to whatever generic frame icon you want to use)
 const BUFF_REGIONS = {
 	"neutral_icon": Rect2(166, 55, 236, 252), # Fallback frame
-	"burn_icon": Rect2(166, 55, 236, 252), 
-	"freeze_icon": Rect2(447, 57, 251, 249),
-	"poison_icon": Rect2(442,345,248,268),
-	"mark_icon": Rect2(758, 81, 231, 213),
-	"stun_icon": Rect2(1036, 83, 262, 211),
-	"curse_icon": Rect2(752,659,269,238),
-	"armor_icon": Rect2(183,661,261,241),
-	"power_icon": Rect2(730,374,276,234)
+	"burned_icon": Rect2(166, 55, 236, 252), 
+	"frozen_icon": Rect2(447, 57, 251, 249),
+	"poisoned_icon": Rect2(442,345,248,268),
+	"marked_icon": Rect2(758, 81, 231, 213),
+	"stunned_icon": Rect2(1036, 83, 262, 211),
+	"cursed_icon": Rect2(752,659,269,238),
+	"armored_icon": Rect2(183,661,261,241),
+	"powered_icon": Rect2(730,374,276,234)
 }
 
 const EVENT_ICON_REGIONS = {

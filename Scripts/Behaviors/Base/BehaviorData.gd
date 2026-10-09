@@ -4,7 +4,6 @@ class_name BehaviorData
 @export_category("Type Settings")
 enum BehaviorType { PASSIVE, ACTIVE, BUFF, STAT }
 @export var type: BehaviorType = BehaviorType.PASSIVE
-enum BehaviorTag {NEUTRAL, BURN, FREEZE, POISON, MARK, STUN, CURSE, ARMOR, POWER}
 @export_category("Basic Settings")
 @export var value = 0
 @export var min_value = 0
@@ -30,6 +29,6 @@ enum BehaviorTag {NEUTRAL, BURN, FREEZE, POISON, MARK, STUN, CURSE, ARMOR, POWER
 @export_category("Buff Settings")
 @export var base_stacks: int = 0 # 0 if not applicable
 @export var add_stacks : bool = true # false if the applied buff shouldn't increase existing stacks of same effect
-@export var tag : BehaviorTag = BehaviorTag.NEUTRAL
+@export var status_type : Enums.StatusType = Enums.StatusType.NEUTRAL
 @export var blocks_action : bool = false
 @export var behaviors_to_apply: Array[BehaviorData] = []

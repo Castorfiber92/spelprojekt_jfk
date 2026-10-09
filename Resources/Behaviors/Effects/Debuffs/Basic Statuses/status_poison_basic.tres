@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="status_poison_basic_behavior" format=3 uid="uid://c3els8cg05vxu"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_5vs7v"]
+[ext_resource type="Script" uid="uid://db676k8rgelcr" path="res://Resources/Behaviors/Effects/Debuffs/Base Scripts/status_poison_basic.gd" id="2_agtvf"]
+
+[resource]
+script = ExtResource("2_agtvf")
+type = 2
+target_team = 2
+animation = ""
+base_stacks = 1
+status_type = 3
+name = "Poisoned"
+metadata/_custom_type_script = "uid://db676k8rgelcr"

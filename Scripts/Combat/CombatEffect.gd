@@ -9,13 +9,14 @@ var animation : String
 var animation_duration : float
 var tags: Array[String] = [] # ["fire", "thorns", "melee"]
 var buffs: Array[Behavior] = []
+var enchantments: Array[Enchantment] = []
 	
 # Flags for items to flip, these can be anything, and will need to be updated, but right now
 # they are only placeholders, might not even use this
 var is_crit: bool = false
 var bypass_armor: bool = false
 
-func _init(_source: HeroSlot = null, _effect_owner: Hero = null, _target: HeroSlot = null, _value: int = 0, _animation: String = "", _animation_duration: float = 0.15, _buffs: Array[Behavior] = []):
+func _init(_source: HeroSlot = null, _effect_owner: Hero = null, _target: HeroSlot = null, _value: int = 0, _animation: String = "", _animation_duration: float = 0.15, _buffs: Array[Behavior] = [],_enchantments: Array[Enchantment] = []):
 	source = _source
 	effect_owner = _effect_owner
 	target = _target
@@ -23,6 +24,7 @@ func _init(_source: HeroSlot = null, _effect_owner: Hero = null, _target: HeroSl
 	animation = _animation
 	animation_duration = _animation_duration
 	buffs = _buffs
+	enchantments = _enchantments
 	
 ## Overridden by children to execute data changes instantly
 func execute(_manager: CombatManager) -> void:
@@ -32,3 +34,23 @@ func execute(_manager: CombatManager) -> void:
 func present(_manager: CombatManager) -> void:
 	# Fallback safety timeline hold
 	await _manager.get_tree().create_timer(0.01).timeout
+	
+func add_or_stack_status(status_type: Enums.StatusType, stacks_to_add: int = 1) -> void:
+	var existing_status = _find_status_by_type(status_type)
+	
+	if existing_status != null:
+		# If its a match, increment the stacks
+		existing_status.current_stacks += stacks_to_add
+	else:
+		# No match. Instantiate a fresh status and append it
+		var base_data = Maps.get_status_from_type(status_type)
+		var behavior_runtime = Behavior.create(base_data)
+		behavior_runtime.current_stacks = stacks_to_add
+		buffs.append(behavior_runtime)
+
+# Helper function to scan the buff array for a matching identity type
+func _find_status_by_type(status_type: Enums.StatusType) -> Variant:
+	for b in buffs:
+		if b.status_type == status_type:
+			return b
+	return null

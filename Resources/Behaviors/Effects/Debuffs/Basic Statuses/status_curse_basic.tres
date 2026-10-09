@@ -6,9 +6,9 @@
 
 [resource]
 script = ExtResource("2_iiqku")
-trigger_event = 8
 type = 2
 base_stacks = 1
-tag = 6
+status_type = 4
 behaviors_to_apply = Array[ExtResource("1_r73yg")]([ExtResource("2_git8h")])
+name = "Cursed"
 metadata/_custom_type_script = "uid://b7nodxm8x8xc2"
