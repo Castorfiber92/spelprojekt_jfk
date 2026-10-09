@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_cjr1e"]
 [ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="2_cjr1e"]
-[ext_resource type="Resource" uid="uid://b8rw6bl3t2g00" path="res://Resources/Behaviors/Effects/Buffs/Orc/status_armor(earth_shaman).tres" id="2_ekp34"]
+[ext_resource type="Resource" uid="uid://b8rw6bl3t2g00" path="res://Resources/Behaviors/Effects/Buffs/Basic Statuses/status_armor_basic.tres" id="2_ekp34"]
 
 [resource]
 script = ExtResource("2_cjr1e")

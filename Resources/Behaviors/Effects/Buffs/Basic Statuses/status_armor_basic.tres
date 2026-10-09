@@ -8,6 +8,6 @@ script = ExtResource("2_wix84")
 type = 2
 target_team = 2
 base_stacks = 1
-tag = 7
+status_type = 5
 name = "Armored"
 metadata/_custom_type_script = "uid://do3uy17ek43s8"

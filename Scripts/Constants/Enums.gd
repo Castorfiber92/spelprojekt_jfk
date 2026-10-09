@@ -16,6 +16,17 @@ static var Tribe_MAP = {
 	"gnome": Enums.Tribe.GNOME,
 	"neutral": Enums.Tribe.NEUTRAL
 }
+enum StatusType {
+	NEUTRAL,
+	BURN,
+	FREEZE,
+	POISON,
+	CURSE,
+	ARMOR,
+	COUNTERATTACK,
+	MULTICAST
+}
+
 enum EffectType { DAMAGE, HEAL }
 enum StatType {
 	SPEED,

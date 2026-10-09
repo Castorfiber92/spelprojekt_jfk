@@ -10,6 +10,5 @@ target_team = 2
 target_count = 0
 animation = ""
 add_stacks = false
-tag = 4
-name = "marked"
+name = "Marked"
 metadata/_custom_type_script = "uid://8uh6jm8u8814"

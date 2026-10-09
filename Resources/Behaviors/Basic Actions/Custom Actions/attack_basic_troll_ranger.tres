@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BasicActionBehavior" format=3 uid="uid://vpxc3n03oi5r"]
+
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_si3bp"]
+[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="2_sgb1v"]
+
+[resource]
+script = ExtResource("2_sgb1v")
+target_team = 1
+range = 3
+crit_multiplier = 2.0
+trigger_on_innate_crit = true
+base_stacks = 2
+status_type = 1
+metadata/_custom_type_script = "uid://d4igq00opuk1n"

@@ -5,7 +5,6 @@
 
 [resource]
 script = ExtResource("2_n6yq8")
-trigger_event = 6
 range = 3
 add_stacks = false
 name = "Siphon Soul"

@@ -5,6 +5,7 @@ var hero_data : HeroData
 var current_tier : HeroData.HeroTier
 var current_HP : int
 var maximum_HP : int
+@export var current_enchantments : Array[Enchantment]
 @export var team: Enums.Team = Enums.Team.FRIEND
 
 var has_acted = false

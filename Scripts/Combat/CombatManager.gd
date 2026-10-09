@@ -95,7 +95,9 @@ func emergency_exit_to_overworld() -> void:
 	combat_active = false
 	is_processing = false
 	effect_stack.clear()
-	
+	for hero in PlayerData.player_party:
+		if hero != null and hero.get_parent() != null: 
+			hero.get_parent().remove_child(hero)
 	# 2. Swap back to the overworld map scene safely
 	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 
