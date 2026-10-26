@@ -11,6 +11,6 @@ func on_damage_taken(combatContext: CombatContext, executor: Behavior, attack_hi
 			if target.hero == runtime_owner:
 				continue
 				
-			# STRUCTURAL FIX: Updated parameters to match our return-free, streamlined blueprint
+			#
 			var effect = executor.create_effect(ExchangeHPEffect, target, combatContext.source) as CombatEffect
 			GameEvents.effect_created.emit(effect)

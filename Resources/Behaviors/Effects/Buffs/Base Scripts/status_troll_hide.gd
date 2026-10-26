@@ -7,7 +7,7 @@ func modify_incoming_effect(effect: CombatEffect, executor: Behavior):
 		effect.value = maxi(min_value, effect.value - value)
 		executor.current_stacks = min(executor.current_stacks + 1, max_value)
 
-# Instead of extracting contexts, it just executes a direct action on its owner!
+# Heals as much as the current stacks are, which are increased every time the hero is struck by a damage effect.
 func on_turn_start(combatContext: CombatContext, executor: Behavior, attack_history: Variant = null):
 	var effect = executor.create_effect(HealEffect, combatContext.source, combatContext.source) as CombatEffect
 	effect.value = executor.current_stacks

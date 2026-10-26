@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="BasicActionBehavior" format=3 uid="uid://dqnl0460t06kg"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_m33hr"]
-[ext_resource type="Resource" uid="uid://c3els8cg05vxu" path="res://Resources/Behaviors/Effects/Debuffs/Basic Statuses/status_poison_basic.tres" id="2_sw4iw"]
 [ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="3_m33hr"]
 
 [resource]
@@ -11,6 +10,6 @@ target_team = 1
 range = 2
 crit_multiplier = 2.0
 trigger_on_innate_crit = true
-add_stacks = false
-behaviors_to_apply = Array[ExtResource("1_m33hr")]([ExtResource("2_sw4iw")])
-name = "Cast Basic Bat Intoxicator"
+base_stacks = 2
+status_type = 3
+name = "Cast Poison"

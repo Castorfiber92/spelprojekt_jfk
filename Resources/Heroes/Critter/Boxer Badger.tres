@@ -2,9 +2,16 @@
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_e1afh"]
 [ext_resource type="Resource" uid="uid://fq7jmuie3yr" path="res://Resources/Behaviors/Passive Abilities/Critter/mark.tres" id="2_bjlrg"]
-[ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="3_m0w3a"]
+[ext_resource type="Script" uid="uid://d4igq00opuk1n" path="res://Resources/Behaviors/Basic Actions/Base Scripts/action_basic.gd" id="3_e1afh"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="4_v6ux5"]
 [ext_resource type="SpriteFrames" uid="uid://grbii4cwfivh" path="res://Graphics/Hero Sprites/Critter/boxer_badger_sprites.tres" id="5_psnpt"]
+
+[sub_resource type="Resource" id="Resource_bjlrg"]
+script = ExtResource("3_e1afh")
+target_team = 1
+range = 1
+add_stacks = false
+metadata/_custom_type_script = "uid://d4igq00opuk1n"
 
 [resource]
 script = ExtResource("4_v6ux5")
@@ -12,7 +19,7 @@ base_HP = 25
 base_damage = 3
 base_speed = 20
 base_range = 1
-base_action = ExtResource("3_m0w3a")
+base_action = SubResource("Resource_bjlrg")
 abilities = Array[ExtResource("1_e1afh")]([ExtResource("2_bjlrg")])
 name = "Boxer Badger"
 sprites = ExtResource("5_psnpt")

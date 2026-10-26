@@ -211,3 +211,6 @@ func get_stat(stat_type: Enums.StatType) -> Variant:
 func get_behaviors() -> Array[Behavior]:
 	# Combines both for the UI layer to draw status icons smoothly
 	return active_passives + stat_modifiers
+
+func get_enchantments() -> Array[Enchantment]:
+	return current_enchantments

@@ -13,11 +13,11 @@ func execute(_manager: CombatManager) -> void:
 
 func present(manager: CombatManager) -> void:
 	# 1. Attacker visual animation pose fires first
-	if source and animation != "" and animation != "idle":
-		source.play_animation(animation, animation_duration)
+	if target and target.hero != null:
+		if source and animation != "" and animation != "idle":
+			source.play_animation(animation, animation_duration)
 		
 	# 2. Target slot shakes and pops floating text labels
-	if target:
 		# Simply pass the raw calculated values straight into your existing tween engine!
 		await target.apply_visual_effect(Enums.EffectType.DAMAGE, is_crit, int(value)).finished
 	else:

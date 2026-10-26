@@ -1,4 +1,5 @@
 attack_basic
+attack_basic_troll_ranger
 attack_multi
 cast_basic
 cast_basic_bat_intoxicator
