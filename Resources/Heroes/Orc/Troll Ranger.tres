@@ -12,7 +12,6 @@ base_HP = 10
 base_damage = 3
 base_speed = 20
 base_range = 3
-base_crit_chance = 0.1
 base_action = ExtResource("3_3r4s8")
 name = "Troll Ranger"
 sprites = ExtResource("5_ufhqt")

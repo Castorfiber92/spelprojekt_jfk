@@ -14,7 +14,7 @@ Vampiric crawler,,Undead,FALSE,25,3,10,1,00.05,attack_basic,,,double strike - sl
 Spectral Hallucinator,,Undead,TRUE,30,1,60,3,00.05,cast_basic,,,"Gör confusion på en random fiende, så att den riskerar att targeta sina friends istället för sina fiender med sin action, i övrigt applicera allt som vanligt."
 ORC,,,,,,,,,,,,
 Orc Hexblade,,Orc,FALSE,14,3,10,1,00.05,attack_basic,,,"Siphon Soul: När han kommer till 25% hp, swap hp% med en i laget och får även en del av hans stats"
-Troll Ranger,,Orc,FALSE,10,3,20,3,0.1,attack_basic,burn(troll_ranger),,Flaming spears: Stackande burn med 2~ dmg per stack
+Troll Ranger,,Orc,FALSE,10,3,20,3,0.1,attack_basic_troll_ranger,,,Flaming spears: Stackande burn med 2~ dmg per stack
 Earth Shaman,,Orc,FALSE,12,0,10,1,00.05,cast_basic_earth_shaman,,,Earth Shield: Start av runda ger alla en sköld som tål 3~ skada. stackande eller ej osäkert beroende på balans 
 Troll Defender,,Orc,FALSE,25,2,10,1,00.05,attack_basic,,,Trollhide: Minskar all skada med 2 (tar minst 1 skada). healar 2 på start av sin turn (ökas permanent med 1 varje gång han blir slagen (max 10) 
 Bat Intoxicator,,Orc,FALSE,10,0,20,2,00.05,cast_basic_bat_intoxicator,,,Puts poison on backline instead of attacking

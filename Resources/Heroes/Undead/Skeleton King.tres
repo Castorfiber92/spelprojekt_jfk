@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="HeroData" format=3 uid="uid://dtb5fbpai0rec"]
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_3wu55"]
-[ext_resource type="Resource" uid="uid://cjd1sxyjun1sp" path="res://Resources/Behaviors/Passive Abilities/Undead/summon(skeleton_king).tres" id="2_gf2w8"]
+[ext_resource type="Resource" uid="uid://cjd1sxyjun1sp" path="res://Resources/Behaviors/Passive Abilities/Undead/summon_skeleton_prince.tres" id="2_gf2w8"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_vyk64"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2nd7a"]
 [ext_resource type="SpriteFrames" uid="uid://cqt3qgooodwsg" path="res://Graphics/Hero Sprites/Undead/skeleton_king_sprites.tres" id="4_3wu55"]

@@ -389,7 +389,7 @@ func restart_combat_with_new_enemies():
 	for slot in player_slots:
 		if is_instance_valid(slot) and is_instance_valid(slot.hero):
 			var current_player_hero = slot.hero
-			var die_callable = remove_hero.bind(slot)
+			#var die_callable = remove_hero.bind(slot)
 				
 			# THE ONLY CHANGE: Safely detach your player heroes from the slot trees!
 			# This protects them from queue_free(), keeping your PlayerData 100% safe in memory.

@@ -1,16 +1,16 @@
 extends Node
 
 const FLASH_SHADER = preload("res://Graphics/Shader Materials/flash_shader.gdshader")
-const crit_intensity : Vector2 = Vector2(10,-10)
-const crit_duration = 0.025
-const crit_loops = 4
+var crit_intensity : Vector2 = Vector2(10,-10)
+var crit_duration = 0.025
+var crit_loops = 4
 
 func play_critical_hit(sprite : Control) -> Tween:
 	var tween = create_tween()
 		
-	var crit_duration: float = 0.20
-	var crit_loops: int = 4
-	var crit_intensity: Vector2 = Vector2(10, -10) # Stronger shake for crits!
+	crit_duration = 0.20
+	crit_loops = 4
+	crit_intensity = Vector2(10, -10) # Stronger shake for crits!
 		
 	# 1. Strong shake
 	shake_node(sprite, crit_intensity, crit_duration, crit_loops)

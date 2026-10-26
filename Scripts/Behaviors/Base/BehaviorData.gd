@@ -18,7 +18,7 @@ enum BehaviorType { PASSIVE, ACTIVE, BUFF, STAT }
 # A probability decimal between 0.0 and 1.0 (e.g., 0.15 for 15%). Leave at 1.0 for guaranteed effects.
 @export var proc_chance: float = 1.0
 # If this ability procs a critical hit, what should the value be multiplied by? (e.g. 2.0 for double)
-@export_range(0,3) var crit_multiplier: float = 1
+@export_range(0,3) var crit_multiplier: float = 2
 # Forcefully flips effect.is_crit to true if this behavior procs successfully
 @export var force_critical_strike: bool = false
 @export var trigger_on_innate_crit: bool = false

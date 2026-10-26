@@ -53,8 +53,8 @@ func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake
 
 
 
-func toggle_visibility(show = true):
-	if show:
+func toggle_visibility(_show = true):
+	if _show:
 		sprite.visible = true
 		hp_label.visible = true
 		damage_label.visible = true
