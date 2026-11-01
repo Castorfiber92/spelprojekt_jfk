@@ -3,12 +3,14 @@
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_cfaf6"]
 [ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_iavnn"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_aab5d"]
+[ext_resource type="SpriteFrames" uid="uid://c5ryek2dd1yxd" path="res://Graphics/Hero Sprites/Critter/bunny_bannerbearer_sprites.tres" id="4_iavnn"]
 
 [resource]
 script = ExtResource("3_aab5d")
 base_HP = 20
 base_damage = 1
-base_speed = 60
+base_speed = 6
 base_range = 1
 base_action = ExtResource("2_iavnn")
 name = "Bunny Bannerbearer"
+sprites = ExtResource("4_iavnn")

@@ -5,7 +5,7 @@ class_name DamageEffect
 func execute(_manager: CombatManager) -> void:
 	if target and target.hero != null:
 		# The target hero mutates its numbers and emits GameEvents.hero_damaged natively
-		target.hero.take_damage(int(value), source)
+		target.hero.take_damage(int(value), source, _manager)
 		
 		# Inject item status buffs attached to this attack profile cleanly
 		for b in buffs:

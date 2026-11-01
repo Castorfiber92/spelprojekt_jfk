@@ -9,7 +9,7 @@
 script = ExtResource("3_kbvxp")
 tribe = 4
 base_HP = 10
-base_damage = 1
+base_damage = 2
 base_speed = 1
 base_range = 1
 base_action = ExtResource("2_2ky6y")

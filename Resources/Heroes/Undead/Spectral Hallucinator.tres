@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_c8maf"]
 [ext_resource type="Resource" uid="uid://h1j0wnhy80e7" path="res://Resources/Behaviors/Basic Actions/cast_basic.tres" id="2_8u6vg"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_5dj2a"]
+[ext_resource type="SpriteFrames" uid="uid://dxsgf2hisi5is" path="res://Graphics/Hero Sprites/Undead/spectral_hallucinator_sprites.tres" id="4_8u6vg"]
 
 [resource]
 script = ExtResource("3_5dj2a")
@@ -10,7 +11,8 @@ tribe = 2
 is_legendary_eligible = true
 base_HP = 30
 base_damage = 1
-base_speed = 60
+base_speed = 6
 base_range = 3
 base_action = ExtResource("2_8u6vg")
 name = "Spectral Hallucinator"
+sprites = ExtResource("4_8u6vg")

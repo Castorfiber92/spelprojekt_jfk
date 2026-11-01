@@ -1,16 +1,17 @@
 extends CombatEffect
 class_name ExchangeHPEffect
 
-# CLEANED: Completely return-free and context-free
 func execute(_manager: CombatManager) -> void:
 	if target == null or target.hero == null or target.hero.current_HP <= 0:
 		return
 	if source == null or source.hero == null or source.hero.current_HP <= 0:
 		return
-		
+
 	# 1. Capture snapshots of the current layout numbers
 	var old_target_hp = target.hero.current_HP
+	print("target name " + str(target.hero.hero_data.name))
 	var old_source_hp = source.hero.current_HP
+	print("Source name "+ str(source.hero.hero_data.name))
 	
 	# 2. Swap HP values safely clamped to each hero's specific Max HP limits
 	var target_max_hp = target.hero.get_stat(Enums.StatType.MAX_HP)
@@ -28,8 +29,6 @@ func present(manager: CombatManager) -> void:
 		source.play_animation(animation, animation_duration)
 		
 	if target != null and target.hero != null:
-		# CLEANED: Fixed a bug in your original present script where the target's damage effect 
-		# was missing an 'await', which would cause animations to instantly overlap!
 		target.apply_visual_effect(Enums.EffectType.DAMAGE, is_crit, -1, false)
 		await source.apply_visual_effect(Enums.EffectType.HEAL, is_crit, -1).finished
 	else:

@@ -10,6 +10,8 @@ static func resolve_targets(behavior: Behavior, source_slot: HeroSlot, manager: 
 			return [source_slot]
 		Enums.Team.FRIEND: 
 			candidates = manager.get_friendly_slots(team)
+			if not behavior.data.allow_self:
+				candidates = candidates.filter(func(slot): return slot != source_slot)
 		Enums.Team.ENEMY: 
 			candidates = manager.get_enemy_slots(team)
 			

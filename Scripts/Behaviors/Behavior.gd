@@ -22,8 +22,7 @@ static func create(_data : BehaviorData) -> Behavior:
 # --- CLEANED DIRECT PASS-THROUGH HOOKS ---
 func route_to_matching_hook(event_type: Enums.TriggerEvent, context: CombatContext, history: Variant) -> void:
 	match event_type:
-		# FIXED: Calls the local pass-through hook on 'self', which cleanly passes 
-		# the context, the runtime instance, and the history down to your scripts!
+		#  passes the context, the runtime instance, and the history down to your scripts!
 		Enums.TriggerEvent.ON_EXECUTE_ACTION: on_execute_action(context, history)
 		Enums.TriggerEvent.ON_START_OF_BATTLE: on_start_of_battle(context, history)
 		Enums.TriggerEvent.ON_TURN_START: on_turn_start(context, history)

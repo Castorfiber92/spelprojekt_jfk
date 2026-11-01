@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="HeroGrowthData" format=3 uid="uid://d304k5oh1gpbt"]
+
+[ext_resource type="Script" uid="uid://cyq1fik8t3y5i" path="res://Resources/Leveling and experience/Base Script/hero_growth_data.gd" id="1_6ltlq"]
+[ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_tn0og"]
+
+[resource]
+script = ExtResource("1_6ltlq")
+metadata/_custom_type_script = "uid://cyq1fik8t3y5i"

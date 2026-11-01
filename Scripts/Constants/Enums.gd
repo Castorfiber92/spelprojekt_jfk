@@ -1,7 +1,7 @@
-extends Node
+class_name Enums
 enum Team {FRIEND, ENEMY, SELF}
 enum Target {
-	SINGLE,    # Picks exactly N random targets from the pool according to settings
+	SINGLE,    # Picks exactly N random individual targets from the pool according to settings
 	REPEAT,    # Picks exactly 1 random target, and then strikes it according to target count (fury swipes)
 	MULTI,     # Picks a primary target, then another (this CAN target the same target)
 	CLEAVE,    # Picks adjacent targets according to our rules and strikes all instantly
@@ -10,12 +10,13 @@ enum Target {
 }
 enum Tribe {CRITTER, ORC, UNDEAD, GNOME, NEUTRAL}
 static var Tribe_MAP = {
-	"critter": Enums.Tribe.CRITTER,
-	"orc": Enums.Tribe.ORC,
-	"undead": Enums.Tribe.UNDEAD,
-	"gnome": Enums.Tribe.GNOME,
-	"neutral": Enums.Tribe.NEUTRAL
+	"critter": Tribe.CRITTER,
+	"orc": Tribe.ORC,
+	"undead": Tribe.UNDEAD,
+	"gnome": Tribe.GNOME,
+	"neutral": Tribe.NEUTRAL
 }
+enum HeroTier { BRONZE, SILVER, GOLD, LEGENDARY }
 enum StatusType {
 	NEUTRAL,
 	BURN,
