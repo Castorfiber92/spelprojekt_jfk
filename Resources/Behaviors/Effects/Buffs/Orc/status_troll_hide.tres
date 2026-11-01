@@ -5,12 +5,10 @@
 
 [resource]
 script = ExtResource("2_b5nem")
-trigger_event = 2
 value = 2
 min_value = 1
-max_value = 5
+max_value = 3
 target_team = 2
-crit_multiplier = 2.0
 trigger_on_innate_crit = true
 animation = ""
 name = "Trollhide"

@@ -9,7 +9,7 @@
 script = ExtResource("3_jsk3k")
 base_HP = 12
 base_damage = 2
-base_speed = 50
+base_speed = 5
 base_range = 3
 base_action = ExtResource("2_l5138")
 name = "Overworked Owl"

@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://c5ryek2dd1yxd"]
+
+[ext_resource type="Texture2D" uid="uid://uej766oai8v0" path="res://Graphics/Hero Sprites/Critter/Bunny Bannerbearer.png" id="1_p1wnc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_was22"]
+atlas = ExtResource("1_p1wnc")
+region = Rect2(768, 0, 768, 1024)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ehnho"]
+atlas = ExtResource("1_p1wnc")
+region = Rect2(0, 0, 768, 1024)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_was22")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ehnho")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

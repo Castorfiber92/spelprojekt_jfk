@@ -10,6 +10,7 @@ enum BehaviorType { PASSIVE, ACTIVE, BUFF, STAT }
 @export var max_value = 0
 @export_category("Targeting Settings")
 @export var target_team: Enums.Team
+@export var allow_self: bool
 @export var target_type: Enums.Target
 @export var target_count: int = 1
 ##0 range for self-targeting or if we are not using a custom range

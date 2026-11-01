@@ -1,0 +1,30 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dxsgf2hisi5is"]
+
+[ext_resource type="Texture2D" uid="uid://dr44wcgdywele" path="res://Graphics/Hero Sprites/Undead/Spectral Hallucinator.png" id="1_2y2q3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ikr8i"]
+atlas = ExtResource("1_2y2q3")
+region = Rect2(887, 0, 887, 887)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hfus8"]
+atlas = ExtResource("1_2y2q3")
+region = Rect2(0, 0, 887, 887)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ikr8i")
+}],
+"loop": 1,
+"name": &"action",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hfus8")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]

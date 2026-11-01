@@ -2,7 +2,7 @@ extends Node
 class_name Hero
 
 var hero_data : HeroData
-var current_tier : HeroData.HeroTier
+var current_tier : Enums.HeroTier
 var current_HP : int
 var maximum_HP : int
 @export var current_enchantments : Array[Enchantment]
@@ -23,6 +23,12 @@ var event_listeners: Dictionary = {
 	Enums.TriggerEvent.ON_DAMAGE_DEALT: [],
 	Enums.TriggerEvent.ON_DEATH: []
 }
+
+## Stores the clean, permanent stats scaled by level-ups
+var runtime_base_stats: Dictionary = {}
+
+## Stores the temporary active modifications or current values during battle
+var current_stats: Dictionary = {}
 
 static func create(data: HeroData) -> Hero:
 	var new_hero = Hero.new()
@@ -65,11 +71,10 @@ func _on_turn_ended(slot: HeroSlot, combat_manager: CombatManager) -> void:
 
 func _on_action_execution_requested(slot: HeroSlot, combat_manager: CombatManager) -> void:
 	if slot.hero == self:
-		# FIXED: Passes the explicit manager reference provided directly by the signal channel!
 		trigger_behavior_event(Enums.TriggerEvent.ON_EXECUTE_ACTION, [], combat_manager)
 
 func initialize_data() -> void:
-	# Explicitly wipe and ensure the dictionary arrays are ready in memory first!
+	# Explicitly wipe and ensure the dictionary arrays are ready in memory first
 	event_listeners = {
 		Enums.TriggerEvent.ON_START_OF_BATTLE: [],
 		Enums.TriggerEvent.ON_TURN_START: [],
@@ -86,6 +91,16 @@ func initialize_data() -> void:
 	for ability_res in hero_data.abilities:
 		add_behavior(Behavior.create(ability_res))
 	reset_temporary_data()
+	initialize_runtime_stats()
+
+func initialize_runtime_stats() -> void:
+	# Assuming Enums.StatType contains MAX_HP, ATTACK, DEFENSE, etc.
+	for stat in Enums.StatType.values():
+		# Fetch the flat starting values from your immutable resource file
+		var base_val = hero_data.get_starting_stat(stat) 
+		
+		runtime_base_stats[stat] = base_val
+		current_stats[stat] = base_val
 
 func prepare_for_combat():
 	reset_temporary_data()
@@ -108,12 +123,15 @@ func _on_round_ended(manager: CombatManager) -> void:
 	var context = CombatContext.new(local_slot, [], manager)
 	trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, context, manager)
 
-func take_damage(damage : int, source : HeroSlot) -> void:
+func take_damage(damage : int, source : HeroSlot, manager: CombatManager) -> void:
 	var active_max_hp = get_stat(Enums.StatType.MAX_HP)
 	current_HP = clamp(current_HP - damage, 0, active_max_hp)
 	print(hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name if source and source.hero else "unknown")
-	
+	var local_slot = manager.hero_to_slot_map.get(self)
+	var context = CombatContext.new(local_slot, [], manager)
+	trigger_behavior_event(Enums.TriggerEvent.ON_DAMAGE_TAKEN,context,manager)
 	GameEvents.hero_damaged.emit(self, source, damage)
+	
 
 		
 func heal_HP(value : int, source : HeroSlot) -> void:
@@ -122,7 +140,7 @@ func heal_HP(value : int, source : HeroSlot) -> void:
 	current_HP = clamp(current_HP + value, 0, active_max_hp)
 	var actual_healed = current_HP - old_hp
 	print(hero_data.name, " heals for ", actual_healed)
-	
+	#trigger_behavior_event(Enums.TriggerEvent.ON_HEAL,[],manager)
 	GameEvents.hero_healed.emit(self, source, actual_healed)
 
 func can_act() -> bool:
@@ -187,17 +205,22 @@ func trigger_behavior_event(event_type: Enums.TriggerEvent, source_context: Vari
 		behavior.route_to_matching_hook(event_type, target_context, source_context)
 
 func get_stat(stat_type: Enums.StatType) -> Variant:
-	var calculated_stats = {
-		Enums.StatType.SPEED: float(hero_data.base_speed),
-		Enums.StatType.RANGE: float(hero_data.base_range),
-		Enums.StatType.DAMAGE: float(hero_data.base_damage),
-		Enums.StatType.MAX_HP: float(hero_data.base_HP),
+	# 2. We check runtime_base_stats first. If missing (for some reason), look inside the defaults dictionary
+	var default_fallbacks = {
+		Enums.StatType.SPEED: hero_data.base_speed,
+		Enums.StatType.RANGE: hero_data.base_range,
+		Enums.StatType.DAMAGE: hero_data.base_damage,
+		Enums.StatType.MAX_HP: hero_data.base_HP,
 		Enums.StatType.CRIT: hero_data.base_crit_chance
 	}
-	for b in stat_modifiers:
-		if b.data.has_method("_execute_stat_modification"):
-			b.data._execute_stat_modification(calculated_stats)
-			
+	var backup_value = default_fallbacks.get(stat_type, 0)
+	var calculated_stats = runtime_base_stats.get(stat_type, backup_value)
+	
+	for behavior in stat_modifiers:
+		if behavior.data.has_method("_execute_stat_modification"):
+			behavior.data._execute_stat_modification(calculated_stats)
+	
+
 	var final_value = calculated_stats.get(stat_type, 0.0)
 	match stat_type:
 		Enums.StatType.DAMAGE, Enums.StatType.SPEED, Enums.StatType.MAX_HP:
@@ -214,3 +237,4 @@ func get_behaviors() -> Array[Behavior]:
 
 func get_enchantments() -> Array[Enchantment]:
 	return current_enchantments
+	

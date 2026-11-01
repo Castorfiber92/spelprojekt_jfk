@@ -9,6 +9,8 @@ func modify_incoming_effect(effect: CombatEffect, executor: Behavior):
 
 # Heals as much as the current stacks are, which are increased every time the hero is struck by a damage effect.
 func on_turn_start(combatContext: CombatContext, executor: Behavior, attack_history: Variant = null):
+	if executor.current_stacks <= 0:
+		return
 	var effect = executor.create_effect(HealEffect, combatContext.source, combatContext.source) as CombatEffect
 	effect.value = executor.current_stacks
 	GameEvents.effect_created.emit(effect)

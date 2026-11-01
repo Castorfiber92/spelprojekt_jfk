@@ -6,6 +6,7 @@
 [resource]
 script = ExtResource("2_cjr1e")
 action_profile = 1
+allow_self = true
 target_count = 2
 trigger_on_innate_crit = true
 base_stacks = 1
