@@ -26,7 +26,7 @@ func get_stat_upgrade(stat_type : Enums.StatType, tier : Enums.HeroTier = Enums.
 			return damage_per_level
 		Enums.StatType.SPEED:
 			return speed_per_level 
-		Enums.StatType.MAX_HP:
+		Enums.StatType.HP:
 			return hp_per_level
 		Enums.StatType.RANGE:
 			return new_range.get(tier)

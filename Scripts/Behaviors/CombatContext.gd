@@ -7,7 +7,7 @@ var damage_dealt_map: Dictionary = {} # Key: HeroSlot, Value: int (actual damage
 var heal_dealt_map : Dictionary = {} # Key: HeroSlot, Value: int (actual heal taken)
 var lethal_targets: Array[HeroSlot] = [] # Tracks who hit 0 HP from this action
 
-func _init(_source: HeroSlot, _targets: Array[HeroSlot] = [], _manager: Node = null):
+func _init(_source: HeroSlot, _targets: Array[HeroSlot] = [],  _manager: CombatManager = null):
 	self.source = _source
 	self.targets = _targets
 	self.manager = _manager

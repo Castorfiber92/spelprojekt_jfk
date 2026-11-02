@@ -53,4 +53,4 @@ func check_enchantment_effects(behavior_owner: Hero, effect: CombatEffect) -> vo
 		var base_data = Maps.get_status_from_type(e.enchantment_type)
 		var behavior_runtime = Behavior.create(base_data)
 		var enchant_stacks = e.stacks * 2 if effect.is_crit else e.stacks
-		effect.add_or_stack_status(behavior_runtime, enchant_stacks)
+		effect.add_or_stack_status(behavior_runtime.status_type, enchant_stacks)

@@ -2,11 +2,7 @@ extends Node
 signal map_event_triggered(event : MapEvent)
 
 # Timeline Execution Channels
-signal battle_started(manager: CombatManager)
-signal round_ended(manager: CombatManager)
-signal turn_started(slot: HeroSlot, manager: CombatManager)
-signal action_execution_requested(slot: HeroSlot, manager: CombatManager)
-signal turn_ended(slot: HeroSlot, manager: CombatManager)
+signal combat_event(event_type: Enums.TriggerEvent, context: Dictionary)
 # Action Delivery Pipeline
 signal effect_created(effect: CombatEffect)
 

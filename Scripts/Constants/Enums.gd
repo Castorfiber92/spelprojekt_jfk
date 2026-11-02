@@ -33,7 +33,7 @@ enum StatType {
 	SPEED,
 	RANGE,
 	DAMAGE,
-	MAX_HP,
+	HP,
 	CRIT
 }
 enum CombatPhase {IDLE, 

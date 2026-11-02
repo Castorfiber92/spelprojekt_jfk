@@ -19,50 +19,14 @@ static func create(_data : BehaviorData) -> Behavior:
 	instance.current_stacks = _data.base_stacks
 	return instance
 
-# --- CLEANED DIRECT PASS-THROUGH HOOKS ---
 func route_to_matching_hook(event_type: Enums.TriggerEvent, context: CombatContext, history: Variant) -> void:
-	match event_type:
-		#  passes the context, the runtime instance, and the history down to your scripts!
-		Enums.TriggerEvent.ON_EXECUTE_ACTION: on_execute_action(context, history)
-		Enums.TriggerEvent.ON_START_OF_BATTLE: on_start_of_battle(context, history)
-		Enums.TriggerEvent.ON_TURN_START: on_turn_start(context, history)
-		Enums.TriggerEvent.ON_TURN_END: on_turn_end(context, history)
-		Enums.TriggerEvent.ON_ATTACK: on_attack(context, history)
-		Enums.TriggerEvent.ON_DAMAGE_DEALT: on_damage_dealt(context, history)
-		Enums.TriggerEvent.ON_DAMAGE_TAKEN: on_damage_taken(context, history)
-		Enums.TriggerEvent.ON_DEATH: on_death(context, history)
-		Enums.TriggerEvent.ON_ROUND_END: on_round_end(context, history)
+	# If this is an action phase and targets haven't been resolved yet, solve them!
+	if event_type == Enums.TriggerEvent.ON_EXECUTE_ACTION and context.targets.is_empty():
+		context.targets = TargetingSolver.resolve_targets(self, context.source, context.manager)
 
-# ==============================================================================
-# Direct Pass-Through Event Hooks
-# ==============================================================================
-func on_execute_action(context: CombatContext, history: Variant = null) -> void: 
-	if data.has_method("on_execute_action"): data.on_execute_action(context, self, history)
-
-func on_start_of_battle(context: CombatContext, history: Variant = null) -> void: 
-	if data.has_method("on_start_of_battle"): data.on_start_of_battle(context, self, history)
-
-func on_turn_start(context: CombatContext, history: Variant = null) -> void:     
-	if data.has_method("on_turn_start"): data.on_turn_start(context, self, history)
-
-func on_turn_end(context: CombatContext, history: Variant = null) -> void:       
-	if data.has_method("on_turn_end"): data.on_turn_end(context, self, history)
-
-func on_attack(context: CombatContext, history: Variant = null) -> void:         
-	if data.has_method("on_attack"): data.on_attack(context, self, history)
-
-func on_damage_dealt(context: CombatContext, history: Variant = null) -> void:   
-	if data.has_method("on_damage_dealt"): data.on_damage_dealt(context, self, history)
-
-func on_damage_taken(context: CombatContext, history: Variant = null) -> void:   
-	if data.has_method("on_damage_taken"): data.on_damage_taken(context, self, history)
-
-func on_death(context: CombatContext, history: Variant = null) -> void:          
-	if data.has_method("on_death"): data.on_death(context, self, history)
-
-func on_round_end(context: CombatContext, history: Variant = null) -> void:      
-	if data.has_method("on_round_end"): data.on_round_end(context, self, history)
-
+	var method_name: String = Enums.TRIGGER_STRINGS.get(event_type, "")
+	if method_name != "" and data.has_method(method_name):
+		data.call(method_name, context, self, history)
 
 func modify_outgoing_effect(effect : CombatEffect):
 # Path A: Gated flow. If the resource implements 'modify_outgoing_effect', 
@@ -79,60 +43,38 @@ func modify_outgoing_effect(effect : CombatEffect):
 		
 		# Pass the call to the resource, providing 'self' as the runtime executor state
 		data.modify_outgoing_effect(effect, self)
-		
 	# Path B: Direct execution override (Like InfuseBuffsModifier)
 	elif data.has_method("_execute_outgoing_modification"):
 		data._execute_outgoing_modification(effect)
 
-func _execute_outgoing_modification(effect: CombatEffect):
-	if data.has_method("_execute_outgoing_modification"):
-		data._execute_outgoing_modification(effect)
-	
 func modify_incoming_effect(effect : CombatEffect):
 	# If your custom status resource script implements 'modify_incoming_effect'
 	if data.has_method("modify_incoming_effect"):
 		# In this case, your status mark script doesn't have gates, so we call it directly,
 		# passing 'self' so your script can read live variables like 'current_stacks'!
 		data.modify_incoming_effect(effect, self)
-		
 	# Fallback if you ever create an incoming modifier that needs to bypass everything
 	elif data.has_method("_execute_incoming_modification"):
 		data._execute_incoming_modification(effect, self)
-		
-func _execute_incoming_modification(effect: CombatEffect):
-	if data.has_method("_execute_incoming_modification"):
-		data._execute_incoming_modification(effect, self)
-		
-# Called on the ATTACKER to modify the raw pool of enemies before range math
-func modify_initial_targets(active_candidates: Array[HeroSlot], source: HeroSlot) -> Array[HeroSlot]:
-	if data.has_method("modify_initial_targets"):
-		return data.modify_initial_targets(active_candidates, source, self)
-	return active_candidates
-
-# Called on the DEFENDER to let them alter the pool (e.g., Taunt forcing itself to be targeted)
-func modify_defender_final_targets(reachables: Array[HeroSlot], defender_slot: HeroSlot) -> Array[HeroSlot]:
-	if data.has_method("modify_defender_final_targets"):
-		return data.modify_defender_final_targets(reachables, defender_slot, self)
-	return reachables
-
-# Called on the ATTACKER at the very end to scale targets up or down (Cleave, AOE, Snipe)
-func modify_attacker_final_targets(resolved_targets: Array[HeroSlot], reachable_pool: Array[HeroSlot]) -> Array[HeroSlot]:
-	if data.has_method("modify_attacker_final_targets"):
-		return data.modify_attacker_final_targets(resolved_targets, reachable_pool, self)
-	return resolved_targets
+	
+func modify_targets(method_name: String, target_pool: Array[HeroSlot], context_slot: HeroSlot, extra_pool: Variant = null) -> Array[HeroSlot]:
+	if data.has_method(method_name):
+		# If it's modify_attacker_final_targets, it takes (resolved, reachable, self)
+		# Called on the ATTACKER at the very end to scale targets up or down (Cleave, AOE, Snipe)
+		if extra_pool != null:
+			return data.call(method_name, target_pool, extra_pool, self)
+		# Otherwise, it takes (candidates/reachables, source/defender_slot, self)
+		# Called on the ATTACKER to modify the raw pool of enemies before range math
+		# OR Called on the DEFENDER to let them alter the pool (e.g., Taunt forcing itself to be targeted)
+		return data.call(method_name, target_pool, context_slot, self)
+	return target_pool
 
 #Universal Validation Gate
-func _check_trigger(current_hook: String, context: CombatContext, trigger_data: Variant):
-	var expected_hook_string = Enums.TRIGGER_STRINGS.get(data.trigger_event, "")
-	# If it is the current triggering event/combat phase
-	if current_hook != expected_hook_string:
-		return 
-		
-	# Execute the payload
-	_execute_behavior_payload(context,trigger_data)
+func _check_trigger(current_hook: String, context: CombatContext, trigger_data: Variant) -> void:
+	if current_hook == Enums.TRIGGER_STRINGS.get(data.trigger_event, ""):
+		_execute_behavior_payload(context, trigger_data)
 
-func _execute_behavior_payload(context: CombatContext,trigger_data):
-	# If the linked data resource asset contains a custom execution payload override, we call it
+func _execute_behavior_payload(context: CombatContext, trigger_data: Variant) -> void:
 	if data.has_method("_execute_behavior_payload_override"):
 		data._execute_behavior_payload_override(context, self, trigger_data)
 
