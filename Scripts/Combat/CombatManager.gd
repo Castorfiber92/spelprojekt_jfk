@@ -37,7 +37,7 @@ func _ready() -> void:
 	await wait_for_input("ui_accept")
 	
 	# The manager announces globally that the match has officially begun!
-	GameEvents.battle_started.emit(self)
+	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_START_OF_BATTLE, {"manager": self})
 	
 	await wait_for_stack_to_clear()
 	run_combat_loop()
@@ -49,7 +49,7 @@ func run_combat_loop():
 		# If no heroes can act, the round is officially over!
 		if next_hero_slot == null:
 			# Shouts globally: This tells all active status items to tick natively!
-			GameEvents.round_ended.emit(self)
+			GameEvents.combat_event.emit(Enums.TriggerEvent.ON_ROUND_END, {"manager": self})
 			
 			# Wait for any status damage or end-of-round heals to fully resolve
 			await wait_for_stack_to_clear()
@@ -111,7 +111,9 @@ func get_next_acting_hero() -> HeroSlot:
 	if candidates.is_empty(): return null
 		
 	candidates.shuffle()
-	candidates.sort_custom(func(a, b): return a.hero.get_stat(Enums.StatType.SPEED) > b.hero.get_stat(Enums.StatType.SPEED))
+	candidates.sort_custom(func(a, b): 
+		return int(a.hero.get_stat(Enums.StatType.SPEED)) > int(b.hero.get_stat(Enums.StatType.SPEED))
+	)
 	return candidates[0]
 	
 func update_UI():
@@ -164,7 +166,7 @@ func check_and_process_deaths() -> void:
 	var all_slots = player_slots + enemy_slots
 	
 	for slot in all_slots:
-		if slot and slot.hero and slot.hero.current_HP <= 0:
+		if slot and slot.hero and slot.hero.current_stats.get(Enums.StatType.HP, 1) <= 0:
 			var death_snapshot = DeathEventData.new(slot.hero, slot)
 			deaths_to_process.append(death_snapshot)
 			
@@ -176,7 +178,7 @@ func check_and_process_deaths() -> void:
 	# ==============================================================================
 	for death in deaths_to_process:
 		# Passes the original valid slot container as the historical variant payload
-		death.dead_hero.trigger_behavior_event(Enums.TriggerEvent.ON_DEATH, death.original_slot, self)
+		GameEvents.combat_event.emit(Enums.TriggerEvent.ON_DEATH, {"slot": death.original_slot, "manager": self})
 		print("Pushed death trigger for ", death.dead_hero.hero_data.name)
 		
 	# ==============================================================================
@@ -196,31 +198,32 @@ func check_and_process_deaths() -> void:
 			if dead_hero.team == Enums.Team.ENEMY:
 				dead_hero.queue_free()
 
-func execute_turn(slot: HeroSlot):
+func execute_turn(slot: HeroSlot) -> void:
 	print("New turn for ", slot.hero.hero_data.name)
 	active_slot = slot
 	await get_tree().process_frame
-	# PHASE 1: PRE_TURN
-	current_phase = Enums.CombatPhase.PRE_TURN
-	GameEvents.turn_started.emit(slot, self)
+	
+	# Pack the data dependencies cleanly
+	var context: Dictionary = {"slot": slot, "manager": self}
+	
+	# PHASE 1: PRE_TURN / TURN_START
+	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_TURN_START, context)
 	await wait_for_stack_to_clear()
 	if not is_instance_valid(slot.hero): return
 	
 	# Status verification
 	if not slot.hero.can_act():
 		print(slot.hero.hero_data.name, " is incapacitated and skips their turn!")
-		GameEvents.turn_ended.emit(slot, self)
+		GameEvents.combat_event.emit(Enums.TriggerEvent.ON_TURN_END, context)
 		await wait_for_stack_to_clear()
 		return
 		
 	# PHASE 2: BEFORE_ACT
-	current_phase = Enums.CombatPhase.BEFORE_ACT
 	await wait_for_stack_to_clear()
 	if not is_instance_valid(slot.hero): return
 	
-	# PHASE 3: EXECUTE
-	current_phase = Enums.CombatPhase.EXECUTE
-	GameEvents.action_execution_requested.emit(slot, self)
+	# PHASE 3: EXECUTE / ACTION_EXECUTION
+	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_EXECUTE_ACTION, context)
 	await wait_for_stack_to_clear()
 	
 	if is_instance_valid(slot.hero):
@@ -229,14 +232,13 @@ func execute_turn(slot: HeroSlot):
 		return
 		
 	# PHASE 4: AFTER_ACT
-	current_phase = Enums.CombatPhase.AFTER_ACT
 	await wait_for_stack_to_clear()
 	if not is_instance_valid(slot.hero): return
 	
-	# PHASE 5: POST_TURN
-	GameEvents.turn_ended.emit(slot, self)
+	# PHASE 5: POST_TURN / TURN_END
+	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_TURN_END, context)
 	await wait_for_stack_to_clear()
-
+	
 func wait_for_stack_to_clear():
 	if not is_processing and not effect_stack.is_empty():
 		await process_stack()
@@ -270,11 +272,11 @@ func clear_highlights():
 	
 func get_enemy_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
 	var raw_slots = enemy_slots if acting_team == Enums.Team.FRIEND else player_slots
-	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.current_HP > 0)
+	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_stat(Enums.StatType.HP) > 0)
 
 func get_friendly_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
 	var raw_slots = player_slots if acting_team == Enums.Team.FRIEND else enemy_slots
-	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.current_HP > 0)
+	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_stat(Enums.StatType.HP) > 0)
 
 func reset_round():
 	for slot in hero_to_slot_map.values():

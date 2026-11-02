@@ -32,6 +32,12 @@ static func resolve_targets(behavior: Behavior, source_slot: HeroSlot, manager: 
 ## Spatial Grid Math: Handles frontline lane blocks and distance restrictions
 static func filter_by_range(candidates: Array[HeroSlot], source_slot: HeroSlot, behavior: Behavior) -> Array[HeroSlot]:
 	var active_candidates = candidates.filter(func(slot): return slot and slot.hero != null)
+	
+	# Allows attacker passives to modify candidates *before* lane calculations occur
+	if source_slot.hero:
+		for b in source_slot.hero.active_passives:
+			active_candidates = b.modify_targets("modify_initial_targets", active_candidates, source_slot)
+	
 	var action_range = behavior.owner_hero.get_stat(Enums.StatType.RANGE)
 	
 	var frontline = active_candidates.filter(func(slot): return slot.index <= 1)
@@ -64,8 +70,7 @@ static func apply_defender_hooks(reachables: Array[HeroSlot]) -> Array[HeroSlot]
 		if slot and slot.hero:
 			# If a defender's passive contains a special target redirection hook
 			for b in slot.hero.active_passives:
-				if b.data.has_method("modify_defender_final_targets"):
-					updated_pool = b.data.modify_defender_final_targets(updated_pool, slot, b)
+				updated_pool = b.modify_targets("modify_defender_final_targets", updated_pool, slot)
 	return updated_pool
 
 
@@ -112,8 +117,7 @@ static func apply_target_type(pool: Array[HeroSlot], source_slot: HeroSlot, data
 	# Attacker final-sweep hook modifications (kept as-is)
 	if source_slot.hero:
 		for b in source_slot.hero.active_passives:
-			if b.data.has_method("modify_attacker_final_targets"):
-				resolved = b.data.modify_attacker_final_targets(resolved, pool, b)
+			resolved = b.modify_targets("modify_attacker_final_targets", resolved, source_slot, pool)
 				
 	return resolved
 

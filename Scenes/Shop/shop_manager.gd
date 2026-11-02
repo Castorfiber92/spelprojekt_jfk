@@ -92,11 +92,11 @@ func sell_selected_slot() -> void:
 	
 	# FIXED ERROR: Evaluated target live instance data tracker instead of structural template asset
 	match hero_to_sell.current_tier:
-		HeroData.HeroTier.BRONZE:
+		Enums.HeroTier.BRONZE:
 			refund_amount = 1 # Cost to buy: 2
-		HeroData.HeroTier.SILVER:
+		Enums.HeroTier.SILVER:
 			refund_amount = 2 # Cost to buy: 4
-		HeroData.HeroTier.GOLD, HeroData.HeroTier.LEGENDARY:
+		Enums.HeroTier.GOLD, Enums.HeroTier.LEGENDARY:
 			refund_amount = 3 # Cost to buy: 6 (Legendary retains Gold value)
 			
 	hero_to_sell.queue_free()

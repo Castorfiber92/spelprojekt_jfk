@@ -22,7 +22,7 @@ class_name HeroData
 func get_starting_stat(stat: Enums.StatType) -> Variant:
 
 	match stat:
-		Enums.StatType.MAX_HP:
+		Enums.StatType.HP:
 			return base_HP
 		Enums.StatType.DAMAGE: # assuming your enum name maps to base_damage
 			return base_damage

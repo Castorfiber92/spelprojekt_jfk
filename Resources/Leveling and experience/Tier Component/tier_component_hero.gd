@@ -11,7 +11,7 @@ var current_tier: Enums.HeroTier
 func tier_up() -> void:
 	# Update the basic stats of the runtime hero
 	# Carry the change over to the /currentactive combat value
-	var stats_to_upgrade = [Enums.StatType.MAX_HP, Enums.StatType.DAMAGE, Enums.StatType.SPEED]
+	var stats_to_upgrade = [Enums.StatType.HP, Enums.StatType.DAMAGE, Enums.StatType.SPEED]
 	for stat in stats_to_upgrade:
 		var amount = growth_blueprint.get_stat_upgrade(stat)
 		parent_hero.runtime_base_stats[stat] += amount

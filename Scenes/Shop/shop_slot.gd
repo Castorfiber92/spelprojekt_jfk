@@ -53,7 +53,7 @@ func display_item(new_item: Variant) -> void:
 			
 			# Pull live combat stats straight from the active Node!
 			dmg_label.text = str(slot_item.get_stat(Enums.StatType.DAMAGE))
-			hp_label.text = str(slot_item.current_HP) 
+			hp_label.text = str(slot_item.get_stat(Enums.StatType.HP)) 
 	else:
 		clear_slot()
 
