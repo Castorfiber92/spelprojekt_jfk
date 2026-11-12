@@ -9,7 +9,7 @@
 [resource]
 script = ExtResource("4_k7ujf")
 tribe = 3
-base_HP = 20
+base_HP = 12
 base_damage = 2
 base_speed = 2
 base_range = 1

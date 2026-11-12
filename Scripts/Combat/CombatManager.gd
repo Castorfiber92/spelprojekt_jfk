@@ -112,7 +112,7 @@ func get_next_acting_hero() -> HeroSlot:
 		
 	candidates.shuffle()
 	candidates.sort_custom(func(a, b): 
-		return int(a.hero.get_stat(Enums.StatType.SPEED)) > int(b.hero.get_stat(Enums.StatType.SPEED))
+		return int(a.hero.get_current_stat(Enums.StatType.SPEED)) > int(b.hero.get_current_stat(Enums.StatType.SPEED))
 	)
 	return candidates[0]
 	
@@ -166,7 +166,7 @@ func check_and_process_deaths() -> void:
 	var all_slots = player_slots + enemy_slots
 	
 	for slot in all_slots:
-		if slot and slot.hero and slot.hero.current_stats.get(Enums.StatType.HP, 1) <= 0:
+		if slot and slot.hero and slot.hero.get_current_stat(Enums.StatType.HP) <= 0:
 			var death_snapshot = DeathEventData.new(slot.hero, slot)
 			deaths_to_process.append(death_snapshot)
 			
@@ -195,7 +195,7 @@ func check_and_process_deaths() -> void:
 	for death in deaths_to_process:
 		var dead_hero = death.dead_hero
 		if is_instance_valid(dead_hero):
-			if dead_hero.team == Enums.Team.ENEMY:
+			if dead_hero.faction == Enums.Faction.OPPONENT:
 				dead_hero.queue_free()
 
 func execute_turn(slot: HeroSlot) -> void:
@@ -270,13 +270,13 @@ func clear_highlights():
 	for i in enemy_slots:
 		i.cleanup()
 	
-func get_enemy_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
-	var raw_slots = enemy_slots if acting_team == Enums.Team.FRIEND else player_slots
-	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_stat(Enums.StatType.HP) > 0)
+func get_enemy_slots(acting_faction: Enums.Faction) -> Array[HeroSlot]:
+	var raw_slots = enemy_slots if acting_faction == Enums.Faction.PLAYER else player_slots
+	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_current_stat(Enums.StatType.HP) > 0)
 
-func get_friendly_slots(acting_team: Enums.Team) -> Array[HeroSlot]:
-	var raw_slots = player_slots if acting_team == Enums.Team.FRIEND else enemy_slots
-	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_stat(Enums.StatType.HP) > 0)
+func get_friendly_slots(acting_faction: Enums.Faction) -> Array[HeroSlot]:
+	var raw_slots = player_slots if acting_faction == Enums.Faction.PLAYER else enemy_slots
+	return raw_slots.filter(func(slot): return slot != null and slot.hero != null and slot.hero.get_current_stat(Enums.StatType.HP) > 0)
 
 func reset_round():
 	for slot in hero_to_slot_map.values():
@@ -284,13 +284,13 @@ func reset_round():
 
 
 func create_slots():
-	load_party(PlayerData.player_party, combat_ui.player_party, player_slots, Enums.Team.FRIEND)
+	load_party(PlayerData.player_party, combat_ui.player_party, player_slots, Enums.Faction.PLAYER)
 	if RunManager.current_encounter == null:
 		printerr("CombatManager: No active encounter found!")
 		return
-	load_party(RunManager.current_encounter.enemy_team, combat_ui.enemy_party, enemy_slots, Enums.Team.ENEMY)
+	load_party(RunManager.current_encounter.enemy_team, combat_ui.enemy_party, enemy_slots, Enums.Faction.OPPONENT)
 	
-func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[HeroSlot], team_enum: Enums.Team):
+func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[HeroSlot], faction_enum: Enums.Faction):
 	var frontline_ui = ui_parent.get_node("Frontline")
 	var backline_ui = ui_parent.get_node("Backline")
 	
@@ -309,7 +309,7 @@ func load_party(party_data: Array, ui_parent: Node, target_slots_array: Array[He
 			slot.hero = null
 			slot.update_info()
 		else:
-			spawn_and_assign_hero(data, slot, team_enum)
+			spawn_and_assign_hero(data, slot, faction_enum)
 
 func add_hero(slot : HeroSlot, hero : Hero):
 	if slot.hero != null: 
@@ -341,7 +341,7 @@ func remove_hero(slot: HeroSlot):
 	slot.hero = null
 	slot.update_info()
 	
-func spawn_and_assign_hero(hero_source: Variant, slot: HeroSlot, team: Enums.Team) -> void:
+func spawn_and_assign_hero(hero_source: Variant, slot: HeroSlot, faction: Enums.Faction) -> void:
 	var hero: Hero
 	if hero_source is Hero:
 		hero = hero_source as Hero
@@ -351,7 +351,7 @@ func spawn_and_assign_hero(hero_source: Variant, slot: HeroSlot, team: Enums.Tea
 	else:
 		return
 	
-	hero.team = team
+	hero.faction = faction
 	
 	# We only lock their action out if they were summoned during a turn phase 
 	# where the active acting slot has ALREADY finished executing its profile.

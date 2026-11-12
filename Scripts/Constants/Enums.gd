@@ -1,5 +1,6 @@
 class_name Enums
 enum Team {FRIEND, ENEMY, SELF}
+enum Faction { PLAYER, OPPONENT }
 enum Target {
 	SINGLE,    # Picks exactly N random individual targets from the pool according to settings
 	REPEAT,    # Picks exactly 1 random target, and then strikes it according to target count (fury swipes)

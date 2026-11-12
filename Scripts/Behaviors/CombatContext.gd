@@ -25,7 +25,3 @@ func get_damage_dealt_to(target_slot: HeroSlot) -> int:
 
 func get_heal_dealt_to(target_slot: HeroSlot) -> int:
 	return heal_dealt_map.get(target_slot, 0)
-
-func resolve_targets(behavior: Behavior, combat_manager: CombatManager) -> Array[HeroSlot]:
-	# Simply bounces execution straight to the static solver!
-	return TargetingSolver.resolve_targets(behavior, self.source, combat_manager)

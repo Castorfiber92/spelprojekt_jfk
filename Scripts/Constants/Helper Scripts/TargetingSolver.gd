@@ -3,18 +3,22 @@ class_name TargetingSolver
 ## Primary Entry Point: Resolves team allocations, lane ranges, and target formats
 static func resolve_targets(behavior: Behavior, source_slot: HeroSlot, manager: CombatManager) -> Array[HeroSlot]:
 	var candidates: Array[HeroSlot] = []
-	var team = behavior.owner_hero.team
-	
+	var caster_faction = behavior.owner_hero.faction
+	var faction_name: String = Enums.Faction.keys()[caster_faction]
+	var target_name: String = Enums.Team.keys()[behavior.data.target_team]
+	print("[%s] %s (%s) -> targeting %s" % [faction_name, behavior.owner_hero.hero_data.name, behavior.data.name, target_name])
+
+	print("behavior's name is: " + str(behavior.data.name))
 	match behavior.data.target_team:
 		Enums.Team.SELF: 
 			return [source_slot]
 		Enums.Team.FRIEND: 
-			candidates = manager.get_friendly_slots(team)
+			candidates = manager.get_friendly_slots(caster_faction)
 			if not behavior.data.allow_self:
 				candidates = candidates.filter(func(slot): return slot != source_slot)
 		Enums.Team.ENEMY: 
-			candidates = manager.get_enemy_slots(team)
-			
+			candidates = manager.get_enemy_slots(caster_faction)
+	
 	if candidates.is_empty():
 		return [] as Array[HeroSlot]
 		
@@ -22,7 +26,7 @@ static func resolve_targets(behavior: Behavior, source_slot: HeroSlot, manager: 
 	var reachables = filter_by_range(candidates, source_slot, behavior)
 	
 	# 2. Run Defender Modifiers (e.g., Taunt overrides) if targeting an enemy team
-	if behavior.data.target_team == Enums.Team.ENEMY:
+	if behavior.data.target_team == Enums.Faction.OPPONENT:
 		reachables = apply_defender_hooks(reachables)
 		
 	# 3. Apply the structural target type profiles (SINGLE, CLEAVE, MULTI, REPEAT, ALL)
@@ -38,7 +42,7 @@ static func filter_by_range(candidates: Array[HeroSlot], source_slot: HeroSlot, 
 		for b in source_slot.hero.active_passives:
 			active_candidates = b.modify_targets("modify_initial_targets", active_candidates, source_slot)
 	
-	var action_range = behavior.owner_hero.get_stat(Enums.StatType.RANGE)
+	var action_range = behavior.owner_hero.get_base_stat(Enums.StatType.RANGE)
 	
 	var frontline = active_candidates.filter(func(slot): return slot.index <= 1)
 	var backline = active_candidates.filter(func(slot): return slot.index > 1)

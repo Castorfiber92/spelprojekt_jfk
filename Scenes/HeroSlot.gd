@@ -86,9 +86,9 @@ func highlight_slot(source = true):
 func update_info():
 	if hero != null:
 		toggle_visibility()
-		var health = hero.get_stat(Enums.StatType.HP)
+		var health = hero.get_current_stat(Enums.StatType.HP)
 		hp_label.text = str(health)
-		var dynamic_damage = hero.get_stat(Enums.StatType.DAMAGE)
+		var dynamic_damage = hero.get_current_stat(Enums.StatType.DAMAGE)
 		damage_label.text = str(dynamic_damage)
 		name_label.text = hero.hero_data.name
 		update_buff_slots()

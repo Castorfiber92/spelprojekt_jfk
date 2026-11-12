@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="1_blurr"]
 [ext_resource type="Resource" uid="uid://beueq5pi0pxwf" path="res://Resources/Heroes/Critter/Boxer Badger.tres" id="2_wwm4l"]
-[ext_resource type="Resource" uid="uid://fyen4aa0645q" path="res://Resources/Heroes/Critter/Mr Rabbit Monk.tres" id="3_gkg6r"]
+[ext_resource type="Resource" uid="uid://0ew6d0dpld4t" path="res://Resources/Heroes/Critter/Mr Rabbit Monk.tres" id="3_gkg6r"]
 [ext_resource type="Script" uid="uid://dgyqarksxg3jj" path="res://Resources/Combat/combat_composition.gd" id="4_o2d5n"]
 
 [resource]

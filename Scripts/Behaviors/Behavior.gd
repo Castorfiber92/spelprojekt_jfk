@@ -20,13 +20,13 @@ static func create(_data : BehaviorData) -> Behavior:
 	return instance
 
 func route_to_matching_hook(event_type: Enums.TriggerEvent, context: CombatContext, history: Variant) -> void:
-	# If this is an action phase and targets haven't been resolved yet, solve them!
-	if event_type == Enums.TriggerEvent.ON_EXECUTE_ACTION and context.targets.is_empty():
-		context.targets = TargetingSolver.resolve_targets(self, context.source, context.manager)
-
 	var method_name: String = Enums.TRIGGER_STRINGS.get(event_type, "")
-	if method_name != "" and data.has_method(method_name):
-		data.call(method_name, context, self, history)
+	if method_name == "" or not data.has_method(method_name):
+		return # Do not resolve targets for irrelevant events
+		
+	if context.source != null:
+		context.targets = TargetingSolver.resolve_targets(self, context.source, context.manager)
+	data.call(method_name, context, self, history)
 
 func modify_outgoing_effect(effect : CombatEffect):
 # Path A: Gated flow. If the resource implements 'modify_outgoing_effect', 
@@ -85,7 +85,7 @@ func roll_crit_local(checking_hero: Hero, main_action_crit: bool = false) -> boo
 	if data.proc_chance < 1.0 and randf() > data.proc_chance: 
 		return false
 	# Determine if a critical strike is actually occurring
-	var rolled_innate: bool = randf() < checking_hero.get_stat(Enums.StatType.CRIT)
+	var rolled_innate: bool = randf() < checking_hero.get_base_stat(Enums.StatType.CRIT)
 	# Not sure if this is as it should be here, but it works as long as we set the basic action behaviors
 	# to trigger_on_innate = true
 	var critical_to_check: bool = main_action_crit if main_action_crit != false else rolled_innate
