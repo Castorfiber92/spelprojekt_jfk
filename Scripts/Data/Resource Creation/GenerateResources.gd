@@ -239,11 +239,11 @@ func generate_heroes():
 		res.description = h_description
 		res.tribe = h_tribe
 		res.is_legendary_eligible = h_legendary
-		res.current_tier = HeroData.HeroTier.BRONZE
+		res.base_tier = Enums.HeroTier.BRONZE
 		res.base_HP = clampi(h_hp, 10, 50)
 		res.base_damage = clampi(h_dmg, 1, 10)
-		res.base_speed = clampi(h_spd, 1, 100)
-		res.base_range = clampi(h_rng, 1, 5)
+		res.base_speed = clampi(h_spd, 1, 10)
+		res.base_range = clampi(h_rng, 1, 3)
 		res.base_crit_chance = h_crit
 		res.is_minion = h_minion
 		res.base_action = find_behavior_globally(act_name)
@@ -260,12 +260,6 @@ func generate_heroes():
 				elif behavior_res is BehaviorData:
 					fresh_abilities.append(behavior_res)
 		
-		# ==============================================================================
-		# THE ULTIMATE OVERWRITE FIX:
-		# ==============================================================================
-		# Instead of modifying elements, we construct a completely fresh array layout.
-		# This assignment forces the change tracker to see the change, bypassing
-		# the C++ lock and cleanly forcing a hard disk rewrite!
 		res.abilities = fresh_abilities
 					
 		# Check if matching sprite file exists using optimized cache

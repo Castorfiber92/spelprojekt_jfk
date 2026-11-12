@@ -11,7 +11,7 @@ func present(manager: CombatManager) -> void:
 		if source and animation != "" and animation != "idle":
 			source.play_animation(animation, animation_duration)
 		# Use your existing team alignments to color the UI highlights cleanly
-		if effect_owner.team == target.hero.team:
+		if effect_owner.faction == target.hero.faction:
 			await target.apply_visual_effect(Enums.EffectType.HEAL, is_crit, -1, false).finished
 		else:
 			await target.apply_visual_effect(Enums.EffectType.DAMAGE, is_crit, -1, false).finished

@@ -9,9 +9,9 @@
 script = ExtResource("3_5dj2a")
 tribe = 2
 is_legendary_eligible = true
-base_HP = 30
+base_HP = 20
 base_damage = 1
-base_speed = 6
+base_speed = 3
 base_range = 3
 base_action = ExtResource("2_8u6vg")
 name = "Spectral Hallucinator"

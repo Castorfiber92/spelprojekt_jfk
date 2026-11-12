@@ -19,9 +19,9 @@ func on_death(combatContext: CombatContext, executor: Behavior, attack_history: 
 		
 		# Caches the team assignment smoothly from the snapshot
 		if runtime_owner:
-			effect.cached_team = runtime_owner.team
+			effect.cached_faction = runtime_owner.faction
 		else:
 			# Fallback if slot tracking is already clearing
-			effect.cached_team = caster_slot.team
+			effect.cached_faction = caster_slot.faction
 			
 		GameEvents.effect_created.emit(effect)

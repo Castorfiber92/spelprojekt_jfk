@@ -18,7 +18,7 @@ func on_execute_action(combatContext: CombatContext, executor: Behavior, attack_
 				var effect = executor.create_effect(DamageEffect, target, source_slot)
 				effect.is_crit = rolled_a_crit
 				
-				var final_damage = source_slot.hero.get_stat(Enums.StatType.DAMAGE)
+				var final_damage = source_slot.hero.get_base_stat(Enums.StatType.DAMAGE)
 				if effect.is_crit:
 					final_damage = int(final_damage * crit_multiplier)
 				

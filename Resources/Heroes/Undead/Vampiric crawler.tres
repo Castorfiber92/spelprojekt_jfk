@@ -8,9 +8,9 @@
 [resource]
 script = ExtResource("3_3k4dr")
 tribe = 2
-base_HP = 25
+base_HP = 12
 base_damage = 3
-base_speed = 2
+base_speed = 4
 base_range = 1
 base_action = ExtResource("2_wu58y")
 name = "Vampiric crawler"

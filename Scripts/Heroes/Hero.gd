@@ -5,7 +5,7 @@ var hero_data : HeroData
 var current_tier : Enums.HeroTier
 
 @export var current_enchantments : Array[Enchantment]
-@export var team: Enums.Team = Enums.Team.FRIEND
+@export var faction: Enums.Faction = Enums.Faction.PLAYER
 
 var has_acted = false
 
@@ -90,9 +90,9 @@ func _on_round_ended(manager: CombatManager) -> void:
 	trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, context, manager)
 
 func take_damage(damage : int, source : HeroSlot, manager: CombatManager) -> void:
-	var active_max_hp = runtime_base_stats.get(Enums.StatType.HP, hero_data.base_HP)
+	var active_max_hp = get_base_stat(Enums.StatType.HP)
 	## Does this check for behavior increases stats?
-	var old_hp = get_stat(Enums.StatType.HP)
+	var old_hp = get_current_stat(Enums.StatType.HP)
 	current_stats[Enums.StatType.HP] = clampi(old_hp - damage, 0, active_max_hp)
 	
 	print(hero_data.name, " takes ", damage, " damage from ", source.hero.hero_data.name if source and source.hero else "unknown")
@@ -105,9 +105,9 @@ func take_damage(damage : int, source : HeroSlot, manager: CombatManager) -> voi
 		
 func heal_HP(value : int, source : HeroSlot) -> void:
 	var active_max_hp = runtime_base_stats.get(Enums.StatType.HP, hero_data.base_HP)
-	var old_hp = get_stat(Enums.StatType.HP)
+	var old_hp = get_base_stat(Enums.StatType.HP)
 	current_stats[Enums.StatType.HP] = clampi(old_hp + value, 0, active_max_hp)
-	var actual_healed = current_stats[Enums.StatType.HP] - old_hp
+	var actual_healed = get_current_stat(Enums.StatType.HP) - old_hp
 	print(hero_data.name, " heals for ", actual_healed)
 	#trigger_behavior_event(Enums.TriggerEvent.ON_HEAL,[],manager)
 	GameEvents.hero_healed.emit(self, source, actual_healed)
@@ -150,7 +150,7 @@ func trigger_behavior_event(event_type: Enums.TriggerEvent, combat_context: Comb
 	for b in active_passives:
 		b.route_to_matching_hook(event_type, combat_context, null)
 
-func get_stat(stat_type: Enums.StatType) -> Variant:
+func get_base_stat(stat_type: Enums.StatType) -> Variant:
 	# 2. We check runtime_base_stats first. If missing (for some reason), look inside the defaults dictionary
 	var default_fallbacks = {
 		Enums.StatType.SPEED: hero_data.base_speed,
@@ -160,8 +160,9 @@ func get_stat(stat_type: Enums.StatType) -> Variant:
 		Enums.StatType.CRIT: hero_data.base_crit_chance
 	}
 	var backup_value = default_fallbacks.get(stat_type, 0)
-	var final_value = current_stats.get(stat_type, backup_value)
+	var final_value = runtime_base_stats.get(stat_type, backup_value)
 	var stat_wrapper = { "value": final_value }
+	## This check should maybe not be here, but let behaviors just add stats someplace else
 	for behavior in stat_modifiers:
 		if behavior.data.has_method("_execute_stat_modification"):
 			behavior.data._execute_stat_modification(stat_wrapper)
@@ -175,7 +176,16 @@ func get_stat(stat_type: Enums.StatType) -> Variant:
 		Enums.StatType.CRIT:
 			return clampf(final_value, 0.0, 1.0)
 	return final_value
-	
+
+func get_current_stat(stat_type: Enums.StatType) -> Variant:
+	var final_value = current_stats.get(stat_type, 0)
+	var stat_wrapper = { "value": final_value }
+	for behavior in stat_modifiers:
+		if behavior.data.has_method("_execute_stat_modification"):
+			behavior.data._execute_stat_modification(stat_wrapper)
+	final_value = stat_wrapper["value"]
+	return final_value
+
 func get_behaviors() -> Array[Behavior]:
 	# Combines both for the UI layer to draw status icons smoothly
 	return active_passives + stat_modifiers

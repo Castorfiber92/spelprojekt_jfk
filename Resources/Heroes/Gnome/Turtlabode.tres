@@ -9,7 +9,7 @@
 script = ExtResource("3_ihx8n")
 tribe = 3
 is_legendary_eligible = true
-base_HP = 50
+base_HP = 30
 base_damage = 2
 base_speed = 1
 base_range = 1

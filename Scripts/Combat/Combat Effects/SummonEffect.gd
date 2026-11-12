@@ -2,7 +2,7 @@ extends CombatEffect
 class_name SummonEffect
 
 var hero_to_summon : HeroData
-var cached_team : Enums.Team 
+var cached_faction : Enums.Faction 
 
 func execute(_manager: CombatManager) -> void:
 	if hero_to_summon == null or source == null:
@@ -14,7 +14,7 @@ func execute(_manager: CombatManager) -> void:
 		return
 		
 	# Spawn the minion and securely assign it directly to the designated empty slot layout
-	_manager.spawn_and_assign_hero(hero_to_summon, source, cached_team)
+	_manager.spawn_and_assign_hero(hero_to_summon, source, cached_faction)
 	print("Summon Success: Reoccupied slot ", source.name, " with: ", hero_to_summon.name)
 
 func present(manager: CombatManager) -> void:
