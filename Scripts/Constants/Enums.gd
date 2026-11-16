@@ -56,6 +56,7 @@ enum TriggerEvent {
 	ON_DAMAGE_DEALT,
 	ON_DAMAGE_TAKEN,
 	ON_DEATH,
+	ON_ANY_DEATH,
 	ON_ROUND_END
 }
 

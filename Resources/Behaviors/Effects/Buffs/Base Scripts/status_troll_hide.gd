@@ -1,7 +1,10 @@
 extends BehaviorData
 class_name Status_trollhide
 
-# Inside Status_trollhide.gd
+# Value is how much damage reduction we do
+# Max value is how much total healing/round we allow
+# Min value is how low damage we always take
+# stacks is the amount to be healed
 func modify_incoming_effect(effect: CombatEffect, executor: Behavior):
 	if effect is DamageEffect:
 		effect.value = maxi(min_value, effect.value - value)
@@ -12,5 +15,6 @@ func on_turn_start(combatContext: CombatContext, executor: Behavior, attack_hist
 	if executor.current_stacks <= 0:
 		return
 	var effect = executor.create_effect(HealEffect, combatContext.source, combatContext.source) as CombatEffect
+	effect.origin = CombatEffect.EffectOrigin.STATUS_TICK
 	effect.value = executor.current_stacks
 	GameEvents.effect_created.emit(effect)

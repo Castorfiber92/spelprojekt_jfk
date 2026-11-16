@@ -39,7 +39,8 @@ func modify_outgoing_effect(effect : CombatEffect):
 		if data.proc_chance < 1.0 and randf() > data.proc_chance:
 			return
 		## If the modifying behavior forces the action to become a crit, set it as crit
-		effect.is_crit = data.force_critical_strike
+		if data.force_critical_strike:
+			effect.is_crit = true
 		
 		# Pass the call to the resource, providing 'self' as the runtime executor state
 		data.modify_outgoing_effect(effect, self)

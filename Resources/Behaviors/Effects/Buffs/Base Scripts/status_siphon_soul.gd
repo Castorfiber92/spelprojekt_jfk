@@ -11,4 +11,5 @@ func on_damage_taken(combatContext: CombatContext, executor: Behavior, attack_hi
 		for target in combatContext.targets:
 			#
 			var effect = executor.create_effect(ExchangeHPEffect, target, combatContext.source)
+			effect.origin = CombatEffect.EffectOrigin.REFLECT
 			GameEvents.effect_created.emit(effect)

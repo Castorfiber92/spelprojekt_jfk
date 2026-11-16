@@ -14,7 +14,7 @@ texture = ExtResource("2_eiwfq")
 atlas = ExtResource("3_beyo3")
 region = Rect2(313, 83, 176, 171)
 
-[node name="ShopSlot" type="PanelContainer" unique_id=2010550177 node_paths=PackedStringArray("UI", "hp_label", "lvl_label", "dmg_label", "cost_label", "sprite")]
+[node name="ShopSlot" type="PanelContainer" unique_id=2010550177 node_paths=PackedStringArray("UI", "hp_label", "tier_label", "dmg_label", "cost_label", "sprite")]
 custom_minimum_size = Vector2(150, 200)
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,7 +26,7 @@ grow_vertical = 2
 script = ExtResource("1_edeb2")
 UI = NodePath("Layout")
 hp_label = NodePath("Layout/Header/HPPanel/HP")
-lvl_label = NodePath("Layout/Header/LVLPanel/LEVEL")
+tier_label = NodePath("Layout/Header/TIERPanel/TIER")
 dmg_label = NodePath("Layout/Header/DMGPanel/DAMAGE")
 cost_label = NodePath("Layout/Footer/PanelContainer2/COST")
 sprite = NodePath("Layout/Control/Sprite")
@@ -64,7 +64,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="LVLPanel" type="PanelContainer" parent="Layout/Header" unique_id=2144075319]
+[node name="TIERPanel" type="PanelContainer" parent="Layout/Header" unique_id=2144075319]
 layout_mode = 2
 size_flags_horizontal = 3
 offset_transform_enabled = true
@@ -73,7 +73,7 @@ offset_transform_visual_only = false
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_s71ko")
 
-[node name="LEVEL" type="Label" parent="Layout/Header/LVLPanel" unique_id=996583613]
+[node name="TIER" type="Label" parent="Layout/Header/TIERPanel" unique_id=996583613]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
 text = "SILVER"

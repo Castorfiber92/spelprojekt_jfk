@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_xrwne"]
 [ext_resource type="Resource" uid="uid://dqnl0460t06kg" path="res://Resources/Behaviors/Basic Actions/Custom Actions/cast_basic_bat_intoxicator.tres" id="2_06d1b"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="3_06d1b"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_r476a"]
 [ext_resource type="SpriteFrames" uid="uid://cvaffewfksjiu" path="res://Graphics/Hero Sprites/Orc/bat_intoxicator_sprites.tres" id="4_shpuw"]
 
@@ -13,5 +14,6 @@ base_damage = 1
 base_speed = 3
 base_range = 2
 base_action = ExtResource("2_06d1b")
+growth_data = ExtResource("3_06d1b")
 name = "Bat Intoxicator"
 sprites = ExtResource("4_shpuw")

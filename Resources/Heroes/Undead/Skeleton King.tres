@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_vyk64"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_2nd7a"]
 [ext_resource type="SpriteFrames" uid="uid://cqt3qgooodwsg" path="res://Graphics/Hero Sprites/Undead/skeleton_king_sprites.tres" id="4_3wu55"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="4_35hq3"]
 
 [resource]
 script = ExtResource("3_2nd7a")
@@ -15,5 +16,6 @@ base_speed = 3
 base_range = 1
 base_action = ExtResource("2_vyk64")
 abilities = Array[ExtResource("1_3wu55")]([ExtResource("2_gf2w8")])
+growth_data = ExtResource("4_35hq3")
 name = "Skeleton King"
 sprites = ExtResource("4_3wu55")

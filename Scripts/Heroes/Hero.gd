@@ -1,11 +1,11 @@
-extends Node
+extends RefCounted
 class_name Hero
 
 var hero_data : HeroData
-var current_tier : Enums.HeroTier
+var tier_component : HeroTierComponent
 
-@export var current_enchantments : Array[Enchantment]
-@export var faction: Enums.Faction = Enums.Faction.PLAYER
+var current_enchantments : Array[Enchantment]
+var faction: Enums.Faction = Enums.Faction.PLAYER
 
 var has_acted = false
 
@@ -20,32 +20,24 @@ var current_stats: Dictionary = {}
 
 static func create(data: HeroData) -> Hero:
 	var new_hero = Hero.new()
-	new_hero.hero_data = data.duplicate(true) as HeroData
+	new_hero.hero_data = data
 	new_hero.initialize_data()
 	return new_hero
 
-func _enter_tree() -> void:
+func activate() -> void:
 	if not GameEvents.combat_event.is_connected(_on_combat_event):
 		GameEvents.combat_event.connect(_on_combat_event)
 
-
-# Triggers unconditionally the exact millisecond the node leaves a slot parent
-func _exit_tree() -> void:
+func deactivate() -> void:
 	if GameEvents.combat_event.is_connected(_on_combat_event):
 		GameEvents.combat_event.disconnect(_on_combat_event)
 
-func _on_combat_event(trigger: Enums.TriggerEvent, context: Dictionary) -> void:
-	# Guard: If context contains a slot tracker, verify that it points to THIS hero instance
-	if context.has("slot"):
-		var slot: HeroSlot = context["slot"]
-		if slot and slot.hero != self:
-			return # Disregard events belonging to other heroes
-	
-	# Unpack the optional manager reference cleanly
-	var manager: CombatManager = context.get("manager", null)
-	
-	var combat_context = CombatContext.new(context.get("slot"), [], manager)
-	trigger_behavior_event(trigger, combat_context, manager)
+func _on_combat_event(trigger: Enums.TriggerEvent, combat_context: CombatContext) -> void:
+	# Guard: Ignores events targeted at other slots
+	if combat_context.source != null and combat_context.source.hero != self:
+		return
+		
+	trigger_behavior_event(trigger, combat_context, combat_context.manager)
 
 func initialize_data() -> void:	
 	if hero_data.base_action:
@@ -56,6 +48,9 @@ func initialize_data() -> void:
 		var ability_behavior = Behavior.create(ability_res)
 		ability_behavior.owner_hero = self # Inject ownership immediately at creation!
 		add_behavior(ability_behavior)
+	tier_component = HeroTierComponent.new()
+	
+	tier_component.setup(self)
 	reset_temporary_data()
 	initialize_runtime_stats()
 
@@ -89,7 +84,7 @@ func _on_round_ended(manager: CombatManager) -> void:
 	var context = CombatContext.new(local_slot, [], manager)
 	trigger_behavior_event(Enums.TriggerEvent.ON_ROUND_END, context, manager)
 
-func take_damage(damage : int, source : HeroSlot, manager: CombatManager) -> void:
+func take_damage(damage : int, source, manager) -> void:
 	var active_max_hp = get_base_stat(Enums.StatType.HP)
 	## Does this check for behavior increases stats?
 	var old_hp = get_current_stat(Enums.StatType.HP)
@@ -104,8 +99,8 @@ func take_damage(damage : int, source : HeroSlot, manager: CombatManager) -> voi
 
 		
 func heal_HP(value : int, source : HeroSlot) -> void:
-	var active_max_hp = runtime_base_stats.get(Enums.StatType.HP, hero_data.base_HP)
-	var old_hp = get_base_stat(Enums.StatType.HP)
+	var active_max_hp = get_base_stat(Enums.StatType.HP)
+	var old_hp = get_current_stat(Enums.StatType.HP)
 	current_stats[Enums.StatType.HP] = clampi(old_hp + value, 0, active_max_hp)
 	var actual_healed = get_current_stat(Enums.StatType.HP) - old_hp
 	print(hero_data.name, " heals for ", actual_healed)

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_e1afh"]
 [ext_resource type="Resource" uid="uid://fq7jmuie3yr" path="res://Resources/Behaviors/Passive Abilities/Critter/mark.tres" id="2_bjlrg"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="3_e1afh"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="4_bjlrg"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="4_v6ux5"]
 [ext_resource type="SpriteFrames" uid="uid://grbii4cwfivh" path="res://Graphics/Hero Sprites/Critter/boxer_badger_sprites.tres" id="5_psnpt"]
 
@@ -14,5 +15,6 @@ base_speed = 3
 base_range = 1
 base_action = ExtResource("3_e1afh")
 abilities = Array[ExtResource("1_e1afh")]([ExtResource("2_bjlrg")])
+growth_data = ExtResource("4_bjlrg")
 name = "Boxer Badger"
 sprites = ExtResource("5_psnpt")

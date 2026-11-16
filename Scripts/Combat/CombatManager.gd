@@ -37,7 +37,8 @@ func _ready() -> void:
 	await wait_for_input("ui_accept")
 	
 	# The manager announces globally that the match has officially begun!
-	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_START_OF_BATTLE, {"manager": self})
+	var context = CombatContext.new(null, [], self)
+	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_START_OF_BATTLE, context)
 	
 	await wait_for_stack_to_clear()
 	run_combat_loop()
@@ -49,7 +50,8 @@ func run_combat_loop():
 		# If no heroes can act, the round is officially over!
 		if next_hero_slot == null:
 			# Shouts globally: This tells all active status items to tick natively!
-			GameEvents.combat_event.emit(Enums.TriggerEvent.ON_ROUND_END, {"manager": self})
+			var context = CombatContext.new(null, [], self)
+			GameEvents.combat_event.emit(Enums.TriggerEvent.ON_ROUND_END, context)
 			
 			# Wait for any status damage or end-of-round heals to fully resolve
 			await wait_for_stack_to_clear()
@@ -96,8 +98,7 @@ func emergency_exit_to_overworld() -> void:
 	is_processing = false
 	effect_stack.clear()
 	for hero in PlayerData.player_party:
-		if hero != null and hero.get_parent() != null: 
-			hero.get_parent().remove_child(hero)
+		cleanup_all_slots()
 	# 2. Swap back to the overworld map scene safely
 	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 
@@ -152,7 +153,7 @@ func process_stack() -> void:
 
 func process_effect(effect: CombatEffect):
 	# 1. Outgoing Interception Valve: Evaluates attacker passives
-	if effect.effect_owner != null and is_instance_valid(effect.effect_owner):
+	if effect.effect_owner != null:
 		for b in effect.effect_owner.active_passives:
 			b.modify_outgoing_effect(effect)
 				
@@ -173,43 +174,36 @@ func check_and_process_deaths() -> void:
 	if deaths_to_process.is_empty():
 		return
 
-	# ==============================================================================
-	# STEP 1: PUSH DEATH TRIGGERS FIRST (While layout relationships are 100% valid!)
-	# ==============================================================================
+	# push death triggers
+
 	for death in deaths_to_process:
-		# Passes the original valid slot container as the historical variant payload
-		GameEvents.combat_event.emit(Enums.TriggerEvent.ON_DEATH, {"slot": death.original_slot, "manager": self})
-		print("Pushed death trigger for ", death.dead_hero.hero_data.name)
-		
-	# ==============================================================================
-	# STEP 2: SEVER RELATIONSHIPS (Now that all passives have safely executed)
-	# ==============================================================================
+	# Trigger self-death passives on the dying hero only
+		var self_context = CombatContext.new(death.original_slot, [], self)
+		GameEvents.combat_event.emit(Enums.TriggerEvent.ON_DEATH, self_context)
+	
+	# Broadcast to all other heroes/items on the board, by setting source as null and target as something to
+	# bypass the self-triggering behaviors.
+		var global_context = CombatContext.new(null, [death.original_slot], self)
+		GameEvents.combat_event.emit(Enums.TriggerEvent.ON_ANY_DEATH, global_context)
+	
+	# Clean up and "kill" the hero
 	for death in deaths_to_process:
+		death.dead_hero.deactivate()
 		hero_to_slot_map.erase(death.dead_hero)
 		death.original_slot.hero = null 
 		death.original_slot.update_info() 
 
-	# ==============================================================================
-	# STEP 3: MEMORY GARBAGE DISPOSAL
-	# ==============================================================================
-	for death in deaths_to_process:
-		var dead_hero = death.dead_hero
-		if is_instance_valid(dead_hero):
-			if dead_hero.faction == Enums.Faction.OPPONENT:
-				dead_hero.queue_free()
 
 func execute_turn(slot: HeroSlot) -> void:
 	print("New turn for ", slot.hero.hero_data.name)
 	active_slot = slot
+	var context = CombatContext.new(slot, [], self)
 	await get_tree().process_frame
-	
-	# Pack the data dependencies cleanly
-	var context: Dictionary = {"slot": slot, "manager": self}
 	
 	# PHASE 1: PRE_TURN / TURN_START
 	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_TURN_START, context)
 	await wait_for_stack_to_clear()
-	if not is_instance_valid(slot.hero): return
+	if slot.hero == null: return
 	
 	# Status verification
 	if not slot.hero.can_act():
@@ -220,20 +214,20 @@ func execute_turn(slot: HeroSlot) -> void:
 		
 	# PHASE 2: BEFORE_ACT
 	await wait_for_stack_to_clear()
-	if not is_instance_valid(slot.hero): return
+	if slot.hero == null: return
 	
 	# PHASE 3: EXECUTE / ACTION_EXECUTION
 	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_EXECUTE_ACTION, context)
 	await wait_for_stack_to_clear()
 	
-	if is_instance_valid(slot.hero):
-		slot.hero.has_acted = true
-	else:
+	if slot.hero == null:
 		return
+	else:
+		slot.hero.has_acted = true
 		
 	# PHASE 4: AFTER_ACT
 	await wait_for_stack_to_clear()
-	if not is_instance_valid(slot.hero): return
+	if slot.hero == null: return
 	
 	# PHASE 5: POST_TURN / TURN_END
 	GameEvents.combat_event.emit(Enums.TriggerEvent.ON_TURN_END, context)
@@ -315,13 +309,8 @@ func add_hero(slot : HeroSlot, hero : Hero):
 	if slot.hero != null: 
 		remove_hero(slot)
 		
-	# FIXED: Safety orphan check. If this hero node is still gripped by an old parent 
-	# from a previous match, we cleanly unparent it before placing it in the new slot tree!
-	if hero.get_parent() != null:
-		hero.get_parent().remove_child(hero)
-		
 	slot.hero = hero
-	slot.add_child(hero)
+	hero.activate()
 	
 	slot.play_animation("idle")
 	hero_to_slot_map[hero] = slot
@@ -333,11 +322,9 @@ func remove_hero(slot: HeroSlot):
 		
 	# FIXED: Cleanly unparent the node from the slot right here.
 	# This ensures that traveling heroes are free to be re-parented in the next battle!
-	var hero_node = slot.hero
-	if hero_node.get_parent() == slot:
-		slot.remove_child(hero_node)
-		
-	hero_to_slot_map.erase(hero_node)
+	var old_hero = slot.hero
+	old_hero.deactivate()
+	hero_to_slot_map.erase(old_hero)
 	slot.hero = null
 	slot.update_info()
 	
@@ -362,22 +349,25 @@ func spawn_and_assign_hero(hero_source: Variant, slot: HeroSlot, faction: Enums.
 		
 	add_hero(slot, hero)
 
-func win_combat():
+func cleanup_all_slots() -> void:
+	for slot in player_slots + enemy_slots:
+		if is_instance_valid(slot) and slot.hero != null:
+			slot.hero.deactivate()
+			slot.hero = null
+	hero_to_slot_map.clear()
+
+func win_combat() -> void:
 	await wait_for_input("ui_accept")
-	for hero in PlayerData.player_party:
-		if hero != null and hero.get_parent() != null: 
-			hero.get_parent().remove_child(hero)
+	cleanup_all_slots()
 	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 	
 func lose_combat():
 	await wait_for_input("ui_accept")
-	for hero in PlayerData.player_party:
-		if hero != null and hero.get_parent() != null: 
-			hero.get_parent().remove_child(hero)
+	cleanup_all_slots()
 	get_tree().change_scene_to_file("res://Scripts/Overworld/OverworldManager.tscn")
 
 
-func restart_combat_with_new_enemies():
+func restart_combat_with_new_enemies() -> void:
 	if RunManager.current_encounter == null:
 		printerr("CombatManager: Cannot restart because current_encounter is missing!")
 		return
@@ -387,27 +377,16 @@ func restart_combat_with_new_enemies():
 	# 1. Capture the structural type of the battle before discarding it
 	var active_battle_type = RunManager.current_encounter.encounter_type
 	
-	# 2. SIGNAL CLEANUP: Cleanly disconnect only the local combat-death signal!
-	for slot in player_slots:
-		if is_instance_valid(slot) and is_instance_valid(slot.hero):
-			var current_player_hero = slot.hero
-			#var die_callable = remove_hero.bind(slot)
-				
-			# THE ONLY CHANGE: Safely detach your player heroes from the slot trees!
-			# This protects them from queue_free(), keeping your PlayerData 100% safe in memory.
-			if current_player_hero.get_parent() == slot:
-				slot.remove_child(current_player_hero)
+	# 2. SIGNAL & REFERENCE CLEANUP: Disconnects signals for both players and enemies
+	cleanup_all_slots()
 				
 	# 3. CLEAN REAP: Clear out live variables and state machines
 	effect_stack.clear()
 	is_processing = false
 	combat_active = true 
 	
-	# 4. SEVER RELATIONSHIPS: Erase tracker memory data completely
-	hero_to_slot_map.clear()
-	
-	# 5. DESTROY VISUAL NODES: Completely free the old slot scenes from memory
-	# Your player heroes are now safely unparented, so they are not destroyed!
+	# 4. DESTROY VISUAL NODES: Free the old slot scenes safely.
+	# Player heroes stay alive automatically because PlayerData.player_party still references them!
 	for slot in player_slots:
 		if is_instance_valid(slot):
 			slot.queue_free()
@@ -418,15 +397,14 @@ func restart_combat_with_new_enemies():
 			slot.queue_free()
 	enemy_slots.clear()
 	
-	# 6. GENERATE NEW ENCOUNTER: Pass the battle type back to your RunManager
+	# 5. GENERATE NEW ENCOUNTER
 	RunManager.roll_next_encounter(active_battle_type)
 	
 	if RunManager.current_encounter == null:
 		printerr("CombatManager: RunManager failed to roll a new encounter. Aborting reset.")
 		return
 	
-	# 7. RE-INITIALIZE: Yield one single frame to let old children clean up, 
-	# then spawn the fresh teams onto the battlefield canvas
+	# 6. RE-INITIALIZE
 	await get_tree().process_frame
 	
 	create_slots()

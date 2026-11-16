@@ -1,7 +1,7 @@
 extends PanelContainer
 class_name HeroSlot
 
-@export var hero : Hero
+var hero : Hero
 @onready var hp_label : Label = $HBoxContainer/HP/Label
 @onready var damage_label : Label = $HBoxContainer/DAMAGE/Label
 @onready var name_label : Label = $VBoxContainer/PanelContainer2/HeroName
@@ -46,8 +46,7 @@ func apply_visual_effect(type : Enums.EffectType, crit : bool,value : int, shake
 		# below is temporary, we can change it to something else later
 		var text_string = str(prefix, value)
 		VisualEffects.spawn_floating_text(sprite, crit, text_string, text_color, text_duration)
-	# .chain() forces this step to wait until the flash/shake steps finish
-	#tween.chain().tween_interval(buffer_duration)
+
 	master_tween.tween_interval(duration)
 	return master_tween 
 
@@ -109,8 +108,6 @@ func update_buff_slots():
 	# 2. Gather currently valid buffs from the hero
 	var current_buffs: Array = []
 	
-	# FIXED: Instead of reading the obsolete .behaviors dictionary, 
-	# we call our backwards-compatible array function getter!
 	for b in hero.get_behaviors():
 		if b.data.type == BehaviorData.BehaviorType.BUFF:
 			current_buffs.append(b)

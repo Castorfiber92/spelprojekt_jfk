@@ -5,4 +5,7 @@
 
 [resource]
 script = ExtResource("1_6ltlq")
+hp_per_level = 6
+damage_per_level = 2
+speed_per_level = 2
 metadata/_custom_type_script = "uid://cyq1fik8t3y5i"

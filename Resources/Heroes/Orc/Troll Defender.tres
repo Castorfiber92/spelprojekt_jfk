@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_ts3ps"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_nxgxi"]
 [ext_resource type="SpriteFrames" uid="uid://j0pgan7nd8ka" path="res://Graphics/Hero Sprites/Orc/troll_defender_sprites.tres" id="4_2uq10"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="4_nxgxi"]
 
 [resource]
 script = ExtResource("3_nxgxi")
@@ -15,5 +16,6 @@ base_speed = 2
 base_range = 1
 base_action = ExtResource("2_ts3ps")
 abilities = Array[ExtResource("1_eb770")]([ExtResource("2_nxgxi")])
+growth_data = ExtResource("4_nxgxi")
 name = "Troll Defender"
 sprites = ExtResource("4_2uq10")
