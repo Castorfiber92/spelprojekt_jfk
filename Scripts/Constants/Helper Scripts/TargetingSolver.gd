@@ -7,8 +7,6 @@ static func resolve_targets(behavior: Behavior, source_slot: HeroSlot, manager: 
 	var faction_name: String = Enums.Faction.keys()[caster_faction]
 	var target_name: String = Enums.Team.keys()[behavior.data.target_team]
 	print("[%s] %s (%s) -> targeting %s" % [faction_name, behavior.owner_hero.hero_data.name, behavior.data.name, target_name])
-
-	print("behavior's name is: " + str(behavior.data.name))
 	match behavior.data.target_team:
 		Enums.Team.SELF: 
 			return [source_slot]

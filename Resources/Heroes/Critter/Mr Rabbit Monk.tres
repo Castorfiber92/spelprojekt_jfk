@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_27v6b"]
 [ext_resource type="Resource" uid="uid://c6ixr6o3yurip" path="res://Resources/Behaviors/Basic Actions/attack_basic.tres" id="2_8oybs"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="3_8oybs"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_v3vjd"]
 [ext_resource type="SpriteFrames" uid="uid://blebytpdob4m6" path="res://Graphics/Hero Sprites/Critter/mr_rabbit_monk_sprites.tres" id="4_mhm1v"]
 
@@ -12,5 +13,6 @@ base_damage = 3
 base_speed = 5
 base_range = 1
 base_action = ExtResource("2_8oybs")
+growth_data = ExtResource("3_8oybs")
 name = "Mr Rabbit Monk"
 sprites = ExtResource("4_mhm1v")

@@ -17,7 +17,7 @@ class_name HeroData
 @export var base_action : BehaviorData
 @export var abilities : Array[BehaviorData]
 @export_group("Level Data")
-@export var tier_growth_data : HeroGrowthData
+@export var growth_data : HeroGrowthData
 
 func get_starting_stat(stat: Enums.StatType) -> Variant:
 

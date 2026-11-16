@@ -15,10 +15,6 @@ class_name HeroGrowthData
 ## This is more for if we want to add another ability or unlock something new.
 @export var ability_unlocks: Dictionary[Enums.HeroTier, BehaviorData] = {}
 @export var new_range: Dictionary[Enums.HeroTier, int] = {}
-
-## Override this method in inherited scripts for unique hero mechanics, if none, skip it
-func apply_custom_levelup_logic(hero: Hero, new_level: int) -> void:
-	pass
 	
 func get_stat_upgrade(stat_type : Enums.StatType, tier : Enums.HeroTier = Enums.HeroTier.BRONZE) -> Variant:
 	match stat_type:

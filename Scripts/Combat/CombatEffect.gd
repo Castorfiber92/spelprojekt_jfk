@@ -10,11 +10,18 @@ var animation_duration : float
 var tags: Array[String] = [] # ["fire", "thorns", "melee"]
 var buffs: Array[Behavior] = []
 var enchantments: Array[Enchantment] = []
+var origin: EffectOrigin = EffectOrigin.ACTION
 	
 # Flags for items to flip, these can be anything, and will need to be updated, but right now
 # they are only placeholders, might not even use this
 var is_crit: bool = false
 var bypass_armor: bool = false
+enum EffectOrigin {
+	ACTION,      # Normal attacks, casts, self-buffs, active skills
+	STATUS_TICK, # Poison, Burn, Regen, etc
+	REFLECT      # Thorns / Counter Attack
+}
+
 
 func _init(_source: HeroSlot = null, _effect_owner: Hero = null, _target: HeroSlot = null, _value: int = 0, _animation: String = "", _animation_duration: float = 0.15, _buffs: Array[Behavior] = [],_enchantments: Array[Enchantment] = []):
 	source = _source

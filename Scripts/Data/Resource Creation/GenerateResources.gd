@@ -33,7 +33,8 @@ const EnumsScript = preload("res://Scripts/Constants/Enums.gd")
 # Caches and internal properties
 var compositions_csv_path: String = "" 
 var behavior_cache: Dictionary = {}
-var sprite_cache: Dictionary = {}   
+var sprite_cache: Dictionary = {}
+var growth_data_cache : Dictionary = {}
 var hero_asset_cache: Dictionary = {}
 var all_files: Array[String] = []
 
@@ -159,6 +160,7 @@ func generate_heroes():
 	print("Hero Importer: Building resource lookup index...")
 	behavior_cache.clear()
 	sprite_cache.clear()
+	growth_data_cache.clear()
 	
 	var all_files: Array[String] = []
 	_get_all_files_on_disk("res://", all_files)
@@ -168,6 +170,8 @@ func generate_heroes():
 			var file_lower = path.get_file().strip_edges().to_lower()
 			if file_lower.ends_with("_sprites.tres"):
 				sprite_cache[file_lower] = path
+			elif file_lower.begins_with("growth_data_"):
+				growth_data_cache[file_lower] = path
 			else:
 				behavior_cache[file_lower] = path
 	# ------------------------------------------------------------------
@@ -269,6 +273,15 @@ func generate_heroes():
 		else:
 			printerr("Sprite for ", h_name, " not found or mismatched string.")
 			
+		var growth_data_filename: String =  "growth_data" + h_name.to_lower().replace(" ", "_") + ".tres"
+		if growth_data_cache.has(growth_data_filename):
+			res.growth_data = load(growth_data_cache[growth_data_filename]) as HeroGrowthData
+		else:
+			var basic_growth_data = load(growth_data_cache["growth_data_basic.tres"]) as HeroGrowthData
+			if basic_growth_data != null:
+				res.growth_data = basic_growth_data
+			else:
+				printerr("Default growth data not found in files.")
 		# Save the resource securely
 		ResourceSaver.save(res, save_path)
 		print("Successfully Synced: ", h_name)

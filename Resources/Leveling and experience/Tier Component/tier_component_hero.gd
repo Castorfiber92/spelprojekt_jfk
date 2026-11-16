@@ -1,42 +1,21 @@
 extends Node
 class_name HeroTierComponent
 
-#signal tiered_up(new_tier: Enums.HeroTier)
+signal tiered_up(hero_tiering_up : Hero, new_tier: Enums.HeroTier)
 
 @export var growth_blueprint: HeroGrowthData
 var parent_hero: Hero
-
 var current_tier: Enums.HeroTier
 
-func tier_up() -> void:
-	# Update the basic stats of the runtime hero
-	# Carry the change over to the /currentactive combat value
-	var stats_to_upgrade = [Enums.StatType.HP, Enums.StatType.DAMAGE, Enums.StatType.SPEED]
-	for stat in stats_to_upgrade:
-		var amount = growth_blueprint.get_stat_upgrade(stat)
-		parent_hero.runtime_base_stats[stat] += amount
-		parent_hero.current_stats[stat] += amount
-
-	# 2. Check for Ability/Passive unlocking milestones
-	if growth_blueprint.ability_unlocks.has(current_tier):
-		parent_hero.learn_behavior(growth_blueprint.ability_unlocks[current_tier])
-	# 3. Range
-	if growth_blueprint.new_range.has(current_tier):
-		var new_range_value = growth_blueprint.get_stat_upgrade(Enums.StatType.RANGE, current_tier)
-		parent_hero.runtime_base_stats[Enums.StatType.RANGE] = new_range_value
-		parent_hero.current_stats[Enums.StatType.RANGE] = new_range_value
-	
-	# 4. Fire Custom Script Hooks unique to this hero configuration??
-	
-	
-	#tiered_up.emit(current_tier), might need a signal here
-
+func setup(p_hero: Hero) -> void:
+	parent_hero = p_hero
+	growth_blueprint = p_hero.hero_data.growth_data
+	current_tier = p_hero.hero_data.base_tier
 
 		#--------Shop functionality-------#
 func can_merge_with(other_hero: HeroData) -> bool:
-	if other_hero == null: return false
 	# Must be the exact same character profile
-	if name != other_hero.name: return false
+	if parent_hero.hero_data.name != other_hero.name: return false
 	# Cannot merge if already at maximum natural or legendary rank
 	if current_tier == Enums.HeroTier.LEGENDARY: return false
 	if current_tier == Enums.HeroTier.GOLD and not parent_hero.hero_data.is_legendary_eligible: return false
@@ -44,6 +23,8 @@ func can_merge_with(other_hero: HeroData) -> bool:
 	return true
 
 func advance_tier() -> void:
+	if not growth_blueprint or not parent_hero:
+		printerr("Tier up failed. Growth or hero data missing during setup.")
 	# If it is max tier, we do nothing
 	if current_tier == Enums.HeroTier.LEGENDARY:
 		return
@@ -57,15 +38,33 @@ func advance_tier() -> void:
 		current_tier += 1
 		
 	tier_up()
+	
+func tier_up() -> void:
+	# Update the basic stats of the runtime hero
+	# Carry the change over to the /currentactive combat value
+	var stats_to_upgrade = [Enums.StatType.HP, Enums.StatType.DAMAGE, Enums.StatType.SPEED]
+	for stat in stats_to_upgrade:
+		var amount = growth_blueprint.get_stat_upgrade(stat,current_tier)
+		parent_hero.runtime_base_stats[stat] += amount
+		parent_hero.current_stats[stat] += amount
+
+	# 2. Check for Ability/Passive unlocking milestones
+	if growth_blueprint.ability_unlocks.has(current_tier):
+		parent_hero.learn_behavior(growth_blueprint.ability_unlocks[current_tier])
+	# 3. Range
+	if growth_blueprint.new_range.has(current_tier):
+		var new_range_value = growth_blueprint.get_stat_upgrade(Enums.StatType.RANGE, current_tier)
+		parent_hero.runtime_base_stats[Enums.StatType.RANGE] = new_range_value
+		parent_hero.current_stats[Enums.StatType.RANGE] = new_range_value
+	
+	# 4. Fire Custom Script Hooks unique to this hero configuration
+	# The comment is just a reminder if we want to implement something like this
+	
+	tiered_up.emit(parent_hero, current_tier)
 
 func trigger_legendary_cosmetic_fanfare() -> void:
-	# Keep this pure text/data: shop UI layer will read current_tier to play animations later
+	# Just placeholder, might not even use, shop UI layer will read current_tier to play animations later
 	print("!!! %s HAS TRANSCENDED TO LEGENDARY STATUS !!!" % name)
 	
 func get_tier_string() -> String:
-	match current_tier:
-		Enums.HeroTier.BRONZE: return "Bronze"
-		Enums.HeroTier.SILVER: return "Silver"
-		Enums.HeroTier.GOLD: return "Gold"
-		Enums.HeroTier.LEGENDARY: return "Legendary"
-	return ""
+	return Enums.HeroTier.keys()[current_tier].capitalize()

@@ -3,7 +3,7 @@ class_name ShopSlot
 
 @export var UI : Control
 @export var hp_label : Label
-@export var lvl_label : Label
+@export var tier_label : Label
 @export var dmg_label : Label
 @export var cost_label : Label
 @export var sprite : TextureRect
@@ -36,6 +36,7 @@ func display_item(new_item: Variant) -> void:
 			if slot_item is HeroData:
 				dmg_label.text = str(slot_item.base_damage)
 				hp_label.text = str(slot_item.base_HP)
+				tier_label.text = Enums.HeroTier.keys()[slot_item.base_tier].capitalize()
 				# Pull the default idle frame from your generated SpriteFrames asset
 				if slot_item.sprites and slot_item.sprites.has_animation("idle"):
 					sprite.texture = slot_item.sprites.get_frame_texture("idle", 0)
@@ -47,7 +48,7 @@ func display_item(new_item: Variant) -> void:
 		elif slot_item is Hero:
 			# Pull static visual data from the nested resource blueprint
 			cost_label.text = str(slot_item.hero_data.cost)
-			
+			tier_label.text = slot_item.tier_component.get_tier_string()
 			if slot_item.hero_data and slot_item.hero_data.sprites:
 				sprite.texture = slot_item.hero_data.sprites.get_frame_texture("idle", 0)
 			

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bcw4j0oepkgpb" path="res://Scripts/Behaviors/Base/BehaviorData.gd" id="1_wu58y"]
 [ext_resource type="Resource" uid="uid://3ysv4ls6by1l" path="res://Resources/Behaviors/Basic Actions/attack_multi.tres" id="2_wu58y"]
 [ext_resource type="Script" uid="uid://cg6we33ta62qy" path="res://Scripts/Heroes/HeroData.gd" id="3_3k4dr"]
+[ext_resource type="Resource" uid="uid://d304k5oh1gpbt" path="res://Resources/Leveling and experience/Basic Growth/growth_data_basic.tres" id="3_5238w"]
 [ext_resource type="SpriteFrames" uid="uid://b7h27lgci1lhk" path="res://Graphics/Hero Sprites/Undead/vampiric_crawler_sprites.tres" id="4_wv25w"]
 
 [resource]
@@ -13,5 +14,6 @@ base_damage = 3
 base_speed = 4
 base_range = 1
 base_action = ExtResource("2_wu58y")
+growth_data = ExtResource("3_5238w")
 name = "Vampiric crawler"
 sprites = ExtResource("4_wv25w")
